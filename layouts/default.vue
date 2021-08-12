@@ -5,21 +5,22 @@
       <ul class="flex space-x-4 flex-1">
         <li><NuxtLink to="/">Home</NuxtLink></li>
         <li><NuxtLink to="/about">About</NuxtLink></li>
-        <li><NuxtLink to="/random-page">Random Page</NuxtLink></li>
+        <li v-if="user"><NuxtLink to="/secret/random-slug-here">Secret Page</NuxtLink></li>
       </ul>
       <div>
-        <span v-if="!user" class="cursor-pointer">Login</span>
+        <span v-if="!user" @click="login()" class="cursor-pointer">Login</span>
         <div v-else class="flex items-center space-x-4">
           <NuxtLink class="rounded-full w-10 overflow-hidden" to="/account">
-            <img src="@/assets/images/avatar.png" alt="Username here">
+            <img :src="user.photoURL" :alt="user.displayName">
           </NuxtLink>
-          <span class="text-red-500 cursor-pointer">Logout</span>
+          <span @click="logout()" class="text-red-500 cursor-pointer">Logout</span>
         </div>
       </div>
     </div>
     <div class="p-8">
 
-      <Nuxt />
+      <SelectUsername v-if="user && !(user.username)"/>
+      <Nuxt v-else />
 
     </div>
   </div>
@@ -27,13 +28,29 @@
 
 <script>
 
+import { mapActions } from 'vuex'
 
 export default {
   data(){
     return {
-	  user: true,
     }
-  }
+  },
+  methods: {
+    ...mapActions({
+      login: 'auth/login',
+      logout: 'auth/logout',
+      watchAuthState: 'auth/onStateChanged',
+    }),
+    
+  },
+  mounted() {
+    this.watchAuthState();
+  },
+  computed:{
+    user(){
+      return this.$store.getters['auth/getUser'];
+    }
+  },
 }
 </script>
 

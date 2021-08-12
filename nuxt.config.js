@@ -17,8 +17,13 @@ export default {
   css: [
   ],
 
+  router: {
+    middleware: ['authControl']
+  },
+  
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+	'~/plugins/firebase.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -29,6 +34,13 @@ export default {
     // https://go.nuxtjs.dev/tailwindcss
     '@nuxtjs/tailwindcss',
   ],
+  
+  tailwindcss: {
+    cssPath: '~/assets/css/tailwind.css',
+    configPath: 'tailwind.config.js',
+    exposeConfig: false,
+    config: {}
+  },
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [

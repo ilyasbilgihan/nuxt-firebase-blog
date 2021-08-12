@@ -1,0 +1,128 @@
+<template>
+  <div class="flex justify-center flex-col items-center">
+    <h1 class="my-6 text-2xl">Please define a username.</h1>
+    <form @submit.prevent="lastCheck()" class="flex flex-col space-y-3 w-1/5 items-center">
+      
+      <div :class="info[1]" class="custom-input relative w-full">
+        <input v-model="chosenName" class="border-current outline-none bg-transparent relative border rounded-lg py-2 px-4 w-full" type="text" required :pattern="pattern">
+        <span :class="{'move-top': chosenName}" class="left-0 top-0 px-2 m-2">Username</span>
+        <div class="error text-xs bg-white px-2 mr-2 -mt-3">{{ info[0] }}</div>
+      </div>
+
+      <input :disabled="!available || loading" type="submit" value="Apply" class="w-1/2 bg-blue-500 text-white rounded-lg pt-1 pb-1.5 cursor-pointer hover:bg-blue-400">
+      
+    </form>
+  </div>
+</template>
+
+<script>
+
+import { mapActions } from 'vuex';
+
+export default {
+  data(){
+    return {
+      chosenName: null,
+      pattern: '^[a-z0-9]([_-](?![_-])|[a-z0-9]){4,14}[a-z0-9]$',
+      regExp: new RegExp(/^[a-z0-9]([_-](?![_-])|[a-z0-9]){4,14}[a-z0-9]$/),
+      timeout: null,
+      available: false,
+      valid: false,
+      loading: false
+    }
+  },
+  watch: {
+    chosenName(){
+      this.onChange();
+    }
+  },
+  computed: {
+    info(){
+      return this.loading 
+        ? ['Checking...', 'text-yellow-500']
+        : (this.valid)
+          ? (this.available)
+            ? ['Available', 'text-green-500']
+            : ['Taken', 'text-red-500']
+          : (this.chosenName)
+            ? ['Invalid username!', 'text-red-500']
+            : ['', 'text-gray-600']
+    },
+    user(){
+      return this.$store.getters['auth/getUser'];
+    }
+  },
+  methods:{
+    ...mapActions({
+      changeUsername: 'auth/changeUsername',
+      checkUsername: 'auth/checkUsername'
+    }),
+    lastCheck(){
+      if(this.valid && this.available && !this.loading){
+        this.changeUsername(this.chosenName);
+      }
+    },
+    onChange() {
+      if (this.timeout){
+        clearTimeout(this.timeout); 
+      }
+
+      if(this.regExp.test(this.chosenName)){
+        this.valid = true
+        this.loading = true
+
+        this.timeout = setTimeout(() => {
+
+          if(this.regExp.test(this.chosenName)){
+            this.checkUsername(this.chosenName).then(res => {
+              this.available = res
+              this.loading = false
+            });
+          }
+
+        }, 400); // delay
+        
+      }else {
+        this.available = false
+        this.loading = false
+        this.valid = false
+      }
+      
+    },
+  }
+}
+</script>
+
+
+<style scoped lang="scss">
+
+.custom-input{
+
+  input {
+    transition: .4s border-color;
+    
+    &:focus + span, & + .move-top{
+      transform: translateY(calc(-50% - 0.5rem)) scale(.75);
+      z-index: 0;
+      background-color: white;
+    }
+    & + span {
+      position: absolute;
+      transform-origin: center left;
+      z-index: -1;
+      transition: .4s all;
+    }
+    
+  }
+  .error {
+    opacity: 1;
+    position: absolute;
+    right: 0;
+    transition: .4s opacity, .4s color;
+  }
+  
+}
+
+
+
+</style>

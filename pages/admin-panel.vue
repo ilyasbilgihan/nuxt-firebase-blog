@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h1 class="text-2xl">Random Page</h1>
+      <h1 class="text-2xl">Admin Panel</h1>
     </div>
 </template>
 
