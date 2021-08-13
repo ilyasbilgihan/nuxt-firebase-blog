@@ -6,8 +6,8 @@ export const actions = {
 	  
 	// nuxtServerInit is the first hook of Nuxt's Lifecycle hooks
 	// When user open the app or reload(f5) the page, Nuxt calls this hook first,
-	// So we can control our 'user_data' cookie (which we would set it when user logged in), 
-	// If 'user_data' exists then we will commit our 'auth/setUser' mutation and set the user,
+	// So we can control our 'user_data' cookie (which we would set/remove it when user logged in/out), 
+	// If 'user_data' exists then we will commit our 'auth/setUser' mutation to set the user,
 	// Thus, it will provide us a server-side like auth system.
 	
 	// To see the difference, comment out this hook (nuxtServerInit) block and reload the page when logged in. 

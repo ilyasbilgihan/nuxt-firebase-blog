@@ -125,5 +125,9 @@ export const actions = {
 
     Cookie.set('user_data', JSON.stringify(state.user), { secure: true })
 
-  }
+  },
+  async fetchUser({ commit }, uid){
+    const user = await firestore.doc(`users/${uid}`).get();
+    return user
+  },
 }

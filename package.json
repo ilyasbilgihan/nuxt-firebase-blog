@@ -11,6 +11,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/pwa": "^3.3.5",
+    "@toast-ui/vue-editor": "^3.0.2",
     "cookieparser": "^0.1.0",
     "core-js": "^3.15.1",
     "firebase": "^8.9.1",
