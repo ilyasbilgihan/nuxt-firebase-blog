@@ -3,22 +3,21 @@
 
 
     <h1 class="text-2xl">Public User Page - {{user.username}}</h1>
-    <div>{{user.displayName}}</div>
-    <div>{{user.email}}</div>
-    <hr class="my-4">
+    <div class="flex mt-4">
+      <img class="w-40 rounded-full border border-gray-100 shadow-lg" :src="user.photoURL || require('@/assets/images/avatar.png')" alt="">
+      <div class="flex flex-col justify-between py-4 ml-8">
+        <div>{{user.displayName}} - {{user.profession}}</div>
+        <div>{{user.email}}</div>
+        <div>{{user.location}}</div>
+        <div>{{user.bio}}</div>
+      </div>
+    </div>
+    <hr class="my-8">
     <ul>
       <li>Blog</li>
       <li>Query</li>
       <li>Here</li>
     </ul>
-    <hr class="my-4">
-    <!-- only visible for its owner -->
-    <div v-if="authUser && (authUser.username == $route.params.username)">
-      <client-only>
-        <editor ref="editor" />
-      </client-only>
-    </div>
-    <div @click="click">asd</div>
 	
 	
   </div>
@@ -33,14 +32,8 @@ export default {
     }
   },
   methods:{
-    click(){
-      console.log(this.$refs.editor.invoke('getMarkdown'))
-    }
   },
   computed: {
-    authUser(){
-      return this.$store.getters['auth/getUser'];
-    }
   },
   
   async asyncData(context) { // fetch the user before mounted

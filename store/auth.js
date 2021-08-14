@@ -1,4 +1,4 @@
-import { auth, provider, firestore } from '../plugins/firebase'
+import { auth, provider, firestore, storage } from '../plugins/firebase'
 import firebase from 'firebase/app'
 import Cookie from 'js-cookie'
 
@@ -66,7 +66,10 @@ export const actions = {
               email: user.email,
               username: null,
               uid: user.uid,
-              usernameChangeLimit: 4
+              usernameChangeLimit: 4,
+              bio: '',
+              profession: '',
+              location: ''
             }
             const setUser = await firestore.doc(`users/${user.uid}`).set(userData); // set user to our 'users db'
             commit('setUser', {user: userData, info: 'new user - must set a username'}) // mutate our state.user
@@ -130,4 +133,30 @@ export const actions = {
     const user = await firestore.doc(`users/${uid}`).get();
     return user
   },
+  async updateUser({ commit, state }, {updatedUser, ppFile}){
+
+    
+    const storageRef = storage.ref();
+
+    if(ppFile != null){
+      const ppRes = await storageRef.child(`profile-pictures/${state.user.username}.jpg`).put(ppFile);
+      updatedUser.photoURL = (await ppRes.ref.getDownloadURL())
+    }else if (!updatedUser.photoURL) {
+
+      try {
+        await storage.ref(`profile-pictures/${state.user.username}.jpg`).delete()
+      } catch (error) {
+        
+      }
+      
+
+    }
+
+    await firestore.doc(`users/${state.user.uid}`).update(updatedUser);
+
+    commit('setUser', {user: updatedUser, info: 'user updated from account settings'}) // mutate our state.user
+    Cookie.set('user_data', JSON.stringify(state.user), { secure: true })
+    
+
+  }
 }

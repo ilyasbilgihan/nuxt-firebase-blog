@@ -1,23 +1,30 @@
 <template>
   <div>
-    <div class="flex h-16 bg-blue-50 border border-b border-blue-100 items-center px-32">
-      <span class="mr-16 font-semibold">LOGO</span>
-      <ul class="flex space-x-4 flex-1">
+    <div class="grid grid-cols-6 h-16 bg-blue-50 border border-b border-blue-100 items-center">
+      <span class="ml-auto mr-8 font-semibold">LOGO</span>
+      <ul class="flex space-x-4 col-span-4">
         <li><NuxtLink to="/">Home</NuxtLink></li>
         <li><NuxtLink to="/about">About</NuxtLink></li>
         <li v-if="user"><NuxtLink to="/secret/random-slug-here">Secret Page</NuxtLink></li>
       </ul>
       <div>
         <span v-if="!user" @click="login()" class="cursor-pointer">Login</span>
-        <div v-else class="flex items-center space-x-4">
-          <NuxtLink class="rounded-full w-10 overflow-hidden" to="/account">
-            <img :src="user.photoURL" :alt="user.displayName">
-          </NuxtLink>
-          <span @click="logout()" class="text-red-500 cursor-pointer">Logout</span>
+        <div v-else class="flex items-center w-10">
+          <el-dropdown trigger="click" @command="handleCommand">
+            <span class="el-dropdown-link flex items-center rounded-full w-full cursor-pointer overflow-hidden">
+              <img :src="user.photoURL || require('@/assets/images/avatar.png')" :alt="user.displayName">
+            </span>
+            <el-dropdown-menu slot="dropdown" class="w-40">
+              <el-dropdown-item command="profile" icon="el-icon-view">Public Profile</el-dropdown-item>
+              <el-dropdown-item divided command="writePost" icon="el-icon-edit">Write Post</el-dropdown-item>
+              <el-dropdown-item command="account" icon="el-icon-user">Account</el-dropdown-item>
+              <el-dropdown-item divided command="logout"><span class="text-red-500">Logout</span></el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
       </div>
     </div>
-    <div class="p-8">
+    <div id="main" class="w-2/3 mx-auto my-16">
 
       <SelectUsername v-if="user && !(user.username)"/>
       <Nuxt v-else />
@@ -33,6 +40,7 @@ import { mapActions } from 'vuex'
 export default {
   data(){
     return {
+      dropdown: false
     }
   },
   methods: {
@@ -41,6 +49,16 @@ export default {
       logout: 'auth/logout',
       watchAuthState: 'auth/onStateChanged',
     }),
+    handleCommand(command) {
+      if( command == 'logout' )
+        this.logout();
+      if ( command == 'account')
+        this.$router.push('/account')
+      if ( command == 'writePost')
+        this.$router.push('/write-post')
+      if ( command == 'profile')
+        this.$router.push(this.user.username)
+    }
     
   },
   mounted() {
@@ -49,11 +67,12 @@ export default {
   computed:{
     user(){
       return this.$store.getters['auth/getUser'];
-    }
+    },
   },
 }
 </script>
 
-<style>
+<style scoped>
+
 
 </style>
