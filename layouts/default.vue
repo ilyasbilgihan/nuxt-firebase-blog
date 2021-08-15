@@ -1,35 +1,50 @@
 <template>
   <div>
+
     <div class="grid grid-cols-6 h-16 bg-blue-50 border border-b border-blue-100 items-center">
-      <span class="ml-auto mr-8 font-semibold">LOGO</span>
+
+      <span class="ml-auto mr-8 font-semibold">LOGO</span> <!-- Dropdown logo end -->
+
       <ul class="flex space-x-4 col-span-4">
         <li><NuxtLink to="/">Home</NuxtLink></li>
         <li><NuxtLink to="/about">About</NuxtLink></li>
         <li v-if="user"><NuxtLink to="/secret/random-slug-here">Secret Page</NuxtLink></li>
-      </ul>
+      </ul>  <!-- Header menu end -->
+
       <div>
+
         <span v-if="!user" @click="login()" class="cursor-pointer">Login</span>
+
         <div v-else class="flex items-center w-10">
-          <el-dropdown trigger="click" @command="handleCommand">
+          <el-dropdown trigger="click" @command="handleDropdown">
+
             <span class="el-dropdown-link flex items-center rounded-full w-full cursor-pointer overflow-hidden">
               <img :src="user.photoURL || require('@/assets/images/avatar.png')" :alt="user.displayName">
-            </span>
+            </span> <!-- Dropdown trigger end -->
+
             <el-dropdown-menu slot="dropdown" class="w-40">
               <el-dropdown-item command="profile" icon="el-icon-view">Public Profile</el-dropdown-item>
               <el-dropdown-item divided command="writePost" icon="el-icon-edit">Write Post</el-dropdown-item>
               <el-dropdown-item command="account" icon="el-icon-user">Account</el-dropdown-item>
               <el-dropdown-item divided command="logout"><span class="text-red-500">Logout</span></el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+            </el-dropdown-menu> <!-- Dropdown menu end -->
+
+          </el-dropdown>  <!-- Dropdown end -->
         </div>
-      </div>
-    </div>
+
+      </div>  <!-- Header rigt end -->
+
+    </div> <!-- Header end -->
+
+
     <div id="main" class="w-2/3 mx-auto my-16">
 
       <SelectUsername v-if="user && !(user.username)"/>
       <Nuxt v-else />
 
-    </div>
+    </div>  <!-- Main(View) end -->
+
+
   </div>
 </template>
 
@@ -40,23 +55,24 @@ import { mapActions } from 'vuex'
 export default {
   data(){
     return {
-      dropdown: false
+      
     }
   },
   methods: {
     ...mapActions({
       login: 'auth/login',
       logout: 'auth/logout',
-      watchAuthState: 'auth/onStateChanged',
+      watchAuthState: 'auth/watchAuthState',
     }),
-    handleCommand(command) {
+    handleDropdown(command) {
+
       if( command == 'logout' )
         this.logout();
       if ( command == 'account')
         this.$router.push('/account')
       if ( command == 'writePost')
         this.$router.push('/write-post')
-      if ( command == 'profile')
+      if ( command == 'profile' && this.user.username)
         this.$router.push(this.user.username)
     }
     
@@ -66,13 +82,10 @@ export default {
   },
   computed:{
     user(){
-      return this.$store.getters['auth/getUser'];
+      return this.$store.getters['user/getUser'];
     },
   },
 }
+
+
 </script>
-
-<style scoped>
-
-
-</style>

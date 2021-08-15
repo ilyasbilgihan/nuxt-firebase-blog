@@ -1,8 +1,8 @@
 <template>
+
   <div>
 
-
-    <h1 class="text-2xl">Public User Page - {{user.username}}</h1>
+    <h1 class="text-4xl font-semibold">Public User Page - {{user.username}}</h1>
     <div class="flex mt-4">
       <img class="w-40 rounded-full border border-gray-100 shadow-lg" :src="user.photoURL || require('@/assets/images/avatar.png')" alt="">
       <div class="flex flex-col justify-between py-4 ml-8">
@@ -12,15 +12,17 @@
         <div>{{user.bio}}</div>
       </div>
     </div>
+
     <hr class="my-8">
+
     <ul>
       <li>Blog</li>
       <li>Query</li>
       <li>Here</li>
     </ul>
 	
-	
   </div>
+
 </template>
 
 <script>
@@ -31,16 +33,12 @@ export default {
       title: `${this.user.displayName}'s profile`,
     }
   },
-  methods:{
-  },
-  computed: {
-  },
   
-  async asyncData(context) { // fetch the user before mounted
+  async asyncData(context) { // fetch the user before mounted(before page loaded)
 
-    const fetchUser = await context.store.dispatch('auth/fetchUserId', context.route.params.username)
+    const fetchUser = await context.store.dispatch('user/fetchUserId', context.route.params.username)
     if(fetchUser.exists){
-      const user = (await context.store.dispatch('auth/fetchUser', fetchUser.data().uid)).data();
+      const user = (await context.store.dispatch('user/fetchUser', fetchUser.data().uid)).data();
       return { user }
     }else {
       context.redirect('/') // or redirect to 404 page
@@ -48,4 +46,5 @@ export default {
   }
 
 }
+
 </script>

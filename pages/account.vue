@@ -1,18 +1,18 @@
 <template>
   <div v-if="user">
     
-    <!-- <div>Go to your public profile page -> <b><NuxtLink :to="user.username">{{user.username}}</NuxtLink></b></div> -->
-    <!-- <hr class="my-4"> -->
     <div>
+
       <h2 class="text-4xl font-semibold mb-8">Settings</h2>
       <el-tabs tab-position="left" class="pr-8">
+
         <el-tab-pane label="Profile">
 
           <h3>Public profile</h3>
           <hr class="mt-4 mb-8">
 
           <div class="flex items-center">
-            <el-tooltip class="item" effect="dark" content="Click to upload image" placement="right">
+            <el-tooltip class="item" effect="dark" content="Click to upload a new profile picture" placement="right">
               <el-upload
                 class="avatar-uploader flex rounded-full"
                 action=""
@@ -24,7 +24,9 @@
               </el-upload>
             </el-tooltip>
             
-            <div v-if="user.photoURL || ppURL" @click="removePP" class="ml-6 flex justify-center rounded-md text-red-600 cursor-pointer">Remove Image</div>
+            <div v-if="user.photoURL || ppURL" @click="removePP" class="select-none ml-6 flex justify-center items-center rounded-md text-red-600 cursor-pointer"><i class="mr-2 text-xl el-icon-delete"></i>Remove Image</div>
+            <div v-else-if="unchangedPP" @click="restorePP" class="select-none ml-6 flex items-center justify-center rounded-md text-reblued-600 cursor-pointer"><i class="mr-2 text-xl el-icon-refresh-left"></i>Restore Current</div>
+          
           </div>
           
           <el-form label-position="top" class="mt-4">
@@ -41,12 +43,14 @@
               <el-input type="textarea" v-model="user.bio"></el-input>
             </el-form-item>
           </el-form>
+
           <div class="flex items-center mt-4">
-            <div @click="updatePublicProfile" class="inline-block hover:bg-blue-800 w-40 py-2 flex justify-center bg-blue-900 text-white rounded-md cursor-pointer">Save changes</div>
+            <button @click="updatePublicProfile" class="inline-block hover:bg-blue-800 w-40 py-2 flex justify-center bg-blue-900 text-white rounded-md cursor-pointer">Save changes</button>
             <span class="ml-4" v-html="result"></span>
           </div>
           
-        </el-tab-pane>
+        </el-tab-pane> <!-- Public profile settings tab -->
+
         <el-tab-pane label="Account">
 
           <div class="space-y-16">
@@ -62,44 +66,41 @@
               <h3>Export account data</h3>
               <hr class="mt-4 mb-8">
               <p class="text-sm">Export all your posts and profile metadata for <NuxtLink class="font-semibold" :to="user.username">@{{user.username}}</NuxtLink>. Exports will be available for 7 days.</p>
-              <div @click="exportData" class="mt-4 hover:bg-blue-800 w-40 py-2 flex justify-center bg-blue-900 text-white rounded-md cursor-pointer">Export data</div>
+              <button @click="exportData" class="mt-4 hover:bg-blue-800 w-40 py-2 flex justify-center bg-blue-900 text-white rounded-md cursor-pointer">Export data</button>
             </section>
 
           </div>  
         
-        </el-tab-pane>
-        <el-tab-pane label="Notification" disabled>Notification settings here</el-tab-pane>
+        </el-tab-pane> <!-- Account settings tab -->
+
+        <el-tab-pane label="Notifications" disabled>Notification settings here</el-tab-pane> <!-- Notifications settings tab -->
+
         <el-tab-pane label="Delete Account">
+
           <h3 class="text-red-600">Delete account</h3>
           <hr class="mt-4 mb-8">
+
           <p class="text-sm">Once you delete your account, there is no going back. Please be certain.</p>
-          <div @click="centerDialogVisible = true" class="transition-colors duration-400 mt-4 hover:bg-red-600 hover:text-white px-8 py-2 flex justify-center bg-gray-200 font-semibold text-red-600 rounded-md cursor-pointer">Delete account</div>
+          <button @click="deleteAccountDialog = true" class="w-full transition-colors duration-400 mt-4 hover:bg-red-600 hover:text-white px-8 py-2 flex justify-center bg-gray-100 border border-1 font-semibold text-red-600 rounded-md cursor-pointer">Delete account</button>
           
           <el-dialog
             title="Warning"
-            :visible.sync="centerDialogVisible"
+            :visible.sync="deleteAccountDialog"
             width="30%"
             center
             >
-            <span>Are you sure you want to do this?</span>
+            <span>Are you sure you want to delete your account?</span>
             <span slot="footer" class="dialog-footer">
-              <el-button @click="centerDialogVisible = false">Cancel</el-button>
-              <el-button type="primary" @click="deleteConfirmed">Confirm</el-button>
+              <el-button @click="deleteAccountDialog = false">Cancel</el-button>
+              <el-button type="primary" @click="deleteConfirmed">I am sure!</el-button>
             </span>
           </el-dialog>
         
         </el-tab-pane>
+
       </el-tabs>
+
     </div>
-    <!-- <ul class="space-y-1">
-      <li><a href="">Change profile picture.</a></li>
-      <li><a href="">Change fullname.</a></li>
-      <li v-if="user.usernameChangeLimit != 0"><a class="cursor-pointer" @click.prevent="changeUsername">Change username ({{user.usernameChangeLimit}} left)</a></li>
-    </ul> -->
-    <!-- <NuxtLink :to="user.username"><b>View Public Profile</b> for user "{{user.username}}"</NuxtLink> -->
-
-
-
     
   </div>
 </template>
@@ -114,21 +115,22 @@ export default {
   },
   data(){
     return {
-      user: JSON.parse(JSON.stringify((this.$store.getters['auth/getUser']))),
-      centerDialogVisible: false,
+      user: null,
+      deleteAccountDialog: false,
       result: '',
       ppFile: null,
-      ppURL: null
+      ppURL: null,
+      unchangedPP: null
     }
   },
   methods: {
     changeUsername(){
       if(this.user.usernameChangeLimit != 0){
-        this.$store.commit('auth/updateUsername', null)
+        this.$store.commit('user/updateUsername', null)
       }
     },
     deleteConfirmed(){
-      this.centerDialogVisible = false
+      this.deleteAccountDialog = false
       alert('delete confirmed')
     },
     exportData(){
@@ -136,7 +138,10 @@ export default {
     },
     async updatePublicProfile(){
       this.result = '<span class="el-icon-loading"></span>'
-      await this.$store.dispatch('auth/updateUser', {updatedUser: JSON.parse(JSON.stringify(this.user)), ppFile: this.ppFile});
+      if(!this.user.photoURL){
+        this.unchangedPP = null
+      }
+      await this.$store.dispatch('user/updateUser', {updatedUser: JSON.parse(JSON.stringify(this.user)), ppFile: this.ppFile});
       this.result = 'Saved'
       setTimeout(() => {
         this.result = ''
@@ -168,13 +173,22 @@ export default {
       return isJPG && isLt2M;
     },
     removePP(){
-      this.user.photoURL = ''
+      this.user.photoURL = null
+      this.ppURL = null
+      this.ppFile = null
+    },
+    restorePP(){
+      this.user.photoURL = this.unchangedPP
       this.ppURL = null
       this.ppFile = null
     }
   },
   computed: {
   },
+  mounted(){
+    this.user = JSON.parse(JSON.stringify((this.$store.getters['user/getUser'])))
+    this.unchangedPP = this.user.photoURL
+  }
 }
 </script>
 

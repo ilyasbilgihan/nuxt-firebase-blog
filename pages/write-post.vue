@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-2xl mb-4">Write Post</h1>
+    <h1 class="text-4xl font-semibold mb-4">Write Post</h1>
 
     <client-only>
       <editor ref="editor" />
@@ -15,7 +15,7 @@
 export default {
   computed: {
     user(){
-      return this.$store.getters['auth/getUser'];
+      return this.$store.getters['user/getUser'];
     }
   },
   mounted(){

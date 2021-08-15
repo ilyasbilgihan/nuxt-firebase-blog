@@ -2,7 +2,7 @@
 import cookieparser from "cookieparser";
 
 export const actions = {
-  nuxtServerInit({ commit, dispatch }, { req }) {
+  nuxtServerInit({ commit }, { req }) {
 	  
 	// nuxtServerInit is the first hook of Nuxt's Lifecycle hooks
 	// When user open the app or reload(f5) the page, Nuxt calls this hook first,
@@ -23,6 +23,6 @@ export const actions = {
     let userObj = JSON.parse(userData);
     if (!userObj) return;
 
-    commit('auth/setUser', {user: userObj, info: 'user mutated from nuxtServerInit'})
+    commit('user/setUser', {user: userObj, info: 'user mutated from nuxtServerInit'})
   },
 };

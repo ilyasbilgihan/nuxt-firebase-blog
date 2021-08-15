@@ -4,7 +4,7 @@ const unallowedAdminRoutes = ['admin-panel'];
 
 export default ({route, store, redirect}) => {
   const currentPage = route.name;
-  const user = store.getters['auth/getUser'];
+  const user = store.getters['user/getUser'];
   
 
   if(user){
