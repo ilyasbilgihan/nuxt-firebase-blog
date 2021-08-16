@@ -15,11 +15,18 @@
 
     <hr class="my-8">
 
-    <ul>
-      <li>Blog</li>
-      <li>Query</li>
-      <li>Here</li>
-    </ul>
+    <el-timeline>
+      <el-timeline-item v-for="post in posts" :key="post.slug" :timestamp="new Date(post.createdAt.seconds * 1000).toLocaleString()" placement="top">
+        
+        <el-card>
+          <NuxtLink :to="user.username + '/' + post.slug">
+            <h4 class="font-semibold">{{post.title}}</h4>
+          </NuxtLink>
+          <p>{{post.description}}</p>
+
+        </el-card>
+      </el-timeline-item>
+    </el-timeline>
 	
   </div>
 
@@ -39,7 +46,10 @@ export default {
     const fetchUser = await context.store.dispatch('user/fetchUserId', context.route.params.username)
     if(fetchUser.exists){
       const user = (await context.store.dispatch('user/fetchUser', fetchUser.data().uid)).data();
-      return { user }
+      const posts = (await context.store.dispatch('post/fetchUserPosts', user.uid));
+
+
+      return { user, posts }
     }else {
       context.redirect('/') // or redirect to 404 page
     }

@@ -89,3 +89,50 @@ export default {
 
 
 </script>
+
+
+<style>
+
+.el-tabs__item.is-left {
+  text-align: left!important;
+  padding-right: 100px;
+  padding-left: 0;
+}
+
+.el-tab-pane {
+  padding-left: 50px;
+}
+
+label {
+  padding: 0!important;
+  @apply font-semibold
+}
+.el-form-item {
+  margin-bottom: 11px!important;
+}
+
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 120px;
+  height: 120px;
+  line-height: 120px;
+  text-align: center;
+}
+.avatar {
+  display: block;
+  width: 120px;
+  height: 120px;
+}
+
+</style>

@@ -45,8 +45,8 @@
           </el-form>
 
           <div class="flex items-center mt-4">
-            <button @click="updatePublicProfile" class="inline-block hover:bg-blue-800 w-40 py-2 flex justify-center bg-blue-900 text-white rounded-md cursor-pointer">Save changes</button>
-            <span class="ml-4" v-html="result"></span>
+            <el-button @click="updatePublicProfile" type="primary">Save changes</el-button>
+            <span class="ml-4 text-sm text-gray-800" v-html="result"></span>
           </div>
           
         </el-tab-pane> <!-- Public profile settings tab -->
@@ -58,15 +58,15 @@
             <section>
               <h3>Change username ({{user.usernameChangeLimit}} left)</h3>
               <hr class="mt-4 mb-8">
-              <p class="text-sm">After changing your username, your old username becomes available for anyone else to claim. Most references to your posts under the old username automatically change to the new username. However, some links to your profile won't automatically redirect.</p>
-              <button :disabled="user.usernameChangeLimit == 0" @click="changeUsername" class="disabled:opacity-50 disabled:cursor-not-allowed disabled:cursor-not-allowed mt-4 hover:bg-blue-800 w-40 py-2 flex justify-center bg-blue-900 text-white rounded-md cursor-pointer">Change username</button>
+              <p class="text-sm mb-4">After changing your username, your old username becomes available for anyone else to claim. Most references to your posts under the old username automatically change to the new username. However, some links to your profile won't automatically redirect.</p>
+              <el-button :disabled="user.usernameChangeLimit == 0" @click="changeUsername" type="primary">Change username</el-button>
             </section>
 
             <section>
               <h3>Export account data</h3>
               <hr class="mt-4 mb-8">
-              <p class="text-sm">Export all your posts and profile metadata for <NuxtLink class="font-semibold" :to="user.username">@{{user.username}}</NuxtLink>. Exports will be available for 7 days.</p>
-              <button @click="exportData" class="mt-4 hover:bg-blue-800 w-40 py-2 flex justify-center bg-blue-900 text-white rounded-md cursor-pointer">Export data</button>
+              <p class="text-sm mb-4">Export all your posts and profile metadata for <NuxtLink class="font-semibold" :to="user.username">@{{user.username}}</NuxtLink>. Exports will be available for 7 days.</p>
+              <el-button @click="exportData" type="primary">Export Data</el-button>
             </section>
 
           </div>  
@@ -80,9 +80,9 @@
           <h3 class="text-red-600">Delete account</h3>
           <hr class="mt-4 mb-8">
 
-          <p class="text-sm">Once you delete your account, there is no going back. Please be certain.</p>
-          <button @click="deleteAccountDialog = true" class="w-full transition-colors duration-400 mt-4 hover:bg-red-600 hover:text-white px-8 py-2 flex justify-center bg-gray-100 border border-1 font-semibold text-red-600 rounded-md cursor-pointer">Delete account</button>
-          
+          <p class="text-sm mb-4">Once you delete your account, there is no going back. Please be certain.</p>
+          <el-button @click="deleteAccountDialog = true" type="danger" plain>Delete Account</el-button>
+
           <el-dialog
             title="Warning"
             :visible.sync="deleteAccountDialog"
@@ -192,53 +192,11 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
-.el-tabs__item.is-left {
-  text-align: left!important;
-  padding-right: 100px;
-  padding-left: 0;
-}
-
-.el-tab-pane {
-  padding-left: 50px;
-}
 
 h3 {
   @apply text-2xl font-semibold mb-2
-}
-
-label {
-  padding: 0!important;
-}
-.el-form-item {
-  margin-bottom: 0!important;
-}
-
-
-
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 50%;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #409EFF;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 120px;
-  height: 120px;
-  line-height: 120px;
-  text-align: center;
-}
-.avatar {
-  display: block;
-  width: 120px;
-  height: 120px;
 }
 
 </style>
