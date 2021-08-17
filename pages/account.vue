@@ -14,7 +14,7 @@
           <div class="flex items-center">
             <el-tooltip class="item" effect="dark" content="Click to upload a new profile picture" placement="right">
               <el-upload
-                class="avatar-uploader flex rounded-full"
+                class="avatar-uploader "
                 action=""
                 :show-file-list="false"
                 :on-success="handleAvatarSuccess"
@@ -192,8 +192,8 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
 
+<style lang="scss" scoped>
 
 h3 {
   @apply text-2xl font-semibold mb-2

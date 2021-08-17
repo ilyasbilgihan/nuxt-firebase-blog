@@ -11,14 +11,15 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/pwa": "^3.3.5",
-    "@toast-ui/vue-editor": "^3.0.2",
     "cookieparser": "^0.1.0",
     "core-js": "^3.15.1",
     "element-ui": "^2.15.5",
     "firebase": "^8.9.1",
+    "highlight.js": "^11.2.0",
     "js-cookie": "^3.0.0",
     "lodash.kebabcase": "^4.1.1",
-    "nuxt": "^2.15.7"
+    "nuxt": "^2.15.7",
+    "vue-quill-editor": "^3.0.6"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^4.2.0",

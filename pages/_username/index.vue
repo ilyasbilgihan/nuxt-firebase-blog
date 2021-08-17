@@ -2,7 +2,7 @@
 
   <div>
 
-    <h1 class="text-4xl font-semibold">Public User Page - {{user.username}}</h1>
+    <h3 class="text-4xl font-semibold">Public User Page - {{user.username}}</h3>
     <div class="flex mt-4">
       <img class="w-40 rounded-full border border-gray-100 shadow-lg" :src="user.photoURL || require('@/assets/images/avatar.png')" alt="">
       <div class="flex flex-col justify-between py-4 ml-8">
@@ -15,16 +15,19 @@
 
     <hr class="my-8">
 
+    <h3 class="text-3xl font-semibold mb-4">Posts</h3>
     <el-timeline>
       <el-timeline-item v-for="post in posts" :key="post.slug" :timestamp="new Date(post.createdAt.seconds * 1000).toLocaleString()" placement="top">
         
+        <NuxtLink :to="'/'+ user.username + '/' + post.slug">
         <el-card>
-          <NuxtLink :to="user.username + '/' + post.slug">
-            <h4 class="font-semibold">{{post.title}}</h4>
-          </NuxtLink>
+
+          <h4 class="font-semibold">{{post.title}}</h4>
           <p>{{post.description}}</p>
 
         </el-card>
+        </NuxtLink>
+        
       </el-timeline-item>
     </el-timeline>
 	

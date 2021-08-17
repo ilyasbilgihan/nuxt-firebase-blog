@@ -9,7 +9,7 @@ export const actions = {
   async fetchUserPosts({}, uid){
 
     let posts = []
-    const snapshot = await firestore.doc(`users/${uid}`).collection('posts').get();
+    const snapshot = await firestore.doc(`users/${uid}`).collection('posts').orderBy('createdAt', 'desc').get();
     snapshot.forEach((post) =>{
       posts.push(post.data())
     })

@@ -15,6 +15,7 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    
   ],
 
   router: {
@@ -24,8 +25,8 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
 	  '~/plugins/firebase.js',
-	  '~/plugins/tui_editor.client.js',
-    '~/plugins/element-ui.js'
+    '~/plugins/element-ui.js',
+    { src: '~/plugins/vue-quill.js', ssr: false}
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

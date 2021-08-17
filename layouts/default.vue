@@ -73,7 +73,7 @@ export default {
       if ( command == 'writePost')
         this.$router.push('/write-post')
       if ( command == 'profile' && this.user.username)
-        this.$router.push(this.user.username)
+        this.$router.push('/' + this.user.username)
     }
     
   },
@@ -92,6 +92,13 @@ export default {
 
 
 <style>
+
+
+pre.ql-syntax{ /* Atom one dark theme override */
+  color:#abb2bf!important; 
+  background:#282c34!important;
+  overflow-x: auto!important;
+}
 
 .el-tabs__item.is-left {
   text-align: left!important;
@@ -117,6 +124,10 @@ label {
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  display: grid;
+  place-items: center;
+  width: 120px;
+  height: 120px;
 }
 .avatar-uploader .el-upload:hover {
   border-color: #409EFF;
@@ -124,15 +135,9 @@ label {
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
-  width: 120px;
-  height: 120px;
-  line-height: 120px;
-  text-align: center;
 }
 .avatar {
   display: block;
-  width: 120px;
-  height: 120px;
 }
 
 </style>
