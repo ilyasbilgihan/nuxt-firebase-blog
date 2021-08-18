@@ -1,11 +1,11 @@
 <template>
   <div>
 
-    <div class="grid grid-cols-6 h-16 bg-blue-50 border border-b border-blue-100 items-center">
+    <div class="h-16 flex items-center px-40 shadow">
 
-      <span class="ml-auto mr-8 font-semibold">LOGO</span> <!-- Dropdown logo end -->
+      <span class="font-semibold">LOGO</span> <!-- Dropdown logo end -->
 
-      <ul class="flex space-x-4 col-span-4">
+      <ul class="flex space-x-4 flex-1 px-8">
         <li><NuxtLink to="/">Home</NuxtLink></li>
         <li><NuxtLink to="/about">About</NuxtLink></li>
         <li v-if="user"><NuxtLink to="/secret/random-slug-here">Secret Page</NuxtLink></li>
@@ -18,7 +18,7 @@
         <div v-else class="flex items-center w-10">
           <el-dropdown trigger="click" @command="handleDropdown">
 
-            <span class="el-dropdown-link flex items-center rounded-full w-full cursor-pointer overflow-hidden">
+            <span class="el-dropdown-link flex items-center rounded-full w-full cursor-pointer overflow-hidden shadow">
               <img :src="user.photoURL || require('@/assets/images/avatar.png')" :alt="user.displayName">
             </span> <!-- Dropdown trigger end -->
 
@@ -37,7 +37,7 @@
     </div> <!-- Header end -->
 
 
-    <div id="main" class="w-2/3 mx-auto my-16">
+    <div id="main">
 
       <SelectUsername v-if="user && !(user.username)"/>
       <Nuxt v-else />
@@ -91,13 +91,28 @@ export default {
 </script>
 
 
-<style>
+<style lang="scss">
 
 
 pre.ql-syntax{ /* Atom one dark theme override */
   color:#abb2bf!important; 
   background:#282c34!important;
   overflow-x: auto!important;
+}
+
+.quill-editor{
+  h1{
+    font-size: 2.25em;
+  }
+  h2{
+    font-size: 2em;
+  }
+  h3{
+    font-size: 1.75em;
+  }
+  h4 {
+    font-size: 1.5em;
+  }
 }
 
 .el-tabs__item.is-left {
@@ -126,8 +141,8 @@ label {
   overflow: hidden;
   display: grid;
   place-items: center;
-  width: 120px;
-  height: 120px;
+  width: 96px;
+  height: 96px;
 }
 .avatar-uploader .el-upload:hover {
   border-color: #409EFF;

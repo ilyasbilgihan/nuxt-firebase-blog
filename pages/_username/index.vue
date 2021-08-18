@@ -2,34 +2,38 @@
 
   <div>
 
-    <h3 class="text-4xl font-semibold">Public User Page - {{user.username}}</h3>
-    <div class="flex mt-4">
-      <img class="w-40 rounded-full border border-gray-100 shadow-lg" :src="user.photoURL || require('@/assets/images/avatar.png')" alt="">
-      <div class="flex flex-col justify-between py-4 ml-8">
-        <div>{{user.displayName}} - {{user.profession}}</div>
-        <div>{{user.email}}</div>
-        <div>{{user.location}}</div>
-        <div>{{user.bio}}</div>
-      </div>
+    <div class="h-64 shadow-lg relative overflow-hidden">
+      <div class="coverImage" style="background-image: url(https://www.incimages.com/uploaded_files/image/1920x1080/getty_509107562_2000133320009280346_351827.jpg)"></div>
+      <h1 class="displayName">{{user.displayName}}</h1>
     </div>
 
-    <hr class="my-8">
+    <div class="p-16 flex">
+      <div class="stickyUser w-1/6 relative">
+        <div class="sticky top-16">
+          <img :src="user.photoURL || require('@/assets/images/avatar.png')" class="w-2/3 rounded-2xl shadow-lg" :alt="user.displayName">
+          <div class="mt-4 space-y-2 text-sm">
+            <div class="font-semibold text-base">{{user.displayName}}</div>
+            <p v-if="user.bio" class="pb-2">{{user.bio}}</p>
+            <div v-if="user.location" :title="user.location" class="flex items-center"><i class="mr-1 text-xl el-icon-map-location"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.location}}</span></div>
+            <div v-if="user.profession" :title="user.profession" class="flex items-center"><i class="mr-1 text-xl el-icon-suitcase"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.profession}}</span></div>
+          </div>
+        </div>
+      </div>
+      <el-timeline class="flex-1 pl-8">
+        <el-timeline-item v-for="post in posts" :key="post.slug" :timestamp="new Date(post.createdAt.seconds * 1000).toLocaleString()" placement="top">
+          
+          <NuxtLink :to="'/'+ user.username + '/' + post.slug">
+          <el-card>
 
-    <h3 class="text-3xl font-semibold mb-4">Posts</h3>
-    <el-timeline>
-      <el-timeline-item v-for="post in posts" :key="post.slug" :timestamp="new Date(post.createdAt.seconds * 1000).toLocaleString()" placement="top">
-        
-        <NuxtLink :to="'/'+ user.username + '/' + post.slug">
-        <el-card>
+            <h4 class="font-semibold">{{post.title}}</h4>
+            <p>{{post.description}}</p>
 
-          <h4 class="font-semibold">{{post.title}}</h4>
-          <p>{{post.description}}</p>
-
-        </el-card>
-        </NuxtLink>
-        
-      </el-timeline-item>
-    </el-timeline>
+          </el-card>
+          </NuxtLink>
+          
+        </el-timeline-item>
+      </el-timeline>
+    </div>
 	
   </div>
 
@@ -61,3 +65,36 @@ export default {
 }
 
 </script>
+
+<style lang="scss" scoped>
+
+.displayName {
+  display: inline-block;
+  @apply text-3xl text-white absolute bottom-0 select-none p-8 pr-28;
+  z-index: 2;
+  &:before {
+    content: '';
+    @apply bg-gradient-to-r from-black via-gray-900 to-transparent;
+    opacity: .2;
+    z-index: -1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+  }
+}
+
+.coverImage {
+  @apply w-full h-64;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -2;
+}
+
+.stickyUser {
+  color: #303133
+}
+
+</style>

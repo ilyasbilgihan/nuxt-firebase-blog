@@ -1,6 +1,6 @@
 <template>
 
-  <div>
+  <div class="px-40 py-20">
     <h1 class="text-4xl font-semibold mb-4">Write Post</h1>
 
     <el-form label-position="top" class="my-4">
@@ -26,7 +26,7 @@
           placeholder="A short, interesting summary of your post."
           v-model="descriptionText"
           autocomplete="off"
-          maxlength="200"
+          :maxlength="descriptionLimit"
           show-word-limit
         ></el-input>
       </el-form-item>
@@ -68,6 +68,7 @@ export default {
       postTitle: null,
       postSlug: null,
       postTitleLimit: 70,
+      descriptionLimit: 300,
       timeout: null,
       checkingSlug: false,
       available: false,
@@ -117,7 +118,7 @@ export default {
       
       const content = this.$refs.editor.quill.getContents();
 
-      if(!this.checkingSlug && this.available && this.descriptionText.length < 200 && this.descriptionText.length > 0 && content.ops.length>0){
+      if(!this.checkingSlug && this.available && this.descriptionText.length < this.descriptionLimit && this.descriptionText.length > 0 ){
 
         const postData = {
           uid: this.user.uid,
@@ -181,9 +182,6 @@ export default {
     font-size: 14px;
     color: #C0C4CC!important;
     font-style: normal!important;
-  }
-  .ql-tooltip {
-    width: inherit!important;
   }
 }
 
