@@ -1,9 +1,10 @@
 <template>
 
-  <div class="px-40 py-20">
-    <h1 class="text-4xl font-semibold mb-4">Write Post</h1>
+  <div class="px-16 py-16">
 
-    <el-form label-position="top" class="my-4">
+    <el-form label-position="top" class="w-2/3 px-8 mx-auto my-4">
+
+      <h1 class="font-semibold mb-4">Write Post</h1>
 
       <el-form-item label="Post Title">
         <el-input
@@ -67,8 +68,8 @@ export default {
     return {
       postTitle: null,
       postSlug: null,
-      postTitleLimit: 70,
-      descriptionLimit: 300,
+      postTitleLimit: 64,
+      descriptionLimit: 200,
       timeout: null,
       checkingSlug: false,
       available: false,

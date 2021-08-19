@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <div class="h-16 flex items-center px-40 shadow">
+    <div class="h-16 flex items-center px-40 shadow bg-white z-10 sticky top-0">
 
       <span class="font-semibold">LOGO</span> <!-- Dropdown logo end -->
 
@@ -100,19 +100,29 @@ pre.ql-syntax{ /* Atom one dark theme override */
   overflow-x: auto!important;
 }
 
-.quill-editor{
-  h1{
-    font-size: 2.25em;
-  }
-  h2{
-    font-size: 2em;
-  }
-  h3{
-    font-size: 1.75em;
-  }
-  h4 {
-    font-size: 1.5em;
-  }
+h1{
+  font-size: 2.25rem!important;
+  line-height: 2.5rem!important;
+}
+h2{
+  font-size: 1.875rem!important;
+  line-height: 2.25rem!important;
+}
+h3{
+  font-size: 1.5rem!important;
+  line-height: 2rem!important;
+}
+h4 {
+  font-size: 1.25rem!important;
+  line-height: 1.75rem!important;
+}
+h5 {
+  font-size: 1.125rem!important;
+  line-height: 1.75rem!important;
+}
+h6 {
+  font-size: 1rem!important;
+  line-height: 1.5rem!important;
 }
 
 .el-tabs__item.is-left {
@@ -155,4 +165,24 @@ label {
   display: block;
 }
 
+.el-timeline-item__timestamp{
+  font-size: 14px!important;
+  &:before{
+    content: "\e71f";
+    font-family: element-icons !important;
+    @apply mr-1
+  }
+}
+
+.postImageAnimation {
+  transition: 500ms background-position;
+  will-change: background-position;
+  &:hover {
+    @apply bg-right-bottom
+  }
+}
+
+.tag {
+  @apply shadow transition duration-300 rounded-2xl bg-gray-100 px-4 py-1 cursor-pointer hover:bg-gray-200
+}
 </style>
