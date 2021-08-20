@@ -1,7 +1,6 @@
 <template>
 
-  <div class="p-16">
-	  
+  <div class="p-16 postView">
     <div class="w-2/3 px-8 mx-auto">
       <h1 class="text-4xl font-semibold capitalize" style="letter-spacing: -1px;">{{post.title}}</h1>
       <div class="mt-1">
@@ -20,9 +19,9 @@
           <li class="tag">yet</li>
         </ul>
         <div class="flex items-center space-x-4">
-          <div class="flex items-center space-x-1"><span>123</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-yellow-50 hover:text-yellow-700 el-icon-star-off"></span></div>
+          <div :class="{'text-red-700': hasAlreadyLiked}" class="flex items-center space-x-1"><span v-html="likeLoading ? loadingElement : post.likes.length"></span><span @click="likePost()" :class="{'bg-red-50': hasAlreadyLiked}" class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-red-50 hover:text-red-700 el-icon-star-off"></span></div>
           <a href="#comments" class="flex items-center space-x-1"><span>12</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-blue-50 hover:text-blue-700 el-icon-chat-line-square"></span></a>
-          <span class="text-2xl p-3 rounded-full cursor-pointer transition duration-300 hover:bg-red-50 hover:text-red-700 el-icon-collection-tag"></span>
+          <span @click="addToBookmarks()" :class="{'text-yellow-700 bg-yellow-50': hasAlreadyBookmarked, 'el-icon-collection-tag': !bookmarkLoading}" class="flex items-center justify-center text-2xl p-3 rounded-full cursor-pointer transition duration-300 hover:bg-yellow-50 hover:text-yellow-700"><span :class="{'el-icon-loading': bookmarkLoading, }"></span></span>
         </div>
       </div>
       <div class="mt-8">
@@ -48,7 +47,74 @@ export default {
   },
   data(){
     return {
-      timeOptions: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }
+      timeOptions: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' },
+      loadingElement: '<span class="el-icon-loading"></span>',
+      likeLoading: false,
+      bookmarkLoading: false,
+    }
+  },
+  methods:{
+    async likePost(){
+      if(this.authUser){
+        if(!this.likeLoading){
+          this.likeLoading = true;
+          const postData = {ownerId: this.user.uid, slug: this.post.slug, uid: this.authUser.uid}
+          
+          if(this.hasAlreadyLiked) {
+            await this.$store.dispatch('post/dislikePost', postData)
+            this.post.likes.splice(this.post.likes.indexOf(this.authUser.uid), 1)
+          }else {
+            await this.$store.dispatch('post/likePost', postData)
+            this.post.likes.push(this.authUser.uid);
+          }
+          this.likeLoading = false;
+        }else {
+          this.$message.warning('Slow Down !!!')
+        }
+      }else {
+        this.$message.warning('You have to login to like a post.')
+      }
+    },
+    async addToBookmarks(){
+      if(this.authUser){
+        if(!this.bookmarkLoading){
+          this.bookmarkLoading = true;
+          const bookmarkData = { uid: this.post.uid, slug: this.post.slug }
+          const postData = { bookmarkData: bookmarkData, uid: this.authUser.uid}
+          
+          if(this.hasAlreadyBookmarked){
+            await this.$store.dispatch('post/removeBookmark', postData );
+            this.$message.error('Post deleted from your bookmarks.');
+          }else {
+            await this.$store.dispatch('post/addBookmark', postData);
+            this.$message.success('Post successfully added to your bookmarks.');
+          }
+          this.bookmarkLoading = false;
+        }else {
+          this.$message.warning('Slow Down !!!')
+        }
+      }else {
+        this.$message.warning('You have to login to bookmark a post.')
+      }
+    }
+  },
+  computed: {
+    authUser(){
+      return this.$store.getters['user/getUser'];
+    },
+    hasAlreadyBookmarked(){
+      let exists = false;
+      if(this.authUser){
+        exists = this.authUser.bookmarks.some(b => (b.uid == this.post.uid && b.slug == this.post.slug))
+      }
+      return exists;
+    },
+    hasAlreadyLiked(){
+      let exists = false;
+      if(this.authUser){
+        exists = this.post.likes.includes(this.authUser.uid);
+      }
+      return exists;
     }
   },
   updated(){
@@ -93,4 +159,7 @@ export default {
   padding: 0;
 }
 
+.postView {
+  color: #303133;
+}
 </style>

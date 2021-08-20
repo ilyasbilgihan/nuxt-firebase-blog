@@ -25,6 +25,7 @@
             <el-dropdown-menu slot="dropdown" class="w-40">
               <el-dropdown-item command="profile" icon="el-icon-view">Public Profile</el-dropdown-item>
               <el-dropdown-item divided command="writePost" icon="el-icon-edit">Write Post</el-dropdown-item>
+              <el-dropdown-item command="bookmarks" icon="el-icon-collection-tag">Bookmarks</el-dropdown-item>
               <el-dropdown-item command="account" icon="el-icon-user">Account</el-dropdown-item>
               <el-dropdown-item divided command="logout"><span class="text-red-500">Logout</span></el-dropdown-item>
             </el-dropdown-menu> <!-- Dropdown menu end -->
@@ -74,6 +75,8 @@ export default {
         this.$router.push('/write-post')
       if ( command == 'profile' && this.user.username)
         this.$router.push('/' + this.user.username)
+      if ( command == 'bookmarks')
+        this.$router.push('/bookmarks')
     }
     
   },

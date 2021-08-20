@@ -125,7 +125,7 @@ export default {
           uid: this.user.uid,
           title: this.postTitle,
           slug: this.postSlug,
-          likeCount: 0,
+          likes: [],
           createdAt: new Date(Date.now()),
           updatedAt:  new Date(Date.now()),
           description: this.descriptionText,

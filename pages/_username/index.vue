@@ -25,31 +25,7 @@
         <el-empty v-if="!posts.length" :description="(ownProfile ? 'You have' : user.displayName + ' has')+' not shared a post yet.'" class="text-lg text-gray-500" :image-size="100"></el-empty>
         <el-timeline-item v-else v-for="post in posts" :key="post.slug" :timestamp="new Date(post.createdAt.seconds * 1000).toLocaleString()" placement="top">
           
-          <div clasS="flex flex-col mt-4 mb-12 ml-4">
-            <div class="w-full flex ">
-              <div class="flex-1 flex flex-col pr-8">
-                <NuxtLink class="capitalize transition duration-300 transform hover:translate-x-1 hover:text-gray-500 limit-lines l-1 font-bold mb-2" style="letter-spacing: -1px" :title="post.title" :to="'/'+ user.username + '/' + post.slug"><h3>{{post.title}}</h3></NuxtLink>
-                <p class="limit-lines l-3" style="font-size: 15px">{{post.description}}</p>
-              </div>
-              <NuxtLink :title="post.title" class="w-48 h-32 shadow rounded-md overflow-hidden" :to="'/'+ user.username + '/' + post.slug">
-                <div class="postImageAnimation w-full h-full bg-cover" style="background-image: url(https://www.incimages.com/uploaded_files/image/1920x1080/getty_509107562_2000133320009280346_351827.jpg)"></div>
-              </NuxtLink>
-            </div>
-            <div class="flex mt-2">
-              <div class="flex flex-1 items-center pr-8 space-x-2">
-                <span class="tag">tags</span>
-                <span class="tag">are</span>
-                <span class="tag">not</span>
-                <span class="tag">ready</span>
-                <span class="tag">yet</span>
-              </div>
-              <div class="w-48 flex justify-evenly items-center text-sm text-gray-600 px-4">
-                <div class="flex items-center space-x-1"><span>123</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-yellow-50 hover:text-yellow-700 el-icon-star-off"></span></div>
-                <NuxtLink :to="'/'+ user.username + '/' + post.slug + '#comments'" class="flex items-center space-x-1 space-x-reverse flex-row-reverse"><span>12</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-blue-50 hover:text-blue-700 el-icon-chat-line-square"></span></NuxtLink>
-              </div>
-            </div>
-
-          </div>
+          <PostCard :authUser="authUser" :user="user" :post="post"></PostCard>
           
         </el-timeline-item>
       </el-timeline>
@@ -100,20 +76,6 @@ export default {
 
 <style lang="scss" scoped>
 
-.limit-lines {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;  
-  overflow: hidden;
-  &.l-1{
-    -webkit-line-clamp: 1;
-  }
-  &.l-2{
-    -webkit-line-clamp: 2;
-  }
-  &.l-3{
-    -webkit-line-clamp: 3;
-  }
-}
 
 .displayName {
   display: inline-block;

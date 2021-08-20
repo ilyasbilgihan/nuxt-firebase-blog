@@ -1,5 +1,5 @@
 
-const unallowedRegularRoutes = ['account', 'secret-slug', 'write-post'];
+const unallowedRegularRoutes = ['account', 'secret-slug', 'write-post', 'bookmarks'];
 const unallowedAdminRoutes = ['admin-panel'];
 
 export default ({route, store, redirect}) => {

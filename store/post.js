@@ -1,4 +1,5 @@
 import { firestore } from '../plugins/firebase'
+import firebase from 'firebase/app'
 
 export const actions = {
 
@@ -18,6 +19,28 @@ export const actions = {
   },
   async addPost({}, postData){
     await firestore.doc(`users/${postData.uid}/posts/${postData.slug}`).set(postData);
+  },
+  async dislikePost({}, postData){
+    await firestore.doc(`users/${postData.ownerId}/posts/${postData.slug}`).update({
+      likes: firebase.firestore.FieldValue.arrayRemove(postData.uid)
+    });
+  },
+  async likePost({}, postData){
+    await firestore.doc(`users/${postData.ownerId}/posts/${postData.slug}`).update({
+      likes: firebase.firestore.FieldValue.arrayUnion(postData.uid)
+    });
+  },
+  async removeBookmark({}, postData){
+    await firestore.doc(`users/${postData.uid}`).update({
+      bookmarks: firebase.firestore.FieldValue.arrayRemove(postData.bookmarkData)
+    });
+    this.commit('user/deleteBookmark', postData.bookmarkData)
+  },
+  async addBookmark({}, postData){
+    await firestore.doc(`users/${postData.uid}`).update({
+      bookmarks: firebase.firestore.FieldValue.arrayUnion(postData.bookmarkData)
+    });
+    this.commit('user/pushBookmark', postData.bookmarkData)
   }
 
 }

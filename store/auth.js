@@ -49,7 +49,8 @@ export const actions = {
               bio: '',
               profession: '',
               location: '',
-			  customPP: false
+			        customPP: false,
+              bookmarks: []
             }
             await firestore.doc(`users/${user.uid}`).set(userData); // set user to our 'users db'
             this.commit('user/setUser', {user: userData, info: 'new user - must define a username'}) // mutate our state.user

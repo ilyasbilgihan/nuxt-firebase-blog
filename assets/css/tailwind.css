@@ -13,6 +13,7 @@ html {
   width: 100vw;
   overflow-y: scroll;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 body {
   background-color: #fdfdfd;

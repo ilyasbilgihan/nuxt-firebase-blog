@@ -28,6 +28,16 @@ export const mutations = {
   },
   updateUsernameChangeLimit(state, left){
     state.user.usernameChangeLimit = left;
+  },
+  deleteBookmark(state, data){
+    const afterDelete = state.user.bookmarks.filter(b => !(b.uid == data.uid && b.slug == data.slug));
+    state.user.bookmarks = afterDelete;
+    Cookie.set('user_data', JSON.stringify(state.user), { secure: true })
+  },
+  pushBookmark(state, data){
+    const afterPush = [data, ...state.user.bookmarks]
+    state.user.bookmarks = afterPush;
+    Cookie.set('user_data', JSON.stringify(state.user), { secure: true })
   }
 }
 
