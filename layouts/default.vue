@@ -104,16 +104,16 @@ pre.ql-syntax{ /* Atom one dark theme override */
 }
 
 h1{
-  font-size: 2.25rem!important;
-  line-height: 2.5rem!important;
+  font-size: 2.375rem!important;
+  line-height: 3rem!important;
 }
 h2{
   font-size: 1.875rem!important;
-  line-height: 2.25rem!important;
+  line-height: 2.4375rem!important;
 }
 h3{
   font-size: 1.5rem!important;
-  line-height: 2rem!important;
+  line-height: 2.025rem!important;
 }
 h4 {
   font-size: 1.25rem!important;
@@ -121,7 +121,7 @@ h4 {
 }
 h5 {
   font-size: 1.125rem!important;
-  line-height: 1.75rem!important;
+  line-height: 1.63125rem!important;
 }
 h6 {
   font-size: 1rem!important;

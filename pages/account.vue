@@ -44,7 +44,7 @@
 
         <div class="flex items-center mt-4">
           <el-button @click="updatePublicProfile" type="primary">Save changes</el-button>
-          <span class="ml-4 text-sm text-gray-800" v-html="result"></span>
+          <span v-if="loadingUpdate" class="ml-4 text-sm text-gray-800 el-icon-loading"></span>
         </div>
         
       </el-tab-pane> <!-- Public profile settings tab -->
@@ -113,10 +113,10 @@ export default {
     return {
       user: null,
       deleteAccountDialog: false,
-      result: '',
       ppFile: null,
       ppURL: null,
-      unchangedPP: null
+      unchangedPP: null,
+      loadingUpdate: false,
     }
   },
   methods: {
@@ -133,15 +133,18 @@ export default {
       alert('export data')
     },
     async updatePublicProfile(){
-      this.result = '<span class="el-icon-loading"></span>'
-      if(!this.user.photoURL){
-        this.unchangedPP = null
+      
+      if(!this.loadingUpdate){
+        this.loadingUpdate = true;
+        if(!this.user.photoURL){
+          this.unchangedPP = null
+        }
+        await this.$store.dispatch('user/updateUser', {updatedUser: JSON.parse(JSON.stringify(this.user)), ppFile: this.ppFile});
+        this.loadingUpdate= false;
+        this.$message.success('Profile updated successfully.');
+      }else {
+        this.$message.warning('Slow Down !!!');
       }
-      await this.$store.dispatch('user/updateUser', {updatedUser: JSON.parse(JSON.stringify(this.user)), ppFile: this.ppFile});
-      this.result = 'Saved'
-      setTimeout(() => {
-        this.result = ''
-      }, 2000);
     },
     handleAvatarSuccess(res, file) {
       const img = new Image();

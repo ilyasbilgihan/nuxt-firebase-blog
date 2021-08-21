@@ -1,12 +1,39 @@
 <template>
 
-  <div class="p-16 postView">
-    <div class="w-2/3 px-8 mx-auto">
-      <h1 class="text-4xl font-semibold capitalize" style="letter-spacing: -1px;">{{post.title}}</h1>
-      <div class="mt-1">
-        <span class="text-sm text-gray-600"><span class="el-icon-time mr-1"></span>{{new Date(post.createdAt.seconds * 1000).toLocaleDateString('en-US',timeOptions)}}</span>
+  <div class="p-16 postView flex">
+    <div class="w-1/6 relative pr-8">
+      <div v-if="ownPost" class="sticky top-32">
+        <el-button v-if="!editMode" class="w-full" @click="openEditMode()" type="warning">Enter edit mode</el-button>
+        <el-button v-else class="w-full" type="primary" @click="closeEditMode()">Live Preview</el-button>
       </div>
-      <p class="my-4" style="font-size: 16px">{{post.description}}</p>
+    </div>
+    <div class="w-2/3 px-8">
+      <h1 v-if="!editMode" class="overflow-hidden overflow-ellipsis font-semibold capitalize" style="letter-spacing: -1px;">{{titleInput}}</h1>
+      <el-input
+        v-else
+        class="titleInput"
+        type="textarea"
+        :autosize="{minRows: 1, maxRows: 3}"
+        v-model="titleInput"
+        :maxlength="titleLimit"
+        show-word-limit
+      ></el-input>
+      <div>
+        <div class="text-sm text-gray-600 flex justify-between">
+          <div title="Publish date"><span class="el-icon-time mr-1"></span>{{getTime(post.createdAt)}}</div>
+          <div v-if="post.createdAt.seconds != post.updatedAt.seconds" title="Last update date"><span class="el-icon-refresh-left mr-1"></span>{{getTime(post.updatedAt)}}</div>
+        </div>
+      </div>
+      <p v-if="!editMode" class="my-4 overflow-hidden overflow-ellipsis" style="line-height: 1.5rem; font-size: 16px">{{descriptionInput}}</p>
+      <el-input 
+        v-else
+        class="descriptionInput"
+        type="textarea" 
+        :autosize="{minRows: 1, maxRows: 6}"
+        v-model="descriptionInput"
+        :maxlength="descriptionLimit"
+        show-word-limit
+      ></el-input>
       <div class="w-full h-80 rounded-lg shadow-lg overflow-hidden">
         <div class="postImageAnimation w-full h-full bg-cover" style="background-image: url(https://www.incimages.com/uploaded_files/image/1920x1080/getty_509107562_2000133320009280346_351827.jpg)"></div>
       </div>
@@ -24,16 +51,34 @@
           <span @click="addToBookmarks()" :class="{'text-yellow-700 bg-yellow-50': hasAlreadyBookmarked, 'el-icon-collection-tag': !bookmarkLoading}" class="flex items-center justify-center text-2xl p-3 rounded-full cursor-pointer transition duration-300 hover:bg-yellow-50 hover:text-yellow-700"><span :class="{'el-icon-loading': bookmarkLoading, }"></span></span>
         </div>
       </div>
+      <div class="flex w-max py-3 items-center space-x-2">
+        <img :src="user.photoURL" class="rounded-full w-14 h-14 shadow-lg"/>
+        <div class="flex flex-col">
+          <NuxtLink :title="'@'+user.username" class="font-semibold transition duration-300 transform hover:translate-x-1" :to="'/'+ user.username">
+           {{user.displayName}}
+          </NuxtLink>
+          <span class="text-sm">{{user.profession}}</span>
+        </div>
+      </div>
       <div class="mt-8">
         <client-only>
           <quill-editor
+            :class="{'contentInput': editMode}"
+            contentType="html"
             ref="editor"
+            :disabled='!editMode'
           />
         </client-only>
       </div>
       <hr class="my-8">
       <h2 id="comments" class="font-semibold">Comments</h2>
       <el-empty description="No comment found, be the first!" :image-size="100"></el-empty>
+    </div>
+    <div class="w-1/6 relative pl-8">
+      <div v-if="ownPost && hasPostChanged" class="sticky top-32 space-x-0 space-y-2">
+        <el-button class="w-full" type="danger" @click="resetChanges()">Reset Changes</el-button>
+        <el-button class="w-full" type="success" @click="savePost()">Save Changes</el-button>
+      </div>
     </div>
   </div>
 
@@ -51,9 +96,59 @@ export default {
       loadingElement: '<span class="el-icon-loading"></span>',
       likeLoading: false,
       bookmarkLoading: false,
+      editMode: false,
+      saveLoading: false,
+      hasPostChanged: false,
+      titleLimit: 64,
+      descriptionLimit: 300,
     }
   },
   methods:{
+    async savePost(){
+      if(!this.saveLoading){
+        this.saveLoading = true
+
+        if(this.titleInput.length > 0 && this.titleInput.length <= this.titleLimit && this.descriptionInput.length > 0 && this.descriptionInput.length <= this.descriptionLimit){
+          const postData = {
+            title: this.titleInput,
+            updatedAt: new Date(Date.now()),
+            description: this.descriptionInput,
+            content: this.$refs.editor.quill.getContents().ops
+          }
+          await this.$store.dispatch('post/updatePost', {postData: postData, uid: this.post.uid, slug: this.post.slug});
+          this.hasPostChanged = false;
+          this.$message.success('Post Updated Successfully')
+          this.$router.go();
+        }else {
+          this.saveLoading = false;
+          this.$message.error('One of the post fields is not valid.')
+        }
+      }else {
+        this.$message.warning('Slow Down !!!')
+      }
+    },
+    resetChanges(){
+      this.titleInput = this.post.title;
+      this.descriptionInput = this.post.description;
+      this.$refs.editor.quill.setContents(this.post.content);
+      this.hasPostChanged = false;
+    },
+    closeEditMode(){
+      this.editMode = false
+      const contentInput = JSON.stringify(this.$refs.editor.quill.getContents().ops)
+      if(this.descriptionInput != this.post.description || this.titleInput != this.post.title || this.originalContent != contentInput){
+        // There are changes in the post
+        this.hasPostChanged = true
+      }
+    },
+    openEditMode(){
+      this.hasPostChanged = false;
+      this.editMode = true
+      this.$message.warning('A quick reminder, you can not change the post slug!')
+    },
+    getTime(time){
+      return new Date(time.seconds * 1000).toLocaleDateString('en-US', this.timeOptions)
+    },
     async likePost(){
       if(this.authUser){
         if(!this.likeLoading){
@@ -79,11 +174,11 @@ export default {
       if(this.authUser){
         if(!this.bookmarkLoading){
           this.bookmarkLoading = true;
-          const bookmarkData = { uid: this.post.uid, slug: this.post.slug }
+          const bookmarkData = { uid: this.post.uid, slug: this.post.slug, createdAt: new Date(Date.now()) }
           const postData = { bookmarkData: bookmarkData, uid: this.authUser.uid}
           
           if(this.hasAlreadyBookmarked){
-            await this.$store.dispatch('post/removeBookmark', postData );
+            await this.$store.dispatch('post/removeBookmark', {bookmarkData: this.hasAlreadyBookmarked, uid: this.authUser.uid} );
             this.$message.error('Post deleted from your bookmarks.');
           }else {
             await this.$store.dispatch('post/addBookmark', postData);
@@ -98,6 +193,8 @@ export default {
       }
     }
   },
+  watch:{
+  },
   computed: {
     authUser(){
       return this.$store.getters['user/getUser'];
@@ -105,7 +202,7 @@ export default {
     hasAlreadyBookmarked(){
       let exists = false;
       if(this.authUser){
-        exists = this.authUser.bookmarks.some(b => (b.uid == this.post.uid && b.slug == this.post.slug))
+        exists = this.authUser.bookmarks.filter(b => (b.uid == this.post.uid && b.slug == this.post.slug))[0]
       }
       return exists;
     },
@@ -115,11 +212,22 @@ export default {
         exists = this.post.likes.includes(this.authUser.uid);
       }
       return exists;
-    }
+    },
+    ownPost(){
+      if(this.authUser == null){
+        return false
+      }else {
+        return this.authUser.uid == this.post.uid
+      }
+    },
   },
-  updated(){
-    this.$refs.editor.quill.setContents(this.post.content);
-    this.$refs.editor.quill.enable(false);
+  mounted(){
+    this.$nextTick(() => {
+      this.$nextTick(() => {
+        this.$refs.editor.quill.setContents(this.post.content)
+        this.originalContent = JSON.stringify(this.$refs.editor.quill.getContents().ops)
+      })
+    })
   },
   async asyncData(context) { // fetch the user before mounted(before page loaded)
 
@@ -131,7 +239,7 @@ export default {
       
       if(post.exists){
 
-        return { user, post: post.data() }
+        return { user, post: post.data(), descriptionInput: post.data().description, titleInput: post.data().title }
 
       }else {
         context.redirect('/') // or redirect to 404 page
@@ -149,7 +257,7 @@ export default {
 </script>
 
 
-<style>
+<style lang="scss">
 
 .ql-editor{
   color: #303133;
@@ -157,9 +265,46 @@ export default {
   font-family: 'Quicksand', sans-serif!important;
   font-size: 16px;
   padding: 0;
+  border-radius: 4px;
 }
 
 .postView {
   color: #303133;
+}
+
+.contentInput {
+  .ql-editor {
+    outline: 1px dashed red;
+    outline-offset: 12px 
+  }
+}
+
+.descriptionInput, .titleInput {
+  textarea {
+    color: #303133;
+    background: transparent;
+    border: none;
+    padding: 0;
+    overflow-y: hidden;
+    outline: 1px dashed red;
+    outline-offset: 10px 
+  }
+}
+.descriptionInput {
+  textarea {
+    font-size: 16px;
+    line-height: 1.5rem; 
+    @apply py-4
+  }
+}
+.titleInput {
+  textarea {
+    margin: 0;
+    letter-spacing: -1px;
+    text-transform: capitalize;
+    font-size: 2.375rem;
+    line-height: 3rem;
+    @apply font-semibold
+  }
 }
 </style>

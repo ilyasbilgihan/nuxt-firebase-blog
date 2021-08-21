@@ -10,7 +10,7 @@ export const actions = {
   async fetchUserPosts({}, uid){
 
     let posts = []
-    const snapshot = await firestore.doc(`users/${uid}`).collection('posts').orderBy('createdAt', 'desc').get();
+    const snapshot = await firestore.doc(`users/${uid}`).collection('posts').orderBy('updatedAt', 'desc').get();
     snapshot.forEach((post) =>{
       posts.push(post.data())
     })
@@ -19,6 +19,9 @@ export const actions = {
   },
   async addPost({}, postData){
     await firestore.doc(`users/${postData.uid}/posts/${postData.slug}`).set(postData);
+  },
+  async updatePost({}, data){
+    await firestore.doc(`users/${data.uid}/posts/${data.slug}`).update(data.postData);
   },
   async dislikePost({}, postData){
     await firestore.doc(`users/${postData.ownerId}/posts/${postData.slug}`).update({

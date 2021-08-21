@@ -26,6 +26,7 @@
           type="textarea" 
           placeholder="A short, interesting summary of your post."
           v-model="descriptionText"
+          :autosize="{ minRows: 6}"
           autocomplete="off"
           :maxlength="descriptionLimit"
           show-word-limit
@@ -47,7 +48,6 @@
         <el-button type="primary" @click="submitPost">Submit Post</el-button>
         <div>
           <span v-if="loading" class="el-icon-loading"></span>
-          <span v-else class="text-sm" v-html="result"></span>
         </div>
 
       </div>
@@ -69,13 +69,12 @@ export default {
       postTitle: null,
       postSlug: null,
       postTitleLimit: 64,
-      descriptionLimit: 200,
+      descriptionLimit: 300,
       timeout: null,
       checkingSlug: false,
       available: false,
       descriptionText: null,
       loading: false,
-      result: '',
       content: '',
     }
   },
@@ -119,7 +118,7 @@ export default {
       
       const content = this.$refs.editor.quill.getContents();
 
-      if(!this.checkingSlug && this.available && this.descriptionText.length < this.descriptionLimit && this.descriptionText.length > 0 ){
+      if(!this.checkingSlug && this.available && this.descriptionText.length <= this.descriptionLimit && this.descriptionText.length > 0 ){
 
         const postData = {
           uid: this.user.uid,
@@ -133,7 +132,7 @@ export default {
         }
         await this.$store.dispatch('post/addPost', postData);
         this.loading = false;
-        this.result = 'Added, redirecting...';
+        this.$message.success('Post succesfully added, redirecting...');
         this.resetFields();
         setTimeout(() => {
           this.$router.push(`/${this.user.username}/${postData.slug}`)
@@ -141,11 +140,8 @@ export default {
 
       }else {
         this.loading = false;
-        this.result = 'Make sure you fill in the fields properly.';
         this.resetFields();
-        setTimeout(() => {
-          this.result = ''
-        }, 2000);
+        this.$message.error('Make sure you fill in the fields properly.');
       }
 
     }
