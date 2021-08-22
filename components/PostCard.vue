@@ -4,10 +4,10 @@
     <div class="w-full flex ">
       <div class="flex-1 flex flex-col pr-8">
         <NuxtLink v-if="showAuthor" :to="'/' + user.username" :title="'@'+ user.username" class="mb-1 author flex w-max items-center space-x-2">
-          <img :src="user.photoURL" class="rounded-full shadow h-7 w-7 overflow-hidden" :alt="post.displayName">
+          <img :src="user.photoURL || require('@/assets/images/avatar.png')" class="rounded-full shadow h-7 w-7 overflow-hidden" :alt="post.displayName">
           <span class="text-xs font-semibold text-gray-700 transition duration-300 transform">{{user.displayName}} </span>
         </NuxtLink>
-        <NuxtLink class="capitalize transition duration-300 transform hover:translate-x-1 hover:text-gray-500 limit-lines l-1 font-bold mb-2" style="letter-spacing: -1px" :title="post.title" :to="'/'+ user.username + '/' + post.slug"><h3>{{post.title}}</h3></NuxtLink>
+        <NuxtLink class="card-title capitalize transition duration-300 transform hover:translate-x-1 hover:text-gray-500 limit-lines l-1 font-bold mb-2" style="letter-spacing: -1px;" :title="post.title" :to="'/'+ user.username + '/' + post.slug"><h3>{{post.title}}</h3></NuxtLink>
         <p :class="{'l-2': showAuthor, 'l-3': !showAuthor}" class="limit-lines" style="font-size: 15px">{{post.description}}</p>
       </div>
       <NuxtLink :title="post.title" class="w-48 h-32 shadow rounded-md overflow-hidden" :to="'/'+ user.username + '/' + post.slug">
@@ -86,9 +86,16 @@ export default {
 
 <style lang="scss" scoped>
 
+.card-title {
+  width: fit-content;
+  width: webkit-fit-content;
+  width: intrinsic;
+}
+
 .limit-lines {
   display: -webkit-box;
   -webkit-box-orient: vertical;  
+  box-orient: vertical;
   overflow: hidden;
   &.l-1{
     -webkit-line-clamp: 1;

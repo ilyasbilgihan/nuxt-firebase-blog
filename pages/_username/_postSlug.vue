@@ -52,7 +52,7 @@
         </div>
       </div>
       <div class="flex w-max py-3 items-center space-x-2">
-        <img :src="user.photoURL" class="rounded-full w-14 h-14 shadow-lg"/>
+        <img :src="user.photoURL || require('@/assets/images/avatar.png')" class="rounded-full w-14 h-14 shadow-lg"/>
         <div class="flex flex-col">
           <NuxtLink :title="'@'+user.username" class="font-semibold transition duration-300 transform hover:translate-x-1" :to="'/'+ user.username">
            {{user.displayName}}
@@ -60,7 +60,7 @@
           <span class="text-sm">{{user.profession}}</span>
         </div>
       </div>
-      <div class="mt-8">
+      <div class="mt-8" v-loading="editorLoading">
         <client-only>
           <quill-editor
             :class="{'contentInput': editMode}"
@@ -72,7 +72,7 @@
       </div>
       <hr class="my-8">
       <h2 id="comments" class="font-semibold">Comments</h2>
-      <el-empty description="No comment found, be the first!" :image-size="100"></el-empty>
+      <Comments :parent="post.slug" :postOwnerId="post.uid" :showEmpty="true" />
     </div>
     <div class="w-1/6 relative pl-8">
       <div v-if="ownPost && hasPostChanged" class="sticky top-32 space-x-0 space-y-2">
@@ -101,6 +101,7 @@ export default {
       hasPostChanged: false,
       titleLimit: 64,
       descriptionLimit: 300,
+      editorLoading: false
     }
   },
   methods:{
@@ -222,12 +223,13 @@ export default {
     },
   },
   mounted(){
-    this.$nextTick(() => {
-      this.$nextTick(() => {
-        this.$refs.editor.quill.setContents(this.post.content)
-        this.originalContent = JSON.stringify(this.$refs.editor.quill.getContents().ops)
-      })
-    })
+    this.editorLoading = true;
+    setTimeout(() => {
+
+      this.$refs.editor.quill.setContents(this.post.content)
+      this.originalContent = JSON.stringify(this.$refs.editor.quill.getContents().ops)
+      this.editorLoading = false;
+    }, 1000);
   },
   async asyncData(context) { // fetch the user before mounted(before page loaded)
 
@@ -259,13 +261,16 @@ export default {
 
 <style lang="scss">
 
+
 .ql-editor{
-  color: #303133;
-  line-height: 1.5;
-  font-family: 'Quicksand', sans-serif!important;
-  font-size: 16px;
   padding: 0;
+  font-size: 16px;
   border-radius: 4px;
+}
+.el-loading-parent--relative {
+  .ql-editor{
+    opacity: 0;
+  }
 }
 
 .postView {

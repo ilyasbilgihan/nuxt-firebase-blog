@@ -169,11 +169,8 @@ export default {
   .ql-editor {
     border: 1px solid #DCDFE6;
     min-height: 400px;
-    color: #606266;
     border-radius: 4px;
-    line-height: 1.5;
     padding: 5px 15px;
-    font-family: 'Quicksand', sans-serif;
   }
   .ql-editor.ql-blank::before {
     font-size: 14px;

@@ -96,6 +96,19 @@ export default {
 
 <style lang="scss">
 
+.el-loading-mask {
+  background-color: #fdfdfd8f!important;
+  .el-loading-spinner {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.ql-editor {
+  color: #303133;
+  line-height: 1.5;
+  font-family: 'Quicksand', sans-serif!important;
+}
 
 pre.ql-syntax{ /* Atom one dark theme override */
   color:#abb2bf!important; 
