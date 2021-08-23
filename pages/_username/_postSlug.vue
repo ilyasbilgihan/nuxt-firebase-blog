@@ -47,7 +47,7 @@
         </ul>
         <div class="flex items-center space-x-4">
           <div :class="{'text-red-700': hasAlreadyLiked}" class="flex items-center space-x-1"><span v-html="likeLoading ? loadingElement : post.likes.length"></span><span @click="likePost()" :class="{'bg-red-50': hasAlreadyLiked}" class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-red-50 hover:text-red-700 el-icon-star-off"></span></div>
-          <a href="#comments" class="flex items-center space-x-1"><span>12</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-blue-50 hover:text-blue-700 el-icon-chat-line-square"></span></a>
+          <a href="#comments" class="flex items-center space-x-1"><span>{{post.commentCount}}</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-blue-50 hover:text-blue-700 el-icon-chat-line-square"></span></a>
           <span @click="addToBookmarks()" :class="{'text-yellow-700 bg-yellow-50': hasAlreadyBookmarked, 'el-icon-collection-tag': !bookmarkLoading}" class="flex items-center justify-center text-2xl p-3 rounded-full cursor-pointer transition duration-300 hover:bg-yellow-50 hover:text-yellow-700"><span :class="{'el-icon-loading': bookmarkLoading, }"></span></span>
         </div>
       </div>
@@ -71,8 +71,24 @@
         </client-only>
       </div>
       <hr class="my-8">
-      <h2 id="comments" class="font-semibold">Comments</h2>
-      <Comments :parent="post.slug" :postOwnerId="post.uid" :showEmpty="true" />
+      <h2 id="comments" class="font-semibold mb-4">Comments</h2>
+      <div class="flex-1 space-y-2 mb-4">
+        <el-input 
+          type="textarea" 
+          placeholder="What are your thoughts?."
+          v-model="commentContent"
+          :autosize="{ minRows: 4}"
+          autocomplete="off"
+          :maxlength="commentLimit"
+          show-word-limit
+        ></el-input>
+        <div class="flex">
+          <span class="flex-1"></span>
+          <el-button @click="addComment()" type="primary" >Add Comment</el-button>
+        </div>
+      </div>
+      <Comments :key="forceUpdate" v-if="post.commentCount > 0" :parent="post.slug" :postOwnerId="post.uid" :post="post" />
+      <el-empty v-else description="No comment found, be the first!" :image-size="100"></el-empty>
     </div>
     <div class="w-1/6 relative pl-8">
       <div v-if="ownPost && hasPostChanged" class="sticky top-32 space-x-0 space-y-2">
@@ -101,10 +117,54 @@ export default {
       hasPostChanged: false,
       titleLimit: 64,
       descriptionLimit: 300,
-      editorLoading: false
+      editorLoading: false,
+      commentContent: '',
+      commentLimit: 300,
+      commentLoading: false,
+      forceUpdate: 0,
     }
   },
   methods:{
+    async addComment(){
+      
+      if(this.authUser){
+        if(!this.commentLoading){
+          this.commentLoading = true;
+          if(this.commentContent.length <= this.commentLimit){
+            if(this.commentContent.length > 0 ){
+              const commentData = {
+                uid: this.authUser.uid,
+                parentId: this.$route.params.postSlug,
+                content: this.commentContent,
+                updateHistory: [{editedAt: new Date(Date.now()), content: this.commentContent}],
+                upVotes: [],
+                downVotes: [],
+                voteCount: 0,
+                replyCount: 0,
+                createdAt: new Date(Date.now()),
+                updatedAt: new Date(Date.now()),
+              }
+              
+              await this.$store.dispatch('post/addComment', {postOwnerId: this.user.uid, slug: this.$route.params.postSlug, commentData: commentData})
+              
+              this.commentContent = '';
+              this.forceUpdate += 1;
+              this.post.commentCount += 1;
+
+            }else {
+              this.$message.error('You should type something.')
+            }
+          }else {
+            this.$message.error('You can\'t break the rules.')
+          }
+          this.commentLoading = false;
+        }else {
+          this.$message.warning('Slow Down !!!')
+        }
+      }else {
+        this.$message.error('You have to login to send a comment.');
+      }
+    },
     async savePost(){
       if(!this.saveLoading){
         this.saveLoading = true

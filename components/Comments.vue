@@ -1,12 +1,9 @@
 <template>
 
-  <div>
-    <div v-if="comments && comments.length > 0">
-      <div class="" v-for="comment in comments" :key="comment.commentId">
-        <CommentInside :comment="comment" :postOwnerId="postOwnerId" />
-      </div>
+  <div class="comment">
+    <div class="" v-for="comment in comments" :key="comment.commentId">
+      <CommentInside :comment="comment" :postOwnerId="postOwnerId" :post="post" />
     </div>
-    <el-empty v-else-if="showEmpty" description="No comment found, be the first!" :image-size="100"></el-empty>
   </div>
 
 </template>
@@ -22,10 +19,7 @@ export default({
   props: {
     parent: String,
     postOwnerId: String,
-    showEmpty: {
-      type: Boolean,
-      default: false,
-    }
+    post: Object,
   },
   async fetch(){
     

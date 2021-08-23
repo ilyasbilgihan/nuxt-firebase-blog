@@ -96,6 +96,12 @@ export default {
 
 <style lang="scss">
 
+#el-drawer__title {
+  span{
+    @apply font-semibold text-gray-800 text-xl pt-4;
+  }
+}
+
 .el-loading-mask {
   background-color: #fdfdfd8f!important;
   .el-loading-spinner {

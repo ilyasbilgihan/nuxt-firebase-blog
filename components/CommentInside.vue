@@ -1,22 +1,54 @@
 <template>
 
   <div v-if="commentOwner" class="comment-container flex flex-col">
-    <div class="flex items-center space-x-2 pt-2">
-      <NuxtLink :to="'/' + commentOwner.username" class="w-8 h-8 rounded-md shadow overflow-hidden">
+    <div class="flex items-center space-x-3 pt-2">
+      <NuxtLink v-if="comment.uid != 'deleted'" :to="'/' + commentOwner.username" class="w-8 h-8 rounded-md shadow overflow-hidden">
         <img :src="commentOwner.photoURL || require('@/assets/images/avatar.png')" :alt="commentOwner.displayName">
       </NuxtLink>
-      <NuxtLink :to="'/' + commentOwner.username" class="text-sm font-semibold transition duration-300 transform hover:translate-x-1">{{commentOwner.displayName}}</NuxtLink>
-      <span :title="getTime(comment.createdAt)" class="text-xs text-gray-500" >{{$moment(comment.createdAt.seconds * 1000).fromNow()}}</span>
+      <div class="text-sm font-semibold">
+        <NuxtLink v-if="comment.uid != 'deleted'" :to="'/' + commentOwner.username" class="inline-block transition duration-300 transform hover:translate-x-1">{{commentOwner.displayName}}</NuxtLink>
+        <span v-else>{{commentOwner.displayName}}</span>
+      </div>
+      <div v-if="comment.uid != 'deleted'" class="flex space-x-2 items-center text-xs text-gray-500">
+        <span :title="getTime(comment.createdAt)" >sent {{fromNow(comment.createdAt)}}</span>
+        <div v-if="comment.createdAt.seconds != comment.updatedAt.seconds" class="p-0.5 bg-gray-400 rounded-full"></div>
+        <span v-if="comment.createdAt.seconds != comment.updatedAt.seconds" :title="getTime(comment.updatedAt)">
+          <span @click="toggleHistory()" class="underline cursor-pointer select-none hover:text-gray-600">edited</span>
+          {{ fromNow(comment.updatedAt) }}
+        </span>
+      </div>
+      <span v-else class="text-xs text-gray-500">Unknown</span>
+      <el-dropdown v-if="authUser && (authUser.uid == comment.uid)" size="small" trigger="click" placement="bottom-start" @command="handleMoreOption">
+        <span class="el-dropdown-link">
+          <span class="transition duration-300 hover:bg-gray-50 hover:shadow cursor-pointer p-1 rounded-full el-icon-more text-xs text-gray-500"></span>
+        </span> <!-- Dropdown trigger end -->
+
+        <el-dropdown-menu slot="dropdown" class="w-40">
+          <el-dropdown-item command="editComment" icon="el-icon-edit-outline">{{showEditArea ? 'Preview' : 'Edit'}} comment</el-dropdown-item>
+          <el-dropdown-item divided command="deleteComment"><span class="text-red-500"><span class="el-icon-delete"></span> Delete comment</span></el-dropdown-item>
+        </el-dropdown-menu> <!-- Dropdown menu end -->
+      </el-dropdown>  <!-- Dropdown end -->
     </div>
     <div class="comment flex">
       <div class="commentLine"><span></span></div>
       <div class="flex-1 overflow-hidden pl-2">
-        <p class="py-2 text-sm overflow-hidden overflow-ellipsis">{{comment.content}}</p>
+        <p v-if="!showEditArea" class="py-2 text-sm overflow-hidden overflow-ellipsis" :class="{'text-xs line-through': comment.uid == 'deleted'}">{{comment.content}}</p>
+        <div v-else class="space-y-1 mb-2">
+          <el-input
+            class=""
+            type="textarea" 
+            :autosize="{minRows: 2}"
+            v-model="comment.content"
+            :maxlength="replyLimit"
+            show-word-limit
+          ></el-input>
+          <el-button @click="applyEdit()" size="small" type="warning" round>Apply Edit</el-button>
+        </div>
         <div class="flex items-center space-x-1">
           <div :class="{'bg-green-50 text-green-700': hasAlreadyUpVoted}" @click="upVote()" class="flex w-8 h-8 justify-center items-center cursor-pointer transition duration-300 rounded-full hover:bg-green-50 hover:text-green-700"><span class="el-icon-arrow-up pb-0.5"></span></div>
           <span class="text-sm font-semibold text-gray-600 px-1">{{comment.voteCount}}</span>
           <div :class="{'bg-red-50 text-red-700': hasAlreadyDownVoted}" @click="downVote()" class="flex w-8 h-8 justify-center items-center cursor-pointer transition duration-300 rounded-full hover:bg-red-50 hover:text-red-700"><span class="el-icon-arrow-down"></span></div>
-          <span @click="toggleReply()" class="select-none cursor-pointer text-sm font-semibold">Reply</span>
+          <span @click="toggleReply()" v-if="comment.uid != 'deleted'" class="select-none cursor-pointer text-sm font-semibold">Reply</span>
         </div>
         <el-collapse-transition>
           <div v-show="showReply" class="reply mt-2 flex">
@@ -37,10 +69,42 @@
         </el-collapse-transition>
         <span @click="showReplies = !showReplies" v-if="comment.replyCount > 0" class="mt-2 text-yellow-600 hover:text-yellow-700 select-none cursor-pointer text-sm font-semibold">{{showReplies ? 'Hide' : 'Show'}} replies</span>
         <el-collapse-transition>
-          <Comments :key="forceUpdate" v-show="showReplies" :parent="comment.commentId" :postOwnerId="postOwnerId" />
+          <Comments :key="forceUpdate" v-show="showReplies" :parent="comment.commentId" :postOwnerId="postOwnerId" :post="post" />
         </el-collapse-transition>
       </div>
     </div>
+
+    <el-drawer
+      title="Update history for selected comment."
+      :visible.sync="updateHistory"
+      direction="rtl"
+      size="40%"
+      >
+      <div class="px-8">
+        <div class="flex mb-8">
+          <NuxtLink class="w-24 h-24 rounded-lg shadow overflow-hidden" :to="'/' + commentOwner.username">
+            <img :src="commentOwner.photoURL || require('@/assets/images/avatar.png')" :alt="commentOwner.displayName">
+          </NuxtLink>
+          <div class="ml-4 flex flex-1 flex-col space-y-1 justify-center text-sm">
+            <NuxtLink :to="'/' + commentOwner.username" class="transition duration-300 transform hover:translate-x-1">
+              <h6 class="font-semibold">{{commentOwner.displayName}}</h6>
+            </NuxtLink>
+            <div v-if="commentOwner.profession" class="flex items-center"><span class="mr-1 text-xl el-icon-map-location"></span>{{commentOwner.profession}}</div>
+            <div v-if="commentOwner.profession" class="flex items-center"><span class="mr-1 text-xl el-icon-suitcase"></span>{{commentOwner.location}}</div>
+            <p>{{commentOwner.bio}}</p>
+          </div>
+        </div>
+        <div class="updateHistory grid gap-x-10 grid-cols-2 w-full h-full">
+          <div class="historyItem flex flex-col pb-10" v-for="(history, index) in comment.updateHistory" :key="history.editedAt.seconds">
+            <h5 class="font-semibold">{{index + 1}}</h5>
+            <span class="text-xs text-gray-500">{{getTime(history.editedAt)}}</span>
+            <hr class="my-2">
+            <span class="text-sm">{{history.content}}</span>
+          </div>
+        </div>
+      </div>
+    </el-drawer>
+
   </div>
 
 </template>
@@ -51,6 +115,11 @@ export default({
   data(){
     return {
       commentOwner: null,
+      anonymousComment: {
+        photoURL: null,
+        displayName: 'Anonymous',
+        username: 'anonymous'
+      },
       showReply: false,
       replyContent: '',
       replyLimit: 300,
@@ -59,11 +128,105 @@ export default({
       forceUpdate: 0,
       voteLoading: false,
       timeOptions: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' },
+      showEditArea: false,
+      editLoading: false,
+      deleteLoading: false,
+      updateHistory: false,
     }
   },
   methods: {
     getTime(time){
       return new Date(time.seconds * 1000).toLocaleDateString('en-US', this.timeOptions)
+    },
+    toggleHistory(){
+      if(this.authUser){
+        this.updateHistory = true
+      }else {
+        this.$message.error('You have to login to see a comment\'s history.');
+      }
+    },
+    handleMoreOption(command) {
+      if( command == 'editComment' )
+        this.showEditArea = !this.showEditArea
+      if ( command == 'deleteComment')
+        this.openDeleteModal();
+    },
+    openDeleteModal() {
+      this.$confirm('Are you sure you want to delete your comment.', 'Warning', {
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        this.confirmDelete().then(()=>{
+          this.$message({
+            type: 'success',
+            message: 'Your comment successfully deleted.'
+          });
+        });
+      }).catch(()=>{
+
+      })
+    },
+    async confirmDelete(){
+      this.deleteCommentWarning = false;
+
+      if(!this.deleteLoading){
+        this.deleteLoading = true;
+        const deleteData = {commentId: this.comment.commentId, postOwnerId: this.postOwnerId, slug: this.$route.params.postSlug }
+        
+        if(this.comment.replyCount != 0){
+          await this.$store.dispatch('post/deleteComment', deleteData)
+          this.comment.uid = 'deleted'
+          this.comment.content = 'Message deleted.'
+          this.commentOwner = this.anonymousComment;
+        }else {
+          await this.$store.dispatch('post/deleteCommentAbsolute', {parentId: this.comment.parentId, ...deleteData})
+          this.commentOwner = false;
+
+          // If the deleted comment is a reply(not main) comment, reduce the parent's
+          if(this.$route.params.postSlug != this.comment.parentId){
+            this.$parent.$parent.comment.replyCount -= 1;
+
+            // Delete parent comment if it has been deleted and has 0 replies
+            if(this.$parent.$parent.comment.replyCount == 0 && this.$parent.$parent.comment.uid == 'deleted'){
+              this.$parent.$parent.confirmDelete();
+            }
+
+          }
+          this.post.commentCount -= 1;
+        }
+        this.deleteLoading = false;
+      }
+    },
+    async applyEdit(){
+      if(!this.editLoading){
+        this.editLoading = true;
+        if(this.comment.content.length <= this.replyLimit){
+          if(this.comment.content.length > 0 ){
+            
+            const editData = {
+              commentId: this.comment.commentId, 
+              postOwnerId: this.postOwnerId, 
+              slug: this.$route.params.postSlug, 
+              newContent: this.comment.content
+            }
+            await this.$store.dispatch('post/editComment', editData)
+            this.comment.updatedAt.seconds = (Date.now() / 1000) // approximately - hacky solution
+            this.comment.updateHistory.push({editedAt: this.comment.updatedAt, content: editData.newContent})
+            this.showEditArea = false;
+            
+          }else {
+            this.$message.error('You should type something.')
+          }
+        }else {
+          this.$message.error('You can\'t break the rules.')
+        }
+        this.editLoading = false;
+
+      }else {
+        this.$message.warning('Slow Down !!!')
+      }
     },
     async toggleReply(){
       if(this.authUser){
@@ -73,67 +236,75 @@ export default({
       }
     },
     async upVote(){
-      if(!this.voteLoading){
-        this.voteLoading = true;
+      if(this.authUser){
+        if(!this.voteLoading){
+          this.voteLoading = true;
 
-        const voteData = {
-          postOwnerId: this.postOwnerId,
-          slug: this.$route.params.postSlug,
-          commentId: this.comment.commentId,
-          authUserId: this.authUser.uid,
-          inc: this.hasAlreadyDownVoted ? 2 : 1,
-        }
-
-        if(!this.hasAlreadyUpVoted){
-
-          await this.$store.dispatch('post/upVoteComment', voteData);
-          this.comment.upVotes.push(this.authUser.uid)
-          this.comment.voteCount += this.hasAlreadyDownVoted ? 2 : 1;
-          if(this.hasAlreadyDownVoted){
-            this.comment.downVotes.splice(this.comment.downVotes.indexOf(this.authUser.uid), 1)
+          const voteData = {
+            postOwnerId: this.postOwnerId,
+            slug: this.$route.params.postSlug,
+            commentId: this.comment.commentId,
+            authUserId: this.authUser.uid,
+            inc: this.hasAlreadyDownVoted ? 2 : 1,
           }
-          
-        }else {
-          await this.$store.dispatch('post/resetUpVote', voteData)
-          this.comment.upVotes.splice(this.comment.upVotes.indexOf(this.authUser.uid), 1)
-          this.comment.voteCount -= 1;
-        }
-        this.voteLoading = false;
 
+          if(!this.hasAlreadyUpVoted){
+
+            await this.$store.dispatch('post/upVoteComment', voteData);
+            this.comment.upVotes.push(this.authUser.uid)
+            this.comment.voteCount += this.hasAlreadyDownVoted ? 2 : 1;
+            if(this.hasAlreadyDownVoted){
+              this.comment.downVotes.splice(this.comment.downVotes.indexOf(this.authUser.uid), 1)
+            }
+            
+          }else {
+            await this.$store.dispatch('post/resetUpVote', voteData)
+            this.comment.upVotes.splice(this.comment.upVotes.indexOf(this.authUser.uid), 1)
+            this.comment.voteCount -= 1;
+          }
+          this.voteLoading = false;
+
+        }else {
+          this.$message.warning('Slow Down !!!');
+        }
       }else {
-        this.$message.warning('Slow Down !!!');
+        this.$message.error('You have to login to vote a comment.')
       }
     },
     async downVote(){
-      if(!this.voteLoading){
-        this.voteLoading = true;
+      if(this.authUser){
+        if(!this.voteLoading){
+          this.voteLoading = true;
 
-        const voteData = {
-          postOwnerId: this.postOwnerId,
-          slug: this.$route.params.postSlug,
-          commentId: this.comment.commentId,
-          authUserId: this.authUser.uid,
-          inc: this.hasAlreadyUpVoted ? -2 : -1,
-        }
-
-        if(!this.hasAlreadyDownVoted){
-          
-          await this.$store.dispatch('post/downVoteComment', voteData);
-          this.comment.downVotes.push(this.authUser.uid)
-          this.comment.voteCount -= this.hasAlreadyUpVoted ? 2 : 1;
-          if(this.hasAlreadyUpVoted){
-            this.comment.upVotes.splice(this.comment.upVotes.indexOf(this.authUser.uid), 1)
+          const voteData = {
+            postOwnerId: this.postOwnerId,
+            slug: this.$route.params.postSlug,
+            commentId: this.comment.commentId,
+            authUserId: this.authUser.uid,
+            inc: this.hasAlreadyUpVoted ? -2 : -1,
           }
 
-        }else {
-          await this.$store.dispatch('post/resetDownVote', voteData)
-          this.comment.downVotes.splice(this.comment.downVotes.indexOf(this.authUser.uid), 1)
-          this.comment.voteCount += 1;
-        }
-        this.voteLoading = false;
+          if(!this.hasAlreadyDownVoted){
+            
+            await this.$store.dispatch('post/downVoteComment', voteData);
+            this.comment.downVotes.push(this.authUser.uid)
+            this.comment.voteCount -= this.hasAlreadyUpVoted ? 2 : 1;
+            if(this.hasAlreadyUpVoted){
+              this.comment.upVotes.splice(this.comment.upVotes.indexOf(this.authUser.uid), 1)
+            }
 
+          }else {
+            await this.$store.dispatch('post/resetDownVote', voteData)
+            this.comment.downVotes.splice(this.comment.downVotes.indexOf(this.authUser.uid), 1)
+            this.comment.voteCount += 1;
+          }
+          this.voteLoading = false;
+
+        }else {
+          this.$message.warning('Slow Down !!!');
+        }
       }else {
-        this.$message.warning('Slow Down !!!');
+        this.$message.error('You have to login to vote a comment.')
       }
     },
     async replyComment(){
@@ -146,19 +317,22 @@ export default({
               uid: this.authUser.uid,
               parentId: this.comment.commentId,
               content: this.replyContent,
+              updateHistory: [{editedAt: new Date(Date.now()), content: this.replyContent}],
               upVotes: [],
               downVotes: [],
               voteCount: 0,
               replyCount: 0,
               createdAt: new Date(Date.now()),
+              updatedAt: new Date(Date.now()),
             }
             
             await this.$store.dispatch('post/addComment', {postOwnerId: this.postOwnerId, slug: this.$route.params.postSlug, commentData: commentData})
             
-            this.replyLoading = false;
-
+            this.replyContent = '';
+            this.toggleReply();
             this.forceUpdate += 1;
             this.comment.replyCount += 1;
+            this.post.commentCount += 1;
 
           }else {
             this.$message.error('You should type something.')
@@ -166,6 +340,7 @@ export default({
         }else {
           this.$message.error('You can\'t break the rules.')
         }
+        this.replyLoading = false;
       }else {
         this.$message.warning('Slow Down !!!')
       }
@@ -173,6 +348,11 @@ export default({
     }
   },
   computed: {
+    fromNow(){
+      return function(time){
+        return this.$moment(time.seconds * 1000).fromNow();
+      }
+    },
     authUser(){
       return this.$store.getters['user/getUser'];
     },
@@ -194,11 +374,18 @@ export default({
   props: {
     comment: Object,
     postOwnerId: String,
+    post: Object,
   },
   async fetch(){
 
-    const user = await this.$store.dispatch('user/fetchUser', this.comment.uid)
-    this.commentOwner = user.data();
+    if(this.comment.uid != 'deleted'){
+      const user = await this.$store.dispatch('user/fetchUser', this.comment.uid)
+      this.commentOwner = user.data();
+    }else {
+
+      this.commentOwner = this.anonymousComment;
+
+    }
 
   },
 })

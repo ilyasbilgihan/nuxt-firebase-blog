@@ -29,16 +29,36 @@
         
         <el-form label-position="top" class="mt-4">
           <el-form-item label="Display Name">
-            <el-input v-model="user.displayName"></el-input>
+            <el-input 
+              v-model="user.displayName"
+              autocomplete="off"
+              :maxlength="25"
+              show-word-limit
+            ></el-input>
           </el-form-item>
           <el-form-item label="Location">
-            <el-input v-model="user.location"></el-input>
+            <el-input 
+              v-model="user.location"
+              autocomplete="off"
+              :maxlength="25"
+              show-word-limit
+            ></el-input>
           </el-form-item>
           <el-form-item label="Profession">
-            <el-input v-model="user.profession"></el-input>
+            <el-input 
+              v-model="user.profession"
+              autocomplete="off"
+              :maxlength="25"
+              show-word-limit
+            ></el-input>
           </el-form-item>
           <el-form-item label="Bio">
-            <el-input type="textarea" v-model="user.bio"></el-input>
+            <el-input type="textarea" 
+            v-model="user.bio"
+            autocomplete="off"
+            :maxlength="150"
+            show-word-limit>
+            </el-input>
           </el-form-item>
         </el-form>
 
@@ -117,6 +137,8 @@ export default {
       ppURL: null,
       unchangedPP: null,
       loadingUpdate: false,
+      limitSmall: 25,
+      limitBio: 150,
     }
   },
   methods: {
@@ -136,12 +158,16 @@ export default {
       
       if(!this.loadingUpdate){
         this.loadingUpdate = true;
-        if(!this.user.photoURL){
-          this.unchangedPP = null
+        if(this.user.displayName && this.user.bio && this.user.displayName.length <= this.limitSmall && this.user.bio.length <= this.limitBio && this.user.profession.length <= this.limitSmall && this.user.location.length <= this.limitSmall){
+          if(!this.user.photoURL){
+            this.unchangedPP = null
+          }
+          await this.$store.dispatch('user/updateUser', {updatedUser: JSON.parse(JSON.stringify(this.user)), ppFile: this.ppFile});
+          this.$message.success('Profile updated successfully.');
+        }else {
+
         }
-        await this.$store.dispatch('user/updateUser', {updatedUser: JSON.parse(JSON.stringify(this.user)), ppFile: this.ppFile});
         this.loadingUpdate= false;
-        this.$message.success('Profile updated successfully.');
       }else {
         this.$message.warning('Slow Down !!!');
       }

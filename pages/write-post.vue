@@ -76,6 +76,7 @@ export default {
       descriptionText: null,
       loading: false,
       content: '',
+      commentCount: 0,
     }
   },
   methods: {

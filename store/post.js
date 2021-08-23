@@ -56,9 +56,39 @@ export const actions = {
   async addComment({}, data){
     await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}`).collection('comments').add(data.commentData);
     
-    await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}/comments/${data.commentData.parentId}`).update({
-      replyCount: firebase.firestore.FieldValue.increment(1),
+    if(data.commentData.parentId != data.slug){
+      await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}/comments/${data.commentData.parentId}`).update({
+        replyCount: firebase.firestore.FieldValue.increment(1),
+      });
+    }
+    await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}`).update({
+      commentCount: firebase.firestore.FieldValue.increment(1),
+    })
+  },
+  async editComment({}, data){
+    await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}/comments/${data.commentId}`).update({
+      content: data.newContent,
+      updateHistory: firebase.firestore.FieldValue.arrayUnion({editedAt: new Date(Date.now()), content: data.newContent}),
+      updatedAt: new Date(Date.now()),
     });
+  },
+  async deleteComment({}, data){
+    await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}/comments/${data.commentId}`).update({
+      content: 'Message deleted.',
+      uid: 'deleted',
+      updatedAt: new Date(Date.now()),
+    });
+  },
+  async deleteCommentAbsolute({}, data){
+    await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}/comments/${data.commentId}`).delete();
+    if(data.parentId != data.slug){
+      await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}/comments/${data.parentId}`).update({
+        replyCount: firebase.firestore.FieldValue.increment(-1),
+      });
+    }
+    await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}`).update({
+      commentCount: firebase.firestore.FieldValue.increment(-1),
+    })
   },
   async upVoteComment({}, data){
     await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}/comments/${data.commentId}`).update({

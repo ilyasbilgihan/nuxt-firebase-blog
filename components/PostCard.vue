@@ -24,7 +24,7 @@
       </ul>
       <div class="w-48 flex space-x-5 items-center text-sm text-gray-600 px-4">
         <div :class="{'text-red-700': hasAlreadyLiked}" class="flex justify-end flex-1 items-center space-x-1"><span v-html="likeLoading ? loadingElement : post.likes.length"></span><span @click="likePost()" :class="{'bg-red-50': hasAlreadyLiked}" class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-red-50 hover:text-red-700 el-icon-star-off"></span></div>
-        <NuxtLink :to="'/'+ user.username + '/' + post.slug + '#comments'" class="pt-0.5 flex justify-end flex-1 items-center space-x-1 space-x-reverse flex-row-reverse"><span>12</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-blue-50 hover:text-blue-700 el-icon-chat-line-square"></span></NuxtLink>
+        <NuxtLink :to="'/'+ user.username + '/' + post.slug + '#comments'" class="pt-0.5 flex justify-end flex-1 items-center space-x-1 space-x-reverse flex-row-reverse"><span>{{post.commentCount}}</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-blue-50 hover:text-blue-700 el-icon-chat-line-square"></span></NuxtLink>
       </div>
     </div>
   </div>
