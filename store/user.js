@@ -67,17 +67,11 @@ export const actions = {
     await firestore.doc(`usernames/${chosenName}`).set({
       uid: state.user.uid
     });
-
-    let newPpURL;
-    if(user.data().customPP){
-      newPpURL = await moveFirebaseFile(`profile-pictures/${user.data().username}.jpg`,`profile-pictures/${chosenName}.jpg`);
-    }
 	
     // update the user's data with new username and decrease the username change limit
     await firestore.doc(`users/${state.user.uid}`).update({
       username: chosenName,
       usernameChangeLimit: firebase.firestore.FieldValue.increment(-1),
-      photoURL: newPpURL || user.data().photoURL
     });
 
     commit('updateUsername', chosenName);
@@ -89,24 +83,18 @@ export const actions = {
     const user = await firestore.doc(`users/${uid}`).get();
     return user
   },
-  async updateUser({ commit, state }, { updatedUser, ppFile }){
+  async updateUser({ commit, state }, { updatedUser, ppFile, unchangedPP }){
     
     const storageRef = storage.ref();
     
     if(ppFile != null){
 
-      const ppRes = await storageRef.child(`profile-pictures/${state.user.username}.jpg`).put(ppFile);
+      const ppRes = await storageRef.child(`profile-pictures/${state.user.uid}.jpg`).put(ppFile);
       updatedUser.photoURL = (await ppRes.ref.getDownloadURL());
-	    updatedUser.customPP = true;
 
-    }else if (!updatedUser.photoURL) {
-
-      updatedUser.customPP = false;
-      try {
-        await storageRef.child(`profile-pictures/${state.user.username}.jpg`).delete()
-      } catch (error) {
-        // throws an unnecessary error - ignore it.
-      }
+    }else if (!updatedUser.photoURL && unchangedPP != null) {
+      
+      await storageRef.child(`profile-pictures/${state.user.uid}.jpg`).delete()
 
     }
 
@@ -115,51 +103,4 @@ export const actions = {
     commit('setUser', {user: updatedUser, info: 'user updated from account settings'}) // mutate our state.user
 
   },
-}
-
-
-function moveFirebaseFile(currentPath, destinationPath) {
-
-  return new Promise((resolve, reject) => {
-    
-    let oldRef = storage.ref().child(currentPath)
-
-    oldRef.getDownloadURL().then(url => {
-
-      // For now,
-      // I use a CORS proxy (cors-anywhere) to avoid "Header 'access-control-allow-origin' missing" error.
-      // It will be changed/fixed in the production.
-      fetch('http://localhost:1111/'+url).then(async htmlReturn => { 
-        let fileArray = new Uint8Array()
-        const reader = htmlReturn.body.getReader()
-
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done){
-            break;
-          }
-          fileArray = mergeTypedArrays(fileArray,value);
-          
-        }
-
-        oldRef.delete()
-              
-        const task = await storage.ref().child(destinationPath).put(fileArray, { contentType: 'image/jpeg' });
-        const newURL = await task.ref.getDownloadURL();
-        resolve(newURL);
-
-      })
-    })
-
-  });
-
-}
-
-
-function mergeTypedArrays(a, b) {
-  var c = new a.constructor(a.length + b.length);
-  c.set(a);
-  c.set(b, a.length);
-
-  return c;
 }

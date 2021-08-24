@@ -207,4 +207,21 @@ label {
 .tag {
   @apply shadow transition duration-300 rounded-2xl bg-gray-100 px-4 py-1 cursor-pointer hover:bg-gray-200
 }
+
+.post-image-uploader {
+  @apply h-80 w-full rounded-lg transition duration-300 relative;
+
+  .el-upload{
+    display: block!important;
+  }
+  &:hover {
+    .post-image-uploader-icon {
+      color: #409EFF;
+      border-color: #409EFF;
+    }
+  }
+  .post-image-uploader-icon {
+    @apply absolute text-4xl text-gray-500 inset-0 flex items-center justify-center transition duration-300 border-2 border-dashed rounded-lg;
+  }
+}
 </style>

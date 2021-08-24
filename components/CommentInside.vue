@@ -95,11 +95,23 @@
           </div>
         </div>
         <div class="updateHistory grid gap-x-10 grid-cols-2 w-full h-full">
-          <div class="historyItem flex flex-col pb-10" v-for="(history, index) in comment.updateHistory" :key="history.editedAt.seconds">
+          <div class="historyItem flex flex-col pb-10" v-for="(history, index) in comment.updateHistory" :key="index">
             <h5 class="font-semibold">{{index + 1}}</h5>
             <span class="text-xs text-gray-500">{{getTime(history.editedAt)}}</span>
             <hr class="my-2">
-            <span class="text-sm">{{history.content}}</span>
+            <div class="text-sm diff-content" v-html="index != 0 ? highlightDifferences(history.content, comment.updateHistory[index - 1].content) : history.content"></div>
+            <style>
+                ins{
+                  text-decoration: none;
+                  color: #333;
+                  background-color: rgba(0,255,0, .8);
+                }
+                del {
+                  color: #333;
+                  text-decoration: none;
+                  background-color: rgba(255,0,0, .8);
+                }
+            </style>
           </div>
         </div>
       </div>
@@ -110,6 +122,7 @@
 </template>
 
 <script>
+const Diff = require('diff');
 
 export default({
   data(){
@@ -144,6 +157,12 @@ export default({
       }else {
         this.$message.error('You have to login to see a comment\'s history.');
       }
+    },
+    highlightDifferences(newContent, oldContent){
+
+      const changes = Diff.diffCss(oldContent, newContent);
+      return Diff.convertChangesToXML(changes);
+
     },
     handleMoreOption(command) {
       if( command == 'editComment' )

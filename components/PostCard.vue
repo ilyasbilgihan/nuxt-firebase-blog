@@ -11,7 +11,7 @@
         <p :class="{'l-2': showAuthor, 'l-3': !showAuthor}" class="limit-lines" style="font-size: 15px">{{post.description}}</p>
       </div>
       <NuxtLink :title="post.title" class="w-48 h-32 shadow rounded-md overflow-hidden" :to="'/'+ user.username + '/' + post.slug">
-        <div class="postImageAnimation w-full h-full bg-cover" style="background-image: url(https://www.incimages.com/uploaded_files/image/1920x1080/getty_509107562_2000133320009280346_351827.jpg)"></div>
+        <div class="postImageAnimation w-full h-full bg-cover" :style="`background-image: url(${post.postImageURL})`"></div>
       </NuxtLink>
     </div>
     <div class="flex mt-2">

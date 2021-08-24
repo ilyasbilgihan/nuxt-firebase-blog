@@ -58,12 +58,20 @@ export default {
     bookmarks.sort(compare)
     for(let i = 0; i < bookmarks.length; i++){
 
-      if(users[bookmarks[i].uid] === undefined){
-        const user = await context.store.dispatch('user/fetchUser', bookmarks[i].uid);
-        users[bookmarks[i].uid] = user.data();
-      }
       const post = await context.store.dispatch('post/fetchPost', {uid: bookmarks[i].uid, slug: bookmarks[i].slug});
-      posts.push(post.data())
+      
+      if(post.exists){
+        posts.push(post.data())
+
+        if(users[bookmarks[i].uid] == undefined){
+          const user = await context.store.dispatch('user/fetchUser', bookmarks[i].uid);
+          users[bookmarks[i].uid] = user.data();
+        }
+      }else {
+        const bookmarkData = authUser.bookmarks.filter(b => (b.uid == bookmarks[i].uid && b.slug == bookmarks[i].slug))[0];
+        await context.store.dispatch('post/removeBookmark', {uid: authUser.uid, bookmarkData: bookmarkData});
+      }
+
     }
     return { posts, users}
 

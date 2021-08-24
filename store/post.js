@@ -1,4 +1,4 @@
-import { firestore } from '../plugins/firebase'
+import { firestore, storage } from '../plugins/firebase'
 import firebase from 'firebase/app'
 
 export const actions = {
@@ -17,10 +17,29 @@ export const actions = {
     return posts
     
   },
-  async addPost({}, postData){
-    await firestore.doc(`users/${postData.uid}/posts/${postData.slug}`).set(postData);
+  async addPost({}, data){
+    const storageRef = storage.ref();
+    const postImageRef = await storageRef.child(`post-images/${data.postData.uid}-${data.postData.slug}.jpg`).put(data.postImageFile);
+    data.postData.postImageURL = (await postImageRef.ref.getDownloadURL());
+
+    await firestore.doc(`users/${data.postData.uid}/posts/${data.postData.slug}`).set(data.postData);
+  },
+  async deletePost({}, data){
+    const storageRef = storage.ref();
+
+    await deleteCollection(`users/${data.ownerId}/posts/${data.slug}/comments`);
+    await firestore.doc(`users/${data.ownerId}/posts/${data.slug}`).delete();
+    await storageRef.child(`post-images/${data.ownerId}-${data.slug}.jpg`).delete();
+
   },
   async updatePost({}, data){
+    
+    if(data.newPostImageFile != null){
+      const storageRef = storage.ref();
+      const newPostImageRef = await storageRef.child(`post-images/${data.uid}-${data.slug}.jpg`).put(data.newPostImageFile);
+      data.postData.postImageURL = (await newPostImageRef.ref.getDownloadURL());
+    }
+
     await firestore.doc(`users/${data.uid}/posts/${data.slug}`).update(data.postData);
   },
   async dislikePost({}, postData){
@@ -117,4 +136,12 @@ export const actions = {
     })
   }
 
+}
+
+const deleteCollection = async (path) => {
+  firestore.collection(path).get().then(async query => {
+    query.forEach(async (snapshot) => {
+      await snapshot.ref.delete()
+    });
+  });
 }

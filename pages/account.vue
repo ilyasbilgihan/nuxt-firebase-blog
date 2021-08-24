@@ -9,26 +9,35 @@
         <h3>Public profile</h3>
         <hr class="mt-4 mb-8">
 
-        <div class="flex items-center">
-          <el-tooltip class="item" effect="dark" content="Click to upload a new profile picture" placement="right">
-            <el-upload
-              class="avatar-uploader "
-              action=""
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="user.photoURL || ppURL" :src="ppURL || user.photoURL" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
-          </el-tooltip>
-          
-          <div v-if="user.photoURL || ppURL" @click="removePP" class="select-none ml-6 flex justify-center items-center rounded-md text-red-600 cursor-pointer"><i class="mr-2 text-xl el-icon-delete"></i>Remove Image</div>
-          <div v-else-if="unchangedPP" @click="restorePP" class="select-none ml-6 flex items-center justify-center rounded-md text-reblued-600 cursor-pointer"><i class="mr-2 text-xl el-icon-refresh-left"></i>Restore Current</div>
-        
-        </div>
-        
-        <el-form label-position="top" class="mt-4">
-          <el-form-item label="Display Name">
+        <el-form :model="user" label-position="top" class="mt-4">
+          <el-form-item label="Profile Picture">
+            <div class="flex items-center">
+              <el-tooltip class="item" effect="dark" content="Click to upload a new profile picture" placement="right">
+                <el-upload
+                  class="avatar-uploader "
+                  action=""
+                  :show-file-list="false"
+                  :on-success="handleAvatarSuccess"
+                  :before-upload="beforeAvatarUpload">
+                  <img v-if="user.photoURL || ppURL" :src="ppURL || user.photoURL" class="avatar">
+                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
+              </el-tooltip>
+
+              <div v-if="user.photoURL || ppURL" @click="removePP" class="select-none ml-6 flex justify-center items-center rounded-md text-red-600 cursor-pointer"><i class="mr-2 text-xl el-icon-delete"></i>Remove Image</div>
+              <div v-else-if="unchangedPP" @click="restorePP" class="select-none ml-6 flex items-center justify-center rounded-md text-reblued-600 cursor-pointer"><i class="mr-2 text-xl el-icon-refresh-left"></i>Restore Current</div>
+              
+            </div>
+
+          </el-form-item>
+          <el-form-item 
+            label="Display Name" 
+            prop="displayName"
+            :rules="[
+              {required: true, message: 'Display name is required', trigger: 'blur'},
+              {max: 25, message: 'You should follow the rules', trigger: 'blur' }
+            ]"
+          >
             <el-input 
               v-model="user.displayName"
               autocomplete="off"
@@ -158,15 +167,22 @@ export default {
       
       if(!this.loadingUpdate){
         this.loadingUpdate = true;
-        if(this.user.displayName && this.user.bio && this.user.displayName.length <= this.limitSmall && this.user.bio.length <= this.limitBio && this.user.profession.length <= this.limitSmall && this.user.location.length <= this.limitSmall){
-          if(!this.user.photoURL){
-            this.unchangedPP = null
-          }
-          await this.$store.dispatch('user/updateUser', {updatedUser: JSON.parse(JSON.stringify(this.user)), ppFile: this.ppFile});
-          this.$message.success('Profile updated successfully.');
-        }else {
 
+        if(this.user.displayName){
+
+          if(this.user.displayName.length <= this.limitSmall && this.user.bio.length <= this.limitBio && this.user.profession.length <= this.limitSmall && this.user.location.length <= this.limitSmall){
+            
+            await this.$store.dispatch('user/updateUser', {updatedUser: JSON.parse(JSON.stringify(this.user)), ppFile: this.ppFile, unchangedPP: this.unchangedPP});
+            this.$message.success('Profile updated successfully.');
+            this.$router.go();
+
+          }else {
+            this.$message.error('You can\'t break the rules.');
+          }
+        }else {
+          this.$message.error('You should type something in display name field.');
         }
+
         this.loadingUpdate= false;
       }else {
         this.$message.warning('Slow Down !!!');
@@ -177,7 +193,7 @@ export default {
       img.src = URL.createObjectURL(file.raw);
       const _this = this;
       img.onload = function(){
-        if(this.width != 460 && this.width != 460){
+        if(this.width != 460 && this.height != 460){
           _this.$message.error('Avatar picture resolution must be 460x460')
         }else {
           _this.ppURL = this.src
@@ -221,7 +237,7 @@ export default {
 <style lang="scss" scoped>
 
 h3 {
-  @apply text-2xl font-semibold mb-2
+  @apply font-semibold mb-2
 }
 
 </style>

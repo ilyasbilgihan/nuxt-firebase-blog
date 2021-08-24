@@ -43,13 +43,12 @@ export const actions = {
               uid: user.uid,
               email: user.email,
               displayName: user.displayName,
-              photoURL: user.photoURL,
+              photoURL: null,
               username: null,
               usernameChangeLimit: 4,
               bio: '',
               profession: '',
               location: '',
-			        customPP: false,
               bookmarks: []
             }
             await firestore.doc(`users/${user.uid}`).set(userData); // set user to our 'users db'
