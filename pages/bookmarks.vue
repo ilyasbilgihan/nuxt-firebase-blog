@@ -12,7 +12,7 @@
         <el-timeline-item v-for="post in posts" :key="post.slug" :timestamp="getDate(post)" placement="top">
           
           <PostCard :authUser="authUser" :user="users[post.uid]" :post="post" :show-author="true"></PostCard>
-          
+           
         </el-timeline-item>
 
       </el-timeline>

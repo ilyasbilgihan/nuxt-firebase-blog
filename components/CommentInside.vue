@@ -1,7 +1,9 @@
 <template>
 
   <div v-if="commentOwner" class="comment-container flex flex-col">
+
     <div class="flex items-center space-x-3 pt-2">
+
       <NuxtLink v-if="comment.uid != 'deleted'" :to="'/' + commentOwner.username" class="w-8 h-8 rounded-md shadow overflow-hidden">
         <img :src="commentOwner.photoURL || require('@/assets/images/avatar.png')" :alt="commentOwner.displayName">
       </NuxtLink>
@@ -9,6 +11,8 @@
         <NuxtLink v-if="comment.uid != 'deleted'" :to="'/' + commentOwner.username" class="inline-block transition duration-300 transform hover:translate-x-1">{{commentOwner.displayName}}</NuxtLink>
         <span v-else>{{commentOwner.displayName}}</span>
       </div>
+      <!-- Comment owner details(profile-picture, display name)  end -->
+
       <div v-if="comment.uid != 'deleted'" class="flex space-x-2 items-center text-xs text-gray-500">
         <span :title="getTime(comment.createdAt)" >sent {{fromNow(comment.createdAt)}}</span>
         <div v-if="comment.createdAt.seconds != comment.updatedAt.seconds" class="p-0.5 bg-gray-400 rounded-full"></div>
@@ -17,7 +21,9 @@
           {{ fromNow(comment.updatedAt) }}
         </span>
       </div>
-      <span v-else class="text-xs text-gray-500">Unknown</span>
+      <span v-else class="text-xs text-gray-500">Unknown</span> 
+      <!-- Comment create, update information end -->
+
       <el-dropdown v-if="authUser && (authUser.uid == comment.uid)" size="small" trigger="click" placement="bottom-start" @command="handleMoreOption">
         <span class="el-dropdown-link">
           <span class="transition duration-300 hover:bg-gray-50 hover:shadow cursor-pointer p-1 rounded-full el-icon-more text-xs text-gray-500"></span>
@@ -27,11 +33,18 @@
           <el-dropdown-item command="editComment" icon="el-icon-edit-outline">{{showEditArea ? 'Preview' : 'Edit'}} comment</el-dropdown-item>
           <el-dropdown-item divided command="deleteComment"><span class="text-red-500"><span class="el-icon-delete"></span> Delete comment</span></el-dropdown-item>
         </el-dropdown-menu> <!-- Dropdown menu end -->
-      </el-dropdown>  <!-- Dropdown end -->
-    </div>
+      </el-dropdown>  <!-- Comment settings dropdown end -->
+
+    </div>  <!-- Comment Details (owner, created, updated, settings) end -->
+
     <div class="comment flex">
-      <div class="commentLine"><span></span></div>
+
+      <div class="commentLine">
+        <span></span> <!-- the line -->
+      </div> <!-- line container end -->
+
       <div class="flex-1 overflow-hidden pl-2">
+
         <p v-if="!showEditArea" class="py-2 text-sm overflow-hidden overflow-ellipsis" :class="{'text-xs line-through': comment.uid == 'deleted'}">{{comment.content}}</p>
         <div v-else class="space-y-1 mb-2">
           <el-input
@@ -44,12 +57,16 @@
           ></el-input>
           <el-button @click="applyEdit()" size="small" type="warning" round>Apply Edit</el-button>
         </div>
+        <!-- Comment content and content edit textarea end -->
+
         <div class="flex items-center space-x-1">
           <div :class="{'bg-green-50 text-green-700': hasAlreadyUpVoted}" @click="upVote()" class="flex w-8 h-8 justify-center items-center cursor-pointer transition duration-300 rounded-full hover:bg-green-50 hover:text-green-700"><span class="el-icon-arrow-up pb-0.5"></span></div>
           <span class="text-sm font-semibold text-gray-600 px-1">{{comment.voteCount}}</span>
           <div :class="{'bg-red-50 text-red-700': hasAlreadyDownVoted}" @click="downVote()" class="flex w-8 h-8 justify-center items-center cursor-pointer transition duration-300 rounded-full hover:bg-red-50 hover:text-red-700"><span class="el-icon-arrow-down"></span></div>
           <span @click="toggleReply()" v-if="comment.uid != 'deleted'" class="select-none cursor-pointer text-sm font-semibold">Reply</span>
         </div>
+        <!-- Upvote - downvote - reply buttons end -->
+
         <el-collapse-transition>
           <div v-show="showReply" class="reply mt-2 flex">
             <div class="replyLine pt-0"><span></span></div>
@@ -67,10 +84,14 @@
             </div>
           </div>
         </el-collapse-transition>
+        <!-- Reply textarea end -->
+
         <span @click="showReplies = !showReplies" v-if="comment.replyCount > 0" class="mt-2 text-yellow-600 hover:text-yellow-700 select-none cursor-pointer text-sm font-semibold">{{showReplies ? 'Hide' : 'Show'}} replies</span>
         <el-collapse-transition>
           <Comments :key="forceUpdate" v-show="showReplies" :parent="comment.commentId" :postOwnerId="postOwnerId" :post="post" />
         </el-collapse-transition>
+        <!-- Hid/show replies button and replies end -->
+
       </div>
     </div>
 
@@ -81,6 +102,7 @@
       size="40%"
       >
       <div class="px-8">
+
         <div class="flex mb-8">
           <NuxtLink class="w-24 h-24 rounded-lg shadow overflow-hidden" :to="'/' + commentOwner.username">
             <img :src="commentOwner.photoURL || require('@/assets/images/avatar.png')" :alt="commentOwner.displayName">
@@ -93,9 +115,10 @@
             <div v-if="commentOwner.profession" class="flex items-center"><span class="mr-1 text-xl el-icon-suitcase"></span>{{commentOwner.location}}</div>
             <p>{{commentOwner.bio}}</p>
           </div>
-        </div>
+        </div> <!-- Comment Owner Details end -->
+
         <div class="updateHistory grid gap-x-10 grid-cols-2 w-full h-full">
-          <div class="historyItem flex flex-col pb-10" v-for="(history, index) in comment.updateHistory" :key="index">
+          <div class="historyItem flex flex-col pb-10" v-for="(history, index) in comment.updateHistory" :key="history.editedAt.seconds">
             <h5 class="font-semibold">{{index + 1}}</h5>
             <span class="text-xs text-gray-500">{{getTime(history.editedAt)}}</span>
             <hr class="my-2">
@@ -113,9 +136,10 @@
                 }
             </style>
           </div>
-        </div>
+        </div>  <!-- Comment Differences grid table end-->
+
       </div>
-    </el-drawer>
+    </el-drawer>  <!-- Comment Edit History end -->
 
   </div>
 
@@ -171,6 +195,7 @@ export default({
         this.openDeleteModal();
     },
     openDeleteModal() {
+      
       this.$confirm('Are you sure you want to delete your comment.', 'Warning', {
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
@@ -178,61 +203,73 @@ export default({
         center: true
       }).then(() => {
         this.confirmDelete().then(()=>{
-          this.$message({
-            type: 'success',
-            message: 'Your comment successfully deleted.'
-          });
+          this.$message.success('Your comment successfully deleted.');
         });
-      }).catch(()=>{
+      }).catch(()=>{});
 
-      })
     },
     async confirmDelete(){
       this.deleteCommentWarning = false;
 
       if(!this.deleteLoading){
         this.deleteLoading = true;
-        const deleteData = {commentId: this.comment.commentId, postOwnerId: this.postOwnerId, slug: this.$route.params.postSlug }
+        const deleteData = {
+          commentId: this.comment.commentId, 
+          postOwnerId: this.postOwnerId, 
+          slug: this.post.slug,
+        }
         
+        // Deleted comment has replies, we should keep them.
+        // So just change the comment details with an anonymous data (temporarily deletion)
         if(this.comment.replyCount != 0){
-          await this.$store.dispatch('post/deleteComment', deleteData)
+
+          await this.$store.dispatch('comment/deleteCommentTemporarily', deleteData)
           this.comment.uid = 'deleted'
           this.comment.content = 'Message deleted.'
           this.commentOwner = this.anonymousComment;
-        }else {
-          await this.$store.dispatch('post/deleteCommentAbsolute', {parentId: this.comment.parentId, ...deleteData})
-          this.commentOwner = false;
 
-          // If the deleted comment is a reply(not main) comment, reduce the parent's
-          if(this.$route.params.postSlug != this.comment.parentId){
+        }else {
+
+          await this.$store.dispatch('comment/deleteCommentAbsolute', { parentId: this.comment.parentId, ...deleteData })
+
+          // If the deleted comment is a reply(not main) comment, reduce the parent's reply count.
+          if(this.post.slug != this.comment.parentId){
             this.$parent.$parent.comment.replyCount -= 1;
 
-            // Delete parent comment if it has been deleted and has 0 replies
+            // After reducing replyCount, If parent comment has 0 replies and has been deleted(temporarily), delete it too.
             if(this.$parent.$parent.comment.replyCount == 0 && this.$parent.$parent.comment.uid == 'deleted'){
+
+              // This process will cause a recursive event, It continues delete comments over and over,
+              // until facing a not deleted comment or a comment which has had replies.
               this.$parent.$parent.confirmDelete();
             }
 
           }
+          this.commentOwner = false; // It provides us not to show the comment (line:3 'comment-container' div has v-if control)
           this.post.commentCount -= 1;
         }
         this.deleteLoading = false;
       }
     },
     async applyEdit(){
+
       if(!this.editLoading){
+
         this.editLoading = true;
+
         if(this.comment.content.length <= this.replyLimit){
           if(this.comment.content.length > 0 ){
             
             const editData = {
               commentId: this.comment.commentId, 
               postOwnerId: this.postOwnerId, 
-              slug: this.$route.params.postSlug, 
-              newContent: this.comment.content
+              slug: this.post.slug, 
+              newContent: this.comment.content,
+              updatedAt: new Date(Date.now()),
             }
-            await this.$store.dispatch('post/editComment', editData)
-            this.comment.updatedAt.seconds = (Date.now() / 1000) // approximately - hacky solution
-            this.comment.updateHistory.push({editedAt: this.comment.updatedAt, content: editData.newContent})
+            await this.$store.dispatch('comment/editComment', editData)
+            this.comment.updatedAt = editData.updatedAt;
+            this.comment.updateHistory.push({editedAt: editData.updatedAt, content: editData.newContent})
             this.showEditArea = false;
             
           }else {
@@ -261,23 +298,26 @@ export default({
 
           const voteData = {
             postOwnerId: this.postOwnerId,
-            slug: this.$route.params.postSlug,
+            slug: this.post.slug,
             commentId: this.comment.commentId,
             authUserId: this.authUser.uid,
             inc: this.hasAlreadyDownVoted ? 2 : 1,
           }
 
-          if(!this.hasAlreadyUpVoted){
+          if(!this.hasAlreadyUpVoted){ // Upvote if not upvoted (it still may have been downvoted)
 
-            await this.$store.dispatch('post/upVoteComment', voteData);
+            await this.$store.dispatch('comment/upVoteComment', voteData);
+            
             this.comment.upVotes.push(this.authUser.uid)
+            // if the user has downvoted, it gives us extra 1 point increment
             this.comment.voteCount += this.hasAlreadyDownVoted ? 2 : 1;
+
             if(this.hasAlreadyDownVoted){
               this.comment.downVotes.splice(this.comment.downVotes.indexOf(this.authUser.uid), 1)
             }
             
-          }else {
-            await this.$store.dispatch('post/resetUpVote', voteData)
+          }else { // If the user already has upvoted, reset up vote
+            await this.$store.dispatch('comment/resetUpVote', voteData)
             this.comment.upVotes.splice(this.comment.upVotes.indexOf(this.authUser.uid), 1)
             this.comment.voteCount -= 1;
           }
@@ -297,23 +337,26 @@ export default({
 
           const voteData = {
             postOwnerId: this.postOwnerId,
-            slug: this.$route.params.postSlug,
+            slug: this.post.slug,
             commentId: this.comment.commentId,
             authUserId: this.authUser.uid,
             inc: this.hasAlreadyUpVoted ? -2 : -1,
           }
 
-          if(!this.hasAlreadyDownVoted){
+          if(!this.hasAlreadyDownVoted){ // Downvote if not downvoted (it still may have been upvoted)
             
-            await this.$store.dispatch('post/downVoteComment', voteData);
+            await this.$store.dispatch('comment/downVoteComment', voteData);
+            
             this.comment.downVotes.push(this.authUser.uid)
+            // if the user has upvoted, it gives us extra 1 point to decrement
             this.comment.voteCount -= this.hasAlreadyUpVoted ? 2 : 1;
+
             if(this.hasAlreadyUpVoted){
               this.comment.upVotes.splice(this.comment.upVotes.indexOf(this.authUser.uid), 1)
             }
 
-          }else {
-            await this.$store.dispatch('post/resetDownVote', voteData)
+          }else { // If the user already has downvoted, reset down vote
+            await this.$store.dispatch('comment/resetDownVote', voteData)
             this.comment.downVotes.splice(this.comment.downVotes.indexOf(this.authUser.uid), 1)
             this.comment.voteCount += 1;
           }
@@ -329,9 +372,13 @@ export default({
     async replyComment(){
       
       if(!this.replyLoading){
+
         this.replyLoading = true;
+
         if(this.replyContent.length <= this.replyLimit){
+
           if(this.replyContent.length > 0 ){
+
             const commentData = {
               uid: this.authUser.uid,
               parentId: this.comment.commentId,
@@ -345,13 +392,14 @@ export default({
               updatedAt: new Date(Date.now()),
             }
             
-            await this.$store.dispatch('post/addComment', {postOwnerId: this.postOwnerId, slug: this.$route.params.postSlug, commentData: commentData})
+            await this.$store.dispatch('comment/addComment', {postOwnerId: this.postOwnerId, slug: this.post.slug, commentData: commentData})
             
-            this.replyContent = '';
-            this.toggleReply();
-            this.forceUpdate += 1;
+            this.replyContent = ''; // reset textarea
+            this.showReply = false;
+            this.forceUpdate += 1; // We bind forceUpdate data to our replies container, it will provides us to update the comments.
             this.comment.replyCount += 1;
             this.post.commentCount += 1;
+            this.showReplies = true;
 
           }else {
             this.$message.error('You should type something.')
@@ -360,10 +408,10 @@ export default({
           this.$message.error('You can\'t break the rules.')
         }
         this.replyLoading = false;
+      
       }else {
         this.$message.warning('Slow Down !!!')
       }
-      this.showReplies = true;
     }
   },
   computed: {
@@ -398,8 +446,10 @@ export default({
   async fetch(){
 
     if(this.comment.uid != 'deleted'){
+
       const user = await this.$store.dispatch('user/fetchUser', this.comment.uid)
       this.commentOwner = user.data();
+
     }else {
 
       this.commentOwner = this.anonymousComment;

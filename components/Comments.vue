@@ -23,7 +23,7 @@ export default({
   },
   async fetch(){
     
-    const comments = await this.$store.dispatch('post/fetchComments', {postOwnerId: this.postOwnerId, slug: this.$route.params.postSlug, parent: this.parent})
+    const comments = await this.$store.dispatch('comment/fetchComments', {postOwnerId: this.postOwnerId, slug: this.$route.params.postSlug, parent: this.parent})
     this.comments = comments;
 
   }

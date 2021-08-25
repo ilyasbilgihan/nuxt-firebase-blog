@@ -63,7 +63,7 @@
 
       <div class="flex items-center space-x-2">
 
-        <el-button type="primary" @click="submitPost">Submit Post</el-button>
+        <el-button type="primary" @click="openSubmitDialog()">Submit Post</el-button>
         <div>
           <span v-if="loading" class="el-icon-loading"></span>
         </div>
@@ -142,57 +142,71 @@ export default {
         return true
       }
     },
-    async submitPost(){
-      
+    openSubmitDialog(){
+
       if(!this.loading){
-        this.loading = true;
-        const content = this.$refs.editor.quill.getContents();
-        const isContentValid = this.isContentValid(content);
+        this.$confirm('You will not have a chance to change the post\'s title or slug.', 'Warning', {
+          confirmButtonText: 'I understand',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          this.submitPost().then(()=>{
 
-        if(!this.checkingSlug && this.available ){
+            this.$message.success('Post succesfully added, redirecting...');
 
-          if(this.descriptionText.length <= this.descriptionLimit && this.descriptionText.length > 0){
-
-            if(this.postImageFile){
-
-              if(isContentValid){
-                const postData = {
-                  uid: this.user.uid,
-                  title: this.postTitle,
-                  slug: this.postSlug,
-                  likes: [],
-                  createdAt: new Date(Date.now()),
-                  updatedAt:  new Date(Date.now()),
-                  description: this.descriptionText,
-                  content: content.ops,
-                  commentCount: 0,
-                }
-                await this.$store.dispatch('post/addPost', {postImageFile: this.postImageFile, postData: postData});
-                this.$message.success('Post succesfully added, redirecting...');
-                this.resetFields();
-                setTimeout(() => {
-                  this.$router.push(`/${this.user.username}/${postData.slug}`)
-                }, 2000);
-
-              }else {
-                this.$message.error('Post content is not valid.');
-              }
-            }else {
-              this.$message.error('You have to select a post image.');
-            }
-          }else {
-            this.$message.error('Description text is not valid.');
-          }
-        }else {
-          this.$message.error('Post title/slug is not valid.');
-        }
-
-        this.loading = false;
-
+          });
+        }).catch(()=>{})
       }else {
         this.$message.warning('Slow Down !!!');
       }
 
+    },
+    async submitPost(){
+      this.loading = true;
+      const content = this.$refs.editor.quill.getContents();
+      const isContentValid = this.isContentValid(content);
+
+      if(!this.checkingSlug && this.available ){
+
+        if(this.descriptionText.length <= this.descriptionLimit && this.descriptionText.length > 0){
+
+          if(this.postImageFile){
+
+            if(isContentValid){
+
+              const postData = {
+                uid: this.user.uid,
+                title: this.postTitle,
+                slug: this.postSlug,
+                likes: [],
+                createdAt: new Date(Date.now()),
+                updatedAt:  new Date(Date.now()),
+                description: this.descriptionText,
+                content: content.ops,
+                commentCount: 0,
+              }
+
+              await this.$store.dispatch('post/addPost', {postImageFile: this.postImageFile, postData: postData});
+              this.resetFields();
+              setTimeout(() => {
+                this.$router.push(`/${this.user.username}/${postData.slug}`)
+              }, 2000);
+              
+            }else {
+              this.$message.error('Post content is not valid.');
+            }
+          }else {
+            this.$message.error('You have to select a post image.');
+          }
+        }else {
+          this.$message.error('Description text is not valid.');
+        }
+      }else {
+        this.$message.error('Post title/slug is not valid.');
+      }
+      this.loading = false;
+      
     },
     handlePostImageSuccess(res, file) {
       const img = new Image();
@@ -208,11 +222,12 @@ export default {
       }
     },
     beforePostImageUpload(file) {
-      const isJPG = file.type === 'image/jpeg';
+      console.log(file.type)
+      const isJPG = (file.type === 'image/jpeg') || file.type === 'image/png';
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
-        this.$message.error('Post image must be JPG format!');
+        this.$message.error('Post image must be JPG or PNG format!');
       }
       else if (!isLt2M) {
         this.$message.error('Post image size can not exceed 2MB!');

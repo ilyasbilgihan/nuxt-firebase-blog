@@ -188,7 +188,7 @@ export default {
                 updatedAt: new Date(Date.now()),
               }
               
-              await this.$store.dispatch('post/addComment', {postOwnerId: this.user.uid, slug: this.$route.params.postSlug, commentData: commentData})
+              await this.$store.dispatch('comment/addComment', {postOwnerId: this.user.uid, slug: this.$route.params.postSlug, commentData: commentData})
               
               this.commentContent = '';
               this.forceUpdate += 1;
@@ -315,7 +315,7 @@ export default {
       }
     },
     beforePostImageUpload(file) {
-      const isJPG = file.type === 'image/jpeg';
+      const isJPG = (file.type === 'image/jpeg') || (file.type === 'image/png');
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {

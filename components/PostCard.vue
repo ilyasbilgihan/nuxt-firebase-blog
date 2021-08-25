@@ -1,19 +1,33 @@
 <template>
 
   <div clasS="flex flex-col mt-4 mb-12 ml-4">
+
     <div class="w-full flex ">
+
       <div class="flex-1 flex flex-col pr-8">
         <NuxtLink v-if="showAuthor" :to="'/' + user.username" :title="'@'+ user.username" class="mb-1 author flex w-max items-center space-x-2">
           <img :src="user.photoURL || require('@/assets/images/avatar.png')" class="rounded-full shadow h-7 w-7 overflow-hidden" :alt="post.displayName">
           <span class="text-xs font-semibold text-gray-700 transition duration-300 transform">{{user.displayName}} </span>
         </NuxtLink>
+        <!-- Post owner end (not visible always)-->
+
         <NuxtLink class="card-title capitalize transition duration-300 transform hover:translate-x-1 hover:text-gray-500 limit-lines l-1 font-bold mb-2" style="letter-spacing: -1px;" :title="post.title" :to="'/'+ user.username + '/' + post.slug"><h3>{{post.title}}</h3></NuxtLink>
+        <!-- Post title end -->
+
         <p :class="{'l-2': showAuthor, 'l-3': !showAuthor}" class="limit-lines" style="font-size: 15px">{{post.description}}</p>
+        <!-- Post description end -->
+
       </div>
+      <!-- Post image end -->
+
       <NuxtLink :title="post.title" class="w-48 h-32 shadow rounded-md overflow-hidden" :to="'/'+ user.username + '/' + post.slug">
         <div class="postImageAnimation w-full h-full bg-cover" :style="`background-image: url(${post.postImageURL})`"></div>
       </NuxtLink>
+      <!-- Post image end -->
+      
     </div>
+    <!-- Post card main end -->
+
     <div class="flex mt-2">
       <ul class="flex space-x-2 items-center flex-1 pr-8">
         <li class="tag">tags</li>
@@ -22,11 +36,16 @@
         <li class="tag">ready</li>
         <li class="tag">yet</li>
       </ul>
+      <!-- Post tags end -->
       <div class="w-48 flex space-x-5 items-center text-sm text-gray-600 px-4">
         <div :class="{'text-red-700': hasAlreadyLiked}" class="flex justify-end flex-1 items-center space-x-1"><span v-html="likeLoading ? loadingElement : post.likes.length"></span><span @click="likePost()" :class="{'bg-red-50': hasAlreadyLiked}" class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-red-50 hover:text-red-700 el-icon-star-off"></span></div>
         <NuxtLink :to="'/'+ user.username + '/' + post.slug + '#comments'" class="pt-0.5 flex justify-end flex-1 items-center space-x-1 space-x-reverse flex-row-reverse"><span>{{post.commentCount}}</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-blue-50 hover:text-blue-700 el-icon-chat-line-square"></span></NuxtLink>
       </div>
+      <!-- Post like, comment buttons end -->
+
     </div>
+    <!-- Post details end -->
+
   </div>
 
 </template>
@@ -42,19 +61,27 @@ export default {
   },
   methods: {
     async likePost(){
+
       if(this.authUser){
+
         if(!this.likeLoading){
           this.likeLoading = true;
+
           const postData = {ownerId: this.user.uid, slug: this.post.slug, uid: this.authUser.uid}
           
           if(this.hasAlreadyLiked) {
+
             await this.$store.dispatch('post/dislikePost', postData)
             this.post.likes.splice(this.post.likes.indexOf(this.authUser.uid), 1)
+
           }else {
+
             await this.$store.dispatch('post/likePost', postData)
             this.post.likes.push(this.authUser.uid);
+
           }
           this.likeLoading = false;
+
         }else {
           this.$message.warning('Slow Down !!!')
         }

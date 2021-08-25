@@ -1,20 +1,24 @@
 <template>
   <div class="flex justify-center flex-col items-center">
 
-    <h1 class="my-6 text-2xl">Please define a username.</h1>
+    <h3 class="mt-16 mb-4">Please define a username.</h3>
 
     <form @submit.prevent="submitChanging()" class="flex flex-col space-y-3 w-64 items-center">
       
       <div :class="info[1]" class="custom-input relative w-full">
         <input v-model="chosenName" class="border-current outline-none bg-transparent relative border rounded-lg py-2 px-4 w-full" type="text" required :pattern="pattern">
         <span :class="{'move-top': chosenName}" class="left-0 top-0 px-2 m-2 select-none">Username</span>
+        <!-- label end -->
         <div class="error text-xs bg-white px-2 mr-2 -mt-3 select-none">{{ info[0] }}</div>
+        <!-- info message end -->
       </div>
+      <!-- Input end -->
       
       <div class="w-full flex h-9 space-x-4 justify-center">
         <div v-if="username" @click="cancelChanging" class="text-red-500 rounded-md font-semibold w-1/3 flex justify-center items-center hover:bg-red-50 cursor-pointer">Cancel</div>
         <button :disabled="!available || loading || result != ''" type="submit" class="bg-blue-500 hover:bg-blue-400 text-white rounded-md w-1/3">Apply</button>
       </div>
+      <!-- Cancel, apply buttons end -->
 
     </form>
     <div class="mt-4 text-xl" v-html="result"></div>
@@ -73,15 +77,20 @@ export default {
     }),
     async submitChanging(){
       this.result = '<span class="el-icon-loading"></span>'
+
       if(this.result != '' && this.valid && this.available && !this.loading){
+
         await this.changeUsername(this.chosenName);
         this.result = 'Changed'
+
         setTimeout(() => {
           this.result = ''
         }, 2000);
+
       }else {
         this.result = ''
       }
+      
     },
     cancelChanging(){
       this.$store.commit('user/updateUsername', this.username)
