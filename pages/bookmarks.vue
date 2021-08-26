@@ -7,15 +7,7 @@
       <hr class="my-8">
 
       <el-empty v-if="!posts.length" description="You don't have any bookmarks yet. Add some!" :image-size="100"></el-empty>
-      <el-timeline v-else>
-
-        <el-timeline-item v-for="post in posts" :key="post.slug" :timestamp="getDate(post)" placement="top">
-          
-          <PostCard :authUser="authUser" :user="users[post.uid]" :post="post" :show-author="true"></PostCard>
-           
-        </el-timeline-item>
-
-      </el-timeline>
+      <ListPosts v-else :users="users" :posts="posts" />
     </div>
 
   </div>
@@ -25,25 +17,7 @@
 
 
 export default {
-  data(){
-    return {
-      timeOptions: { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' },
-    }
-  },
-  methods:{
-    getLocale(time){
-      return new Date(time.seconds * 1000).toLocaleDateString('en-US', this.timeOptions);
-    },
-    getDate(post){
-      const createdAt = this.getLocale(post.createdAt);
-      const updatedAt = this.getLocale(post.updatedAt);
-      let string = `Published at: ${createdAt}`
-      if(post.createdAt.seconds != post.updatedAt.seconds){
-        string = `Last update: ${updatedAt}`
-      }
-      return string
-    }
-  },
+  
   computed: {
     authUser(){
       return this.$store.getters['user/getUser']

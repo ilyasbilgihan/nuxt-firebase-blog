@@ -26,6 +26,7 @@ export default {
   plugins: [
 	  '~/plugins/firebase.js',
     '~/plugins/element-ui.js',
+    { src: '~/plugins/el-input-tag.js', mode: 'client'},
     { src: '~/plugins/vue-quill.js', ssr: false}
   ],
 

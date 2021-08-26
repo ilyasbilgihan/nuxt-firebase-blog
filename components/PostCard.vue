@@ -30,11 +30,9 @@
 
     <div class="flex mt-2">
       <ul class="flex space-x-2 items-center flex-1 pr-8">
-        <li class="tag">tags</li>
-        <li class="tag">are</li>
-        <li class="tag">not</li>
-        <li class="tag">ready</li>
-        <li class="tag">yet</li>
+        <li v-for="tag in post.tags" :key="tag.slug">
+          <NuxtLink :to="'/tag/' + tag.slug" class="tag">{{tag.name}}</NuxtLink>
+        </li>
       </ul>
       <!-- Post tags end -->
       <div class="w-48 flex space-x-5 items-center text-sm text-gray-600 px-4">
@@ -97,16 +95,15 @@ export default {
         exists = this.post.likes.includes(this.authUser.uid);
       }
       return exists;
+    },
+    authUser(){
+      return this.$store.getters['user/getUser']
     }
   },
   props: {
     user: Object,
     post: Object,
-    authUser: Object,
-    showAuthor: {
-      type: Boolean,
-      default: false
-    }
+    showAuthor: Boolean,
   }
 }
 </script>

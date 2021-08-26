@@ -20,6 +20,11 @@
       <div class="text-sm -mt-2 mb-2">
         <span class="font-semibold">Slug:</span> <span :class="{'text-green-500': available}" class="text-red-500">"{{postSlug}}" is {{available ? 'available.' : 'not available for you. '}} </span>
       </div>
+      <client-only>
+        <el-form-item label="Define a few tags (max 5)" required>
+          <el-input-tag v-model="tags" size="medium" type="info"></el-input-tag>
+        </el-form-item>
+      </client-only>
       <el-form-item label="Description Text" required>
         <el-input 
           type="textarea" 
@@ -97,6 +102,8 @@ export default {
       commentCount: 0,
       postImageURL: null,
       postImageFile: null,
+      tags: ["use","comma","between","tags"],
+      tagLimit: 5,
     }
   },
   methods: {
@@ -133,6 +140,9 @@ export default {
       this.postTitle = ''
       this.descriptionText = ''
       this.$refs.editor.quill.setContents();
+      this.tags = [];
+      this.postImageURL = null;
+      this.postImageFile = null;
     },
     isContentValid(content){
       
@@ -145,18 +155,18 @@ export default {
     openSubmitDialog(){
 
       if(!this.loading){
+
         this.$confirm('You will not have a chance to change the post\'s title or slug.', 'Warning', {
           confirmButtonText: 'I understand',
           cancelButtonText: 'Cancel',
           type: 'warning',
           center: true
-        }).then(() => {
-          this.submitPost().then(()=>{
+        }).then(async () => {
 
-            this.$message.success('Post succesfully added, redirecting...');
+          await this.submitPost();
 
-          });
         }).catch(()=>{})
+        
       }else {
         this.$message.warning('Slow Down !!!');
       }
@@ -169,38 +179,47 @@ export default {
 
       if(!this.checkingSlug && this.available ){
 
-        if(this.descriptionText.length <= this.descriptionLimit && this.descriptionText.length > 0){
+        if(this.processedTags.length > 0){
 
-          if(this.postImageFile){
+          if(this.descriptionText.length <= this.descriptionLimit && this.descriptionText.length > 0){
 
-            if(isContentValid){
+            if(this.postImageFile){
 
-              const postData = {
-                uid: this.user.uid,
-                title: this.postTitle,
-                slug: this.postSlug,
-                likes: [],
-                createdAt: new Date(Date.now()),
-                updatedAt:  new Date(Date.now()),
-                description: this.descriptionText,
-                content: content.ops,
-                commentCount: 0,
+              if(isContentValid){
+
+                const postData = {
+                  uid: this.user.uid,
+                  title: this.postTitle,
+                  slug: this.postSlug,
+                  likes: [],
+                  createdAt: new Date(Date.now()),
+                  updatedAt:  new Date(Date.now()),
+                  description: this.descriptionText,
+                  content: content.ops,
+                  commentCount: 0,
+                  published: true,
+                  tags: this.processedTags,
+                  tagSlugs: this.processedTags.map((tag)=>tag.slug), // for query
+                }
+
+                await this.$store.dispatch('post/addPost', {postImageFile: this.postImageFile, postData: postData});
+                this.resetFields();
+                this.$message.success('Post succesfully added, redirecting...');
+                setTimeout(() => {
+                  this.$router.push(`/${this.user.username}/${postData.slug}`)
+                }, 2000);
+                
+              }else {
+                this.$message.error('Post content is not valid.');
               }
-
-              await this.$store.dispatch('post/addPost', {postImageFile: this.postImageFile, postData: postData});
-              this.resetFields();
-              setTimeout(() => {
-                this.$router.push(`/${this.user.username}/${postData.slug}`)
-              }, 2000);
-              
             }else {
-              this.$message.error('Post content is not valid.');
+              this.$message.error('You have to select a post image.');
             }
           }else {
-            this.$message.error('You have to select a post image.');
+            this.$message.error('Description text is not valid.');
           }
         }else {
-          this.$message.error('Description text is not valid.');
+          this.$message.error('Your have to define a few tags.');
         }
       }else {
         this.$message.error('Post title/slug is not valid.');
@@ -213,7 +232,7 @@ export default {
       img.src = URL.createObjectURL(file.raw);
       const _this = this;
       img.onload = function(){
-        if(this.width > 1920 && this.height > 1080){
+        if(this.width > 1920 || this.height > 1080){
           _this.$message.error('Post image resolution can not exceed 1920x1080')
         }else {
           _this.postImageURL = this.src
@@ -237,17 +256,36 @@ export default {
     removePostImage(){
       this.postImageURL = null;
       this.postImageFile = null;
-    }
+    },
     
   },
   computed: {
     user(){
       return this.$store.getters['user/getUser'];
+    },
+    processedTags(){
+      const kebabTags = this.tags.map((tag)=>{
+        return {slug: kebab(tag), name: tag}
+      })
+      const filteredTags = kebabTags.reduce((acc, cur)=>{
+        if(!acc.some((r) => r.slug == cur.slug)){
+          return [...acc, {slug: cur.slug, name: cur.name}]
+        }else {
+          return acc
+        }
+      },[])
+      return filteredTags
     }
   },
   watch: {
     postTitle(e){
       this.onTitleChange()
+    },
+    tags(tags){
+      if(tags.length > this.tagLimit){
+        this.$message.error('You can\'t add more tag.');
+        tags.splice(this.tagLimit, 1)
+      }
     }
   },
 

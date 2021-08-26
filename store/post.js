@@ -64,6 +64,22 @@ export const actions = {
     });
     this.commit('user/pushBookmark', postData.bookmarkData)
   },
+  async fetchFeed({}, limit){
+    let posts = []
+    const snapshot = await firestore.collectionGroup('posts').where('published', '==', true).orderBy('createdAt', 'desc').limit(limit).get();
+    snapshot.forEach((post) =>{
+      posts.push(post.data())
+    })
+    return posts
+  },
+  async fetchPostsWithTag({}, data){
+    let posts = []
+    const snapshot = await firestore.collectionGroup('posts').where('published', '==', true).where('tagSlugs', 'array-contains', data.tag).orderBy('createdAt', 'desc').limit(data.limit).get();
+    snapshot.forEach((post) =>{
+      posts.push(post.data())
+    })
+    return posts
+  }
 
 }
 

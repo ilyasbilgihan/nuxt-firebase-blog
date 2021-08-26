@@ -16,19 +16,18 @@
             <p v-if="user.bio" class="pb-2">{{user.bio}}</p>
             <div v-if="user.location" :title="user.location" class="flex items-center"><i class="mr-1 text-xl el-icon-map-location"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.location}}</span></div>
             <div v-if="user.profession" :title="user.profession" class="flex items-center"><i class="mr-1 text-xl el-icon-suitcase"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.profession}}</span></div>
+            <div v-if="ownProfile">
+              <el-button type="success" size="medium" round plain>Follow</el-button>
+              <!-- will be ready in the next commit -->
+            </div>
           </div>
         </div>
       </div>
-      <el-timeline class="pl-16 w-4/6">
+      <div class="pl-16 w-4/6">
         <h2 class="font-bold mb-12" style="color: #303133; letter-spacing: -1px">All the posts {{ownProfile ? 'you' : 'the user' }} have</h2>
-
         <el-empty v-if="!posts.length" :description="(ownProfile ? 'You have' : user.displayName + ' has')+' not shared a post yet.'" class="text-lg text-gray-500" :image-size="100"></el-empty>
-        <el-timeline-item v-else v-for="post in posts" :key="post.slug" :timestamp="getDate(post)" placement="top">
-          
-          <PostCard :authUser="authUser" :user="user" :post="post"></PostCard>
-          
-        </el-timeline-item>
-      </el-timeline>
+        <ListPosts v-else :users="users" :posts="posts" :showAuthor="false" />
+      </div>
     </div>
 	
   </div>
@@ -43,11 +42,6 @@ export default {
       title: `${this.user.displayName}'s profile`,
     }
   },
-  data(){
-    return {
-      timeOptions: { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' },
-    }
-  },
   computed:{
     authUser(){
       return this.$store.getters['user/getUser'];
@@ -60,20 +54,7 @@ export default {
       }
     }
   },
-  methods: {
-    getLocale(time){
-      return new Date(time.seconds * 1000).toLocaleDateString('en-US', this.timeOptions);
-    },
-    getDate(post){
-      const createdAt = this.getLocale(post.createdAt);
-      const updatedAt = this.getLocale(post.updatedAt);
-      let string = `Published at: ${createdAt}`
-      if(post.createdAt.seconds != post.updatedAt.seconds){
-        string = `Last update: ${updatedAt}`
-      }
-      return string
-    }
-  },
+
   
   async asyncData(context) { // fetch the user before mounted(before page loaded)
 
@@ -81,14 +62,14 @@ export default {
     if(fetchUser.exists){
       const user = (await context.store.dispatch('user/fetchUser', fetchUser.data().uid)).data();
       const posts = (await context.store.dispatch('post/fetchUserPosts', user.uid));
-
-
-      return { user, posts }
+      
+      const users = {}
+      users[user.uid] = user;
+      return { user, users, posts }
     }else {
       context.redirect('/') // or redirect to 404 page
     }
   }
-
 }
 
 </script>

@@ -7,8 +7,7 @@
 
       <ul class="flex space-x-4 flex-1 px-8">
         <li><NuxtLink to="/">Home</NuxtLink></li>
-        <li><NuxtLink to="/about">About</NuxtLink></li>
-        <li v-if="user"><NuxtLink to="/secret/random-slug-here">Secret Page</NuxtLink></li>
+        <li v-if="user"><NuxtLink to="/feed">My Feed</NuxtLink></li> <!-- will be ready in the next commit -->
       </ul>  <!-- Header menu end -->
 
       <div>
@@ -222,6 +221,38 @@ label {
   }
   .post-image-uploader-icon {
     @apply absolute text-4xl text-gray-500 inset-0 flex items-center justify-center transition duration-300 border-2 border-dashed rounded-lg;
+  }
+}
+
+.input-tag-wrapper {
+  display: flex!important;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 2px 8px!important;
+  &:hover {
+    border-color: #c0c4cc!important;
+  }
+  &:focus-within {
+    border-color: #409eff!important;
+  }
+  .tag-input {
+    flex: 1;
+    padding-left: 15px!important;
+  }
+  span {
+    user-select: none;
+    line-height: 28px;
+    padding: 0 10px 0 16px!important;
+    font-size: 14px;
+    border: none!important;
+    color: #303133!important;
+    margin-right: 8px!important;
+    @apply shadow transition cursor-default duration-300 rounded-2xl bg-gray-100 hover:bg-gray-200;
+    i {
+      top: inherit!important;
+      vertical-align: inherit!important;
+      transform: scale(1)!important;
+    }
   }
 }
 </style>

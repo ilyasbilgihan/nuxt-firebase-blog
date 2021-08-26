@@ -54,11 +54,9 @@
       </div>
       <div class="flex justify-between py-3">
         <ul class="flex items-center text-sm pr-8 space-x-2">
-          <li class="tag">tags</li>
-          <li class="tag">are</li>
-          <li class="tag">not</li>
-          <li class="tag">ready</li>
-          <li class="tag">yet</li>
+          <li v-for="tag in post.tags" :key="tag.slug">
+            <NuxtLink :to="'/tag/' + tag.slug" class="tag">{{tag.name}}</NuxtLink>
+          </li>
         </ul>
         <div class="flex items-center space-x-4">
           <div :class="{'text-red-700': hasAlreadyLiked}" class="flex items-center space-x-1"><span v-html="likeLoading ? loadingElement : post.likes.length"></span><span @click="likePost()" :class="{'bg-red-50': hasAlreadyLiked}" class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-red-50 hover:text-red-700 el-icon-star-off"></span></div>
@@ -306,7 +304,7 @@ export default {
       img.src = URL.createObjectURL(file.raw);
       const _this = this;
       img.onload = function(){
-        if(this.width > 1920 && this.height > 1080){
+        if(this.width > 1920 || this.height > 1080){
           _this.$message.error('Post image resolution can not exceed 1920x1080')
         }else {
           _this.newPostImageURL = this.src
