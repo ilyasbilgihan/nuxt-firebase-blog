@@ -103,4 +103,30 @@ export const actions = {
     commit('setUser', {user: updatedUser, info: 'user updated from account settings'}) // mutate our state.user
 
   },
+  async follow({ state, commit }, uid){
+    
+    await firestore.doc(`users/${state.user.uid}`).update({
+      followed: firebase.firestore.FieldValue.arrayUnion(uid)
+    });
+    await firestore.doc(`users/${uid}`).update({
+      followers: firebase.firestore.FieldValue.arrayUnion(state.user.uid)
+    });
+    const updatedUser = JSON.parse(JSON.stringify(state.user));
+    updatedUser.followed.push(uid);
+    commit('setUser', {user: updatedUser, info: 'user updated - follow'}) // mutate our state.user
+
+  },
+  async unfollow({ state, commit }, uid){
+
+    await firestore.doc(`users/${state.user.uid}`).update({
+      followed: firebase.firestore.FieldValue.arrayRemove(uid)
+    });
+    await firestore.doc(`users/${uid}`).update({
+      followers: firebase.firestore.FieldValue.arrayRemove(state.user.uid)
+    });
+    const updatedUser = JSON.parse(JSON.stringify(state.user));
+    updatedUser.followed.splice(updatedUser.followed.indexOf(uid), 1);
+    commit('setUser', {user: updatedUser, info: 'user updated - unfollow'}) // mutate our state.user
+
+  }
 }

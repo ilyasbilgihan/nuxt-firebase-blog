@@ -9,38 +9,37 @@
 
       <hr class="my-8">
 
-      <ListPosts :users="users" :posts="posts" />
-      
+      <el-empty v-if="!posts.length" description="Tag not found, ERROR" :image-size="100"></el-empty>
+      <ListPosts v-else :usersP="users" :postsP="posts" :limit="limit" moreDispatchPath="post/fetchPostsWithTagMore" :tag="$route.params.tagSlug" />
+
     </div>
 
   </div>
 </template>
 
 <script>
-
+const LIMIT = 2;
 
 export default {
+  head(){
+    return {
+      title: `Posts tagged with ${this.$route.params.tagSlug}`,
+    }
+  },
   data(){
     return {
+      limit: LIMIT,
     }
   },
 
   async asyncData(context){
     
-    const posts = await context.store.dispatch('post/fetchPostsWithTag', {limit: 5, tag: context.route.params.tagSlug});
-    const users = {}
+    const { posts, users } = await context.store.dispatch('post/fetchPostsWithTag', {limit: LIMIT, tag: context.route.params.tagSlug, cacheUsers: []});
 
-    for(let i = 0; i < posts.length; i++){
-
-      if(users[posts[i].uid] == undefined){
-        const user = await context.store.dispatch('user/fetchUser', posts[i].uid);
-        users[posts[i].uid] = user.data();
-      }
-
-    }
     if(posts.length == 0){
       context.redirect('/');
     }
+
     return { posts, users }
     
   }

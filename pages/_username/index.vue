@@ -16,9 +16,12 @@
             <p v-if="user.bio" class="pb-2">{{user.bio}}</p>
             <div v-if="user.location" :title="user.location" class="flex items-center"><i class="mr-1 text-xl el-icon-map-location"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.location}}</span></div>
             <div v-if="user.profession" :title="user.profession" class="flex items-center"><i class="mr-1 text-xl el-icon-suitcase"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.profession}}</span></div>
-            <div v-if="ownProfile">
-              <el-button type="success" size="medium" round plain>Follow</el-button>
-              <!-- will be ready in the next commit -->
+            <div class="flex space-x-4 pt-2">
+              <div class="space-x-1"><strong v-if="!followLoading">{{user.followers.length}}</strong><span v-else class="el-icon-loading"></span><span>followers</span></div>
+              <div class="space-x-1"><strong>{{user.followed.length}}</strong><span>followed</span></div>
+            </div>
+            <div v-if="!ownProfile">
+              <el-button @click="toggleFollow()" type="success" size="medium" round :plain="hasAlreadyFollowed">{{hasAlreadyFollowed ? 'Unfollow' : 'Follow'}}</el-button>
             </div>
           </div>
         </div>
@@ -26,7 +29,7 @@
       <div class="pl-16 w-4/6">
         <h2 class="font-bold mb-12" style="color: #303133; letter-spacing: -1px">All the posts {{ownProfile ? 'you' : 'the user' }} have</h2>
         <el-empty v-if="!posts.length" :description="(ownProfile ? 'You have' : user.displayName + ' has')+' not shared a post yet.'" class="text-lg text-gray-500" :image-size="100"></el-empty>
-        <ListPosts v-else :users="users" :posts="posts" :showAuthor="false" />
+        <ListPosts v-else :usersP="users" :postsP="posts" :showAuthor="false" :limit="limit" moreDispatchPath="post/fetchUserPostsMore" :uid="user.uid" />
       </div>
     </div>
 	
@@ -35,11 +38,44 @@
 </template>
 
 <script>
+const LIMIT = 3;
 
 export default {
   head(){
     return {
       title: `${this.user.displayName}'s profile`,
+    }
+  },
+  data(){
+    return {
+      followLoading: false,
+      limit: LIMIT,
+    }
+  },
+  methods:{
+    async toggleFollow(){
+      if(this.authUser){
+        
+        if(!this.followLoading){
+          this.followLoading = true;
+
+          if(this.hasAlreadyFollowed){
+            await this.$store.dispatch('user/unfollow', this.user.uid);
+            this.user.followers.splice(this.user.followers.indexOf(this.authUser.uid), 1);
+          }else {
+            await this.$store.dispatch('user/follow', this.user.uid);
+            this.user.followers.push(this.authUser.uid);
+          }
+
+          this.followLoading = false;
+
+        }else {
+          this.$message.warning('Slow Down !!!');
+        }
+
+      }else {
+        this.$message.error('You have to login to follow someone');
+      }
     }
   },
   computed:{
@@ -52,6 +88,13 @@ export default {
       }else {
         return this.authUser.username == this.$route.params.username
       }
+    },
+    hasAlreadyFollowed(){
+      if(this.authUser == null){
+        return false
+      }else {
+        return this.authUser.followed.includes(this.user.uid);
+      }
     }
   },
 
@@ -61,11 +104,9 @@ export default {
     const fetchUser = await context.store.dispatch('user/fetchUserId', context.route.params.username)
     if(fetchUser.exists){
       const user = (await context.store.dispatch('user/fetchUser', fetchUser.data().uid)).data();
-      const posts = (await context.store.dispatch('post/fetchUserPosts', user.uid));
+      const { posts, users } = (await context.store.dispatch('post/fetchUserPosts', {uid: user.uid, limit: LIMIT, cacheUsers: []}));
       
-      const users = {}
-      users[user.uid] = user;
-      return { user, users, posts }
+      return { user, posts, users }
     }else {
       context.redirect('/') // or redirect to 404 page
     }

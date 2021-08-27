@@ -9,8 +9,8 @@
 
       <hr class="my-8">
 
-      <el-empty v-if="!feed.length" description="No one has shared a post yet, be the first!" :image-size="100"></el-empty>
-      <ListPosts v-else :users="users" :posts="feed" />
+      <el-empty v-if="!posts.length" description="No one has shared a post yet, be the first!" :image-size="100"></el-empty>
+      <ListPosts v-else :usersP="users" :postsP="posts" :limit="limit" moreDispatchPath="post/fetchAllPostsMore" />
 
     </div>
 
@@ -18,28 +18,24 @@
 </template>
 
 <script>
-
+const LIMIT = 3;
 
 export default {
-  data(){
+  head(){
     return {
+      title: `Discover Posts`,
     }
   },
-  mounted(){
+  data(){
+    return {
+      limit: LIMIT,
+    }
   },
 
   async asyncData(context){
-    const feed = await context.store.dispatch('post/fetchFeed', 5);
-    const users = {}
 
-    for(let i = 0; i < feed.length; i++){
-
-      if(users[feed[i].uid] == undefined){
-        const user = await context.store.dispatch('user/fetchUser', feed[i].uid);
-        users[feed[i].uid] = user.data();
-      }
-    }
-    return { feed, users }
+    const { posts, users } = await context.store.dispatch('post/fetchAllPosts', {limit: LIMIT, cacheUsers: []});
+    return { posts, users }
     
   }
 

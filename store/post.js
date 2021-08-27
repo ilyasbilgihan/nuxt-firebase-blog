@@ -7,16 +7,6 @@ export const actions = {
     const post = await firestore.doc(`users/${uid}/posts/${slug}`).get();
     return post
   },
-  async fetchUserPosts({}, uid){
-
-    let posts = []
-    const snapshot = await firestore.doc(`users/${uid}`).collection('posts').orderBy('updatedAt', 'desc').get();
-    snapshot.forEach((post) =>{
-      posts.push(post.data())
-    })
-    return posts
-    
-  },
   async addPost({}, data){
     const storageRef = storage.ref();
     const postImageRef = await storageRef.child(`post-images/${data.postData.uid}-${data.postData.slug}.jpg`).put(data.postImageFile);
@@ -64,22 +54,93 @@ export const actions = {
     });
     this.commit('user/pushBookmark', postData.bookmarkData)
   },
-  async fetchFeed({}, limit){
-    let posts = []
-    const snapshot = await firestore.collectionGroup('posts').where('published', '==', true).orderBy('createdAt', 'desc').limit(limit).get();
-    snapshot.forEach((post) =>{
-      posts.push(post.data())
-    })
-    return posts
+  async fetchUserPosts({ dispatch }, data){
+
+    const snapshot = await firestore.doc(`users/${data.uid}`).collection('posts').orderBy('updatedAt', 'desc').limit(data.limit).get();
+    const posts = snapshot.docs.map((doc) => doc.data());
+    const users = await dispatch('fetchPostOwners', { posts, cacheUsers: data.cacheUsers })
+    
+    return { posts, users }
+    
   },
-  async fetchPostsWithTag({}, data){
-    let posts = []
+  async fetchUserPostsMore({ dispatch }, data){
+
+    const cursor = new firebase.firestore.Timestamp(data.last.seconds, data.last.nanoseconds);
+    const snapshot = await firestore.doc(`users/${data.uid}`).collection('posts').orderBy('updatedAt', 'desc').startAfter(cursor).limit(data.limit).get();
+    const posts = snapshot.docs.map((doc) => doc.data());
+    const users = await dispatch('fetchPostOwners', { posts, cacheUsers: data.cacheUsers })
+    
+    return { posts, users }
+    
+  },
+  async fetchAllPosts({ dispatch }, data){
+
+    const snapshot = await firestore.collectionGroup('posts').where('published', '==', true).orderBy('createdAt', 'desc').limit(data.limit).get();
+    const posts = snapshot.docs.map((doc) => doc.data());
+    const users = await dispatch('fetchPostOwners', { posts, cacheUsers: data.cacheUsers })
+    
+    return { posts, users }
+
+  },
+  async fetchAllPostsMore({ dispatch }, data){
+
+    const cursor = new firebase.firestore.Timestamp(data.last.seconds, data.last.nanoseconds);
+    const snapshot = await firestore.collectionGroup('posts').where('published', '==', true).orderBy('createdAt', 'desc').startAfter(cursor).limit(data.limit).get();
+    const posts = snapshot.docs.map((doc) => doc.data());
+    const users = await dispatch('fetchPostOwners', { posts, cacheUsers: data.cacheUsers })
+    
+    return { posts, users }
+
+  },
+  async fetchPostsWithTag({ dispatch }, data){
+
     const snapshot = await firestore.collectionGroup('posts').where('published', '==', true).where('tagSlugs', 'array-contains', data.tag).orderBy('createdAt', 'desc').limit(data.limit).get();
-    snapshot.forEach((post) =>{
-      posts.push(post.data())
-    })
-    return posts
-  }
+    const posts = snapshot.docs.map((doc) => doc.data());
+    const users = await dispatch('fetchPostOwners', { posts, cacheUsers: data.cacheUsers })
+
+    return { posts, users }
+
+  },
+  async fetchPostsWithTagMore({ dispatch }, data){
+
+    const cursor = new firebase.firestore.Timestamp(data.last.seconds, data.last.nanoseconds);
+    const snapshot = await firestore.collectionGroup('posts').where('published', '==', true).where('tagSlugs', 'array-contains', data.tag).orderBy('createdAt', 'desc').startAfter(cursor).limit(data.limit).get();
+    const posts = snapshot.docs.map((doc) => doc.data());
+    const users = await dispatch('fetchPostOwners', { posts, cacheUsers: data.cacheUsers })
+    
+    return { posts, users }
+    
+  },
+  async fetchFollowedUsersPosts({ dispatch }, data){
+
+    const snapshot = await firestore.collectionGroup('posts').where('published', '==', true).where('uid', 'in', data.followedList).orderBy('createdAt', 'desc').limit(data.limit).get()
+    const posts = snapshot.docs.map((doc) => doc.data());
+    const users = await dispatch('fetchPostOwners', { posts, cacheUsers: data.cacheUsers })
+    
+    return { posts, users }
+
+  },
+  async fetchFollowedUsersPostsMore({ dispatch }, data){
+
+    const cursor = new firebase.firestore.Timestamp(data.last.seconds, data.last.nanoseconds);
+    const snapshot = await firestore.collectionGroup('posts').where('published', '==', true).where('uid', 'in', data.followedList).orderBy('createdAt', 'desc').startAfter(cursor).limit(data.limit).get()
+    const posts = snapshot.docs.map((doc) => doc.data());
+    const users = await dispatch('fetchPostOwners', { posts, cacheUsers: data.cacheUsers })
+    
+    return { posts, users }
+
+  },
+  async fetchPostOwners({}, { posts, cacheUsers }){
+    const users = {}
+    for(let i = 0; i < posts.length; i++){
+
+      if(!cacheUsers.includes(posts[i].uid) && users[posts[i].uid] == undefined){
+        const user = await this.dispatch('user/fetchUser', posts[i].uid);
+        users[posts[i].uid] = user.data();
+      }
+    }
+    return users
+  },
 
 }
 

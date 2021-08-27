@@ -87,6 +87,11 @@ import kebab from 'lodash.kebabcase'
 
 
 export default {
+  head(){
+    return {
+      title: `Write a Post`,
+    }
+  },
   data() {
     return {
       postTitle: "",

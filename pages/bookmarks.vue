@@ -7,7 +7,7 @@
       <hr class="my-8">
 
       <el-empty v-if="!posts.length" description="You don't have any bookmarks yet. Add some!" :image-size="100"></el-empty>
-      <ListPosts v-else :users="users" :posts="posts" />
+      <ListPosts v-else :usersP="users" :postsP="posts" />
     </div>
 
   </div>

@@ -22,6 +22,11 @@ export default {
     middleware: ['authControl']
   },
   
+  render: {
+    bundleRenderer: {
+      runInNewContext: false // https://firebase.nuxtjs.org/community/faq/#firestore-using-array-contains-or-array-contains-any-does-not-work
+    }
+  },
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
 	  '~/plugins/firebase.js',
