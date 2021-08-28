@@ -18,7 +18,7 @@
 </template>
 
 <script>
-const LIMIT = 2;
+const LIMIT = 3;
 
 export default {
   head(){

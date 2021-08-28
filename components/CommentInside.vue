@@ -15,8 +15,8 @@
 
       <div v-if="comment.uid != 'deleted'" class="flex space-x-2 items-center text-xs text-gray-500">
         <span :title="getTime(comment.createdAt)" >sent {{fromNow(comment.createdAt)}}</span>
-        <div v-if="comment.createdAt.seconds != comment.updatedAt.seconds" class="p-0.5 bg-gray-400 rounded-full"></div>
-        <span v-if="comment.createdAt.seconds != comment.updatedAt.seconds" :title="getTime(comment.updatedAt)">
+        <div v-if="comment.createdAt != comment.updatedAt" class="p-0.5 bg-gray-400 rounded-full"></div>
+        <span v-if="comment.createdAt != comment.updatedAt" :title="getTime(comment.updatedAt)">
           <span @click="toggleHistory()" class="underline cursor-pointer select-none hover:text-gray-600">edited</span>
           {{ fromNow(comment.updatedAt) }}
         </span>
@@ -118,7 +118,7 @@
         </div> <!-- Comment Owner Details end -->
 
         <div class="updateHistory grid gap-x-10 grid-cols-2 w-full h-full">
-          <div class="historyItem flex flex-col pb-10" v-for="(history, index) in comment.updateHistory" :key="history.editedAt.seconds">
+          <div class="historyItem flex flex-col pb-10" v-for="(history, index) in comment.updateHistory" :key="history.editedAt">
             <h5 class="font-semibold">{{index + 1}}</h5>
             <span class="text-xs text-gray-500">{{getTime(history.editedAt)}}</span>
             <hr class="my-2">
@@ -173,7 +173,7 @@ export default({
   },
   methods: {
     getTime(time){
-      return new Date(time.seconds * 1000).toLocaleDateString('en-US', this.timeOptions)
+      return new Date(time).toLocaleDateString('en-US', this.timeOptions)
     },
     toggleHistory(){
       if(this.authUser){
@@ -265,7 +265,7 @@ export default({
               postOwnerId: this.postOwnerId, 
               slug: this.post.slug, 
               newContent: this.comment.content,
-              updatedAt: new Date(Date.now()),
+              updatedAt: Date.now(),
             }
             await this.$store.dispatch('comment/editComment', editData)
             this.comment.updatedAt = editData.updatedAt;
@@ -383,13 +383,13 @@ export default({
               uid: this.authUser.uid,
               parentId: this.comment.commentId,
               content: this.replyContent,
-              updateHistory: [{editedAt: new Date(Date.now()), content: this.replyContent}],
+              updateHistory: [{editedAt: Date.now(), content: this.replyContent}],
               upVotes: [],
               downVotes: [],
               voteCount: 0,
               replyCount: 0,
-              createdAt: new Date(Date.now()),
-              updatedAt: new Date(Date.now()),
+              createdAt: Date.now(),
+              updatedAt: Date.now(),
             }
             
             await this.$store.dispatch('comment/addComment', {postOwnerId: this.postOwnerId, slug: this.post.slug, commentData: commentData})
@@ -417,7 +417,7 @@ export default({
   computed: {
     fromNow(){
       return function(time){
-        return this.$moment(time.seconds * 1000).fromNow();
+        return this.$moment(time).fromNow();
       }
     },
     authUser(){

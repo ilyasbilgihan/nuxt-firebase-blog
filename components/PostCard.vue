@@ -6,7 +6,7 @@
 
       <div class="flex-1 flex flex-col pr-8">
         <NuxtLink v-if="showAuthor" :to="'/' + user.username" :title="'@'+ user.username" class="mb-1 author flex w-max items-center space-x-2">
-          <img :src="user.photoURL || require('@/assets/images/avatar.png')" class="rounded-full shadow h-7 w-7 overflow-hidden" :alt="post.displayName">
+          <img :src="user.photoURL || require('@/assets/images/avatar.png')" class="rounded-full shadow h-7 w-7 overflow-hidden" :alt="user.displayName">
           <span class="text-xs font-semibold text-gray-700 transition duration-300 transform">{{user.displayName}} </span>
         </NuxtLink>
         <!-- Post owner end (not visible always)-->

@@ -1,11 +1,11 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'nuxt-firebase-blog',
+    title: 'Nuxt Firebase Blog',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
+      { hid: 'description', name: 'description', content: 'A Social Blog example which uses Nuxt + Firebase' },
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [

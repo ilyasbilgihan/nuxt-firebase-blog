@@ -6,8 +6,10 @@
       <div class="coverImage" style="background-image: url(https://www.incimages.com/uploaded_files/image/1920x1080/getty_509107562_2000133320009280346_351827.jpg)"></div>
       <h1 class="displayName">{{user.displayName}}</h1>
     </div>
+    <!-- Cover image end -->
 
     <div class="p-16 flex w-full">
+
       <div class="stickyUser w-1/6 relative">
         <div class="sticky top-32">
           <img :src="user.photoURL || require('@/assets/images/avatar.png')" class="w-2/3 rounded-2xl shadow-lg" :alt="user.displayName">
@@ -26,11 +28,33 @@
           </div>
         </div>
       </div>
+      <!-- User info end -->
+
       <div class="pl-16 w-4/6">
-        <h2 class="font-bold mb-12" style="color: #303133; letter-spacing: -1px">All the posts {{ownProfile ? 'you' : 'the user' }} have</h2>
-        <el-empty v-if="!posts.length" :description="(ownProfile ? 'You have' : user.displayName + ' has')+' not shared a post yet.'" class="text-lg text-gray-500" :image-size="100"></el-empty>
-        <ListPosts v-else :usersP="users" :postsP="posts" :showAuthor="false" :limit="limit" moreDispatchPath="post/fetchUserPostsMore" :uid="user.uid" />
+
+        <div class="flex mb-12 items-center justify-between">
+          <h2 class="font-bold" style="color: #303133; letter-spacing: -1px">All the posts {{ownProfile ? 'you have' : 'the user has' }}</h2>
+          <div v-if="ownProfile" class="flex space-x-2">
+            <el-button @click="published = (!published ? true : published)" type="primary" size="small" round :plain="!published">Published</el-button>
+            <el-button @click="published = (published ? false : published)" type="primary" size="small" round :plain="published">Unpublished</el-button>
+          </div>
+          <!-- Show Published/Unpublished post buttons end -->
+        </div>
+        <!-- Profile title end -->
+
+        <div v-if="published">
+          <el-empty v-if="!posts.length" :description="(ownProfile ? 'You have' : user.displayName + ' has')+' not shared a post yet.'" class="text-lg text-gray-500" :image-size="100"></el-empty>
+          <ListPosts key="published" v-else :usersP="users" :postsP="posts" :showAuthor="false" :limit="limit" moreDispatchPath="post/fetchUserPostsMore" :uid="user.uid" />  
+        </div>
+        <!-- Published posts end -->
+        <div v-else>
+          <el-empty v-if="!unpPosts.length" description="You don't have an unpublished post yet." class="text-lg text-gray-500" :image-size="100"></el-empty>
+          <ListPosts key="unpublished" v-else :usersP="users" :postsP="unpPosts" :showAuthor="false" :limit="limit" moreDispatchPath="post/fetchUnpUserPostsMore" :uid="user.uid" />  
+        </div>
+        <!-- Unpublished posts end -->
+
       </div>
+
     </div>
 	
   </div>
@@ -50,6 +74,7 @@ export default {
     return {
       followLoading: false,
       limit: LIMIT,
+      published: true,
     }
   },
   methods:{
@@ -104,9 +129,10 @@ export default {
     const fetchUser = await context.store.dispatch('user/fetchUserId', context.route.params.username)
     if(fetchUser.exists){
       const user = (await context.store.dispatch('user/fetchUser', fetchUser.data().uid)).data();
-      const { posts, users } = (await context.store.dispatch('post/fetchUserPosts', {uid: user.uid, limit: LIMIT, cacheUsers: []}));
-      
-      return { user, posts, users }
+      const { posts, users } = await context.store.dispatch('post/fetchUserPosts', {uid: user.uid, limit: LIMIT, cacheUsers: []});
+      const { posts: unpPosts } = await context.store.dispatch('post/fetchUserUnpPosts', {uid: user.uid, limit: LIMIT, cacheUsers: []});
+
+      return { user, posts, users, unpPosts }
     }else {
       context.redirect('/') // or redirect to 404 page
     }

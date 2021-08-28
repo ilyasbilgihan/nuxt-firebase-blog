@@ -4,7 +4,7 @@
 
     <el-form label-position="top" class="w-2/3 px-8 mx-auto my-4">
 
-      <h1 class="font-semibold mb-4">Write Post</h1>
+      <h1 class="font-semibold mb-4">Write A Post</h1>
 
       <el-form-item label="Post Title" required>
         <el-input
@@ -65,6 +65,12 @@
           />
         </client-only>
       </div>
+      <el-form-item label="Published" class="flex space-x-2 items-center">
+        <el-switch
+          v-model="published"
+          active-color="#13ce66">
+        </el-switch>
+      </el-form-item>
 
       <div class="flex items-center space-x-2">
 
@@ -89,7 +95,7 @@ import kebab from 'lodash.kebabcase'
 export default {
   head(){
     return {
-      title: `Write a Post`,
+      title: `Write A Post`,
     }
   },
   data() {
@@ -109,6 +115,7 @@ export default {
       postImageFile: null,
       tags: ["use","comma","between","tags"],
       tagLimit: 5,
+      published: true,
     }
   },
   methods: {
@@ -197,12 +204,12 @@ export default {
                   title: this.postTitle,
                   slug: this.postSlug,
                   likes: [],
-                  createdAt: new Date(Date.now()),
-                  updatedAt:  new Date(Date.now()),
+                  createdAt: Date.now(),
+                  updatedAt:  Date.now(),
                   description: this.descriptionText,
                   content: content.ops,
                   commentCount: 0,
-                  published: true,
+                  published: this.published,
                   tags: this.processedTags,
                   tagSlugs: this.processedTags.map((tag)=>tag.slug), // for query
                 }
@@ -307,6 +314,12 @@ export default {
     border-radius: 4px;
     padding: 5px 15px;
     font-size: 16px;
+    &:hover {
+      border-color: #c0c4cc!important;
+    }
+    &:focus-within {
+      border-color: #409eff!important;
+    }
   }
   .ql-editor.ql-blank::before {
     font-size: 14px;

@@ -21,11 +21,6 @@
 const LIMIT = 3;
 
 export default {
-  head(){
-    return {
-      title: `Discover Posts`,
-    }
-  },
   data(){
     return {
       limit: LIMIT,

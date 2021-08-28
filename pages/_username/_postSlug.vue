@@ -4,7 +4,8 @@
     <div class="w-1/6 relative pr-8">
       <div v-if="ownPost" class="sticky top-32">
         <div v-if="!editMode" class="flex flex-col space-x-0 space-y-2">
-          <el-button  class="w-full" @click="openEditMode()" type="warning">Enter edit mode</el-button>
+          <el-button class="w-full" @click="openEditMode()" type="warning">Enter edit mode</el-button>
+          <el-button class="w-full" @click="togglePublishedStatus()" type="info" :plain="!publishedP">{{publishedP ? 'Published' : 'Unpublished'}}</el-button>
           <el-button class="w-full" type="danger" @click="openDeleteModal()">Delete This Post</el-button>
         </div>
         <el-button v-else class="w-full" type="primary" @click="closeEditMode()">Live Preview</el-button>
@@ -15,7 +16,7 @@
       <div>
         <div class="text-sm text-gray-600 flex justify-between">
           <div title="Publish date"><span class="el-icon-time mr-1"></span>{{getTime(post.createdAt)}}</div>
-          <div v-if="post.createdAt.seconds != post.updatedAt.seconds" title="Last update date"><span class="el-icon-refresh-left mr-1"></span>{{getTime(post.updatedAt)}}</div>
+          <div v-if="post.createdAt != post.updatedAt" title="Last update date"><span class="el-icon-refresh-left mr-1"></span>{{getTime(post.updatedAt)}}</div>
         </div>
       </div>
       <p v-if="!editMode" class="my-4 overflow-hidden overflow-ellipsis" style="line-height: 1.5rem; font-size: 16px">{{descriptionInput}}</p>
@@ -106,7 +107,7 @@
     <div class="w-1/6 relative pl-8">
       <div v-if="ownPost && hasPostChanged" class="sticky top-32 space-x-0 space-y-2">
         <el-button class="w-full" type="danger" @click="resetChanges()">Reset Changes</el-button>
-        <el-button class="w-full" type="success" @click="savePost()">Save Changes</el-button>
+        <el-button class="w-full" type="success" @click="saveChanges()">Save Changes</el-button>
       </div>
     </div>
   </div>
@@ -117,7 +118,9 @@
 
 export default {
   head(){
-
+    return {
+      title: `${this.post.title}`,
+    }
   },
   data(){
     return {
@@ -137,9 +140,18 @@ export default {
       forceUpdate: 0,
       newPostImageFile: null,
       newPostImageURL: null,
+      publishedP: null,
     }
   },
   methods:{
+    togglePublishedStatus(){
+      this.publishedP = !this.publishedP
+      if(this.publishedP != this.post.published){
+        this.hasPostChanged = true
+      }else {
+        this.hasPostChanged = false
+      }
+    },
     async openDeleteModal(){
       this.$prompt(`Please enter the post slug<br> <b class="block text-red-500 overflow-hidden overflow-ellipsis">${this.post.slug}</b>`, 'Confirm Delete', {
         dangerouslyUseHTMLString: true,
@@ -148,7 +160,6 @@ export default {
         inputValidator: (input) => input == this.post.slug,
         inputErrorMessage: 'Slug is not correct.'
       }).then(async ({ value }) => {
-
 
         await this.$store.dispatch('post/deletePost', {ownerId: this.post.uid, slug: this.post.slug})
 
@@ -177,13 +188,13 @@ export default {
                 uid: this.authUser.uid,
                 parentId: this.$route.params.postSlug,
                 content: this.commentContent,
-                updateHistory: [{editedAt: new Date(Date.now()), content: this.commentContent}],
+                updateHistory: [{editedAt: Date.now(), content: this.commentContent}],
                 upVotes: [],
                 downVotes: [],
                 voteCount: 0,
                 replyCount: 0,
-                createdAt: new Date(Date.now()),
-                updatedAt: new Date(Date.now()),
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
               }
               
               await this.$store.dispatch('comment/addComment', {postOwnerId: this.user.uid, slug: this.$route.params.postSlug, commentData: commentData})
@@ -206,15 +217,16 @@ export default {
         this.$message.error('You have to login to send a comment.');
       }
     },
-    async savePost(){
+    async saveChanges(){
       if(!this.saveLoading){
         this.saveLoading = true
 
         if(this.descriptionInput.length > 0 && this.descriptionInput.length <= this.descriptionLimit){
           const postData = {
-            updatedAt: new Date(Date.now()),
+            updatedAt: Date.now(),
             description: this.descriptionInput,
-            content: this.$refs.editor.quill.getContents().ops
+            content: this.$refs.editor.quill.getContents().ops,
+            published: this.publishedP
           }
           await this.$store.dispatch('post/updatePost', {postData: postData, uid: this.post.uid, slug: this.post.slug, newPostImageFile: this.newPostImageFile});
           this.hasPostChanged = false;
@@ -235,6 +247,7 @@ export default {
       this.hasPostChanged = false;
       this.newPostImageFile = null;
       this.newPostImageURL = null;
+      this.publishedP = this.post.published;
     },
     closeEditMode(){
       this.editMode = false
@@ -254,7 +267,7 @@ export default {
       });
     },
     getTime(time){
-      return new Date(time.seconds * 1000).toLocaleDateString('en-US', this.timeOptions)
+      return new Date(time).toLocaleDateString('en-US', this.timeOptions)
     },
     async likePost(){
       if(this.authUser){
@@ -281,7 +294,7 @@ export default {
       if(this.authUser){
         if(!this.bookmarkLoading){
           this.bookmarkLoading = true;
-          const bookmarkData = { uid: this.post.uid, slug: this.post.slug, createdAt: new Date(Date.now()) }
+          const bookmarkData = { uid: this.post.uid, slug: this.post.slug, createdAt: Date.now() }
           const postData = { bookmarkData: bookmarkData, uid: this.authUser.uid}
           
           if(this.hasAlreadyBookmarked){
@@ -332,9 +345,6 @@ export default {
   watch:{
   },
   computed: {
-    authUser(){
-      return this.$store.getters['user/getUser'];
-    },
     hasAlreadyBookmarked(){
       let exists = false;
       if(this.authUser){
@@ -358,6 +368,7 @@ export default {
     },
   },
   mounted(){
+    this.publishedP = this.post.published
     this.editorLoading = true;
     setTimeout(() => {
 
@@ -369,14 +380,23 @@ export default {
   async asyncData(context) { // fetch the user before mounted(before page loaded)
 
     const fetchUser = await context.store.dispatch('user/fetchUserId', context.route.params.username)
+    const authUser = context.store.getters['user/getUser'];
 
     if(fetchUser.exists){
+
       const user = (await context.store.dispatch('user/fetchUser', fetchUser.data().uid)).data();
       const post = await context.store.dispatch('post/fetchPost', {uid: user.uid, slug: context.route.params.postSlug});
       
       if(post.exists){
 
-        return { user, post: post.data(), descriptionInput: post.data().description }
+        // If the post is not published, it could only be visited by post owner
+        if(post.data().published || (authUser && authUser.uid == post.data().uid)){
+
+          return { user, post: post.data(), descriptionInput: post.data().description, authUser }
+
+        }else {
+          context.redirect('/') // or redirect to 404 page
+        }
 
       }else {
         context.redirect('/') // or redirect to 404 page
