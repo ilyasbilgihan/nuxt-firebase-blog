@@ -5,10 +5,12 @@
       <div v-if="ownPost" class="sticky top-32">
         <div v-if="!editMode" class="flex flex-col space-x-0 space-y-2">
           <el-button class="w-full" @click="openEditMode()" type="warning">Enter edit mode</el-button>
-          <el-button class="w-full" @click="togglePublishedStatus()" type="info" :plain="!publishedP">{{publishedP ? 'Published' : 'Unpublished'}}</el-button>
           <el-button class="w-full" type="danger" @click="openDeleteModal()">Delete This Post</el-button>
         </div>
-        <el-button v-else class="w-full" type="primary" @click="closeEditMode()">Live Preview</el-button>
+        <div v-else class="flex flex-col space-x-0 space-y-2">
+          <el-button class="w-full" type="primary" @click="closeEditMode()">Live Preview</el-button>
+          <el-button class="w-full" @click="togglePublishedStatus()" type="info" :plain="!publishedP">{{publishedP ? 'Published' : 'Unpublished'}}</el-button>
+        </div>
       </div>
     </div>
     <div class="w-2/3 px-8">
@@ -146,11 +148,6 @@ export default {
   methods:{
     togglePublishedStatus(){
       this.publishedP = !this.publishedP
-      if(this.publishedP != this.post.published){
-        this.hasPostChanged = true
-      }else {
-        this.hasPostChanged = false
-      }
     },
     async openDeleteModal(){
       this.$prompt(`Please enter the post slug<br> <b class="block text-red-500 overflow-hidden overflow-ellipsis">${this.post.slug}</b>`, 'Confirm Delete', {
@@ -252,7 +249,7 @@ export default {
     closeEditMode(){
       this.editMode = false
       const contentInput = JSON.stringify(this.$refs.editor.quill.getContents().ops)
-      if(this.descriptionInput != this.post.description || this.originalContent != contentInput || this.newPostImageFile){
+      if(this.descriptionInput != this.post.description || this.originalContent != contentInput || this.newPostImageFile || this.publishedP != this.post.published){
         // There are changes in the post
         this.hasPostChanged = true
       }
@@ -330,7 +327,7 @@ export default {
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
-        this.$message.error('Post image must be JPG format!');
+        this.$message.error('Post image must be JPG or PNG format!');
       }
       else if (!isLt2M) {
         this.$message.error('Post image size can not exceed 2MB!');

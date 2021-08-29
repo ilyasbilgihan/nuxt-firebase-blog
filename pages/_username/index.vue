@@ -3,8 +3,37 @@
   <div>
 
     <div class="h-64 shadow-lg relative overflow-hidden">
-      <div class="coverImage" style="background-image: url(https://www.incimages.com/uploaded_files/image/1920x1080/getty_509107562_2000133320009280346_351827.jpg)"></div>
+      <div class="coverImage postImageAnimation" :style="`background-image: url(${coverImageURL || (user.coverImageURL || require('@/assets/images/cover-default.jpg'))})`"></div>
       <h1 class="displayName">{{user.displayName}}</h1>
+      <div v-if="ownProfile" class="absolute bottom-0 right-0 p-8 flex items-center justify-center text-white">
+
+        <el-upload
+          v-if="!this.coverImageURL"
+          action=""
+          :show-file-list="false"
+          :on-success="handleCoverSuccess"
+          :before-upload="beforeCoverUpload"
+          >
+          <el-tooltip effect="dark" content="Change cover image" placement="left">
+            <el-button size="small" type="warning" class="w-12 h-12" circle plain>
+              <span class="el-icon-picture-outline text-lg"></span>
+            </el-button>
+          </el-tooltip>
+        </el-upload>
+        <div v-else class="flex space-x-2">
+          <el-tooltip effect="dark" content="Discard changing" placement="left">
+            <el-button @click="discardChanging()" size="small" type="danger" class="w-12 h-12" circle plain>
+              <span class="el-icon-close text-lg"></span>
+            </el-button>
+          </el-tooltip>
+          <el-tooltip effect="dark" content="Accept changing" placement="top">
+            <el-button @click="acceptChanging()" size="small" type="success" class="w-12 h-12" circle plain>
+              <span class="el-icon-check text-lg"></span>
+            </el-button>
+          </el-tooltip>
+        </div>
+
+      </div>
     </div>
     <!-- Cover image end -->
 
@@ -75,6 +104,9 @@ export default {
       followLoading: false,
       limit: LIMIT,
       published: true,
+      coverImageURL: null,
+      coverImageFile: null,
+      coverLoading: false,
     }
   },
   methods:{
@@ -101,7 +133,46 @@ export default {
       }else {
         this.$message.error('You have to login to follow someone');
       }
-    }
+    },
+    discardChanging(){
+      this.coverImageURL = null;
+      this.coverImageFile = null;
+    },
+    async acceptChanging(){
+      if(!this.coverLoading){
+        this.coverLoading = true;
+        await this.$store.dispatch('user/updateUser', {updatedUser: JSON.parse(JSON.stringify(this.authUser)), coverImageFile: this.coverImageFile});
+        this.$message.success('Cover image changed successfully.');
+        this.coverLoading = false;
+      }else {
+        this.$message.warning('Slow Down !!!');
+      }
+    },
+    handleCoverSuccess(res, file) {
+      const img = new Image();
+      img.src = URL.createObjectURL(file.raw);
+      const _this = this;
+      img.onload = function(){
+        if(this.width > 1920 || this.height > 1080){
+          _this.$message.error('Cover image resolution can not exceed 1920x1080')
+        }else {
+          _this.coverImageURL = this.src
+          _this.coverImageFile = file.raw;
+        }
+      }
+    },
+    beforeCoverUpload(file) {
+      const isJPG = (file.type === 'image/jpeg') || (file.type === 'image/png');
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error('Cover image must be JPG or PNG format!');
+      }
+      else if (!isLt2M) {
+        this.$message.error('Cover image size can not exceed 2MB!');
+      }
+      return isJPG && isLt2M;
+    },
   },
   computed:{
     authUser(){
@@ -163,9 +234,6 @@ export default {
 
 .coverImage {
   @apply w-full h-64;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   z-index: -2;
 }
 

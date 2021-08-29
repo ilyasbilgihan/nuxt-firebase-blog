@@ -83,7 +83,7 @@ export const actions = {
     const user = await firestore.doc(`users/${uid}`).get();
     return user
   },
-  async updateUser({ commit, state }, { updatedUser, ppFile, unchangedPP }){
+  async updateUser({ commit, state }, { updatedUser, ppFile, unchangedPP, coverImageFile }){
     
     const storageRef = storage.ref();
     
@@ -96,6 +96,10 @@ export const actions = {
       
       await storageRef.child(`profile-pictures/${state.user.uid}.jpg`).delete()
 
+    }
+    if(coverImageFile){
+      const coverImageRes = await storageRef.child(`cover-images/${state.user.uid}.jpg`).put(coverImageFile);
+      updatedUser.coverImageURL = (await coverImageRes.ref.getDownloadURL());
     }
 
     await firestore.doc(`users/${state.user.uid}`).update(updatedUser);

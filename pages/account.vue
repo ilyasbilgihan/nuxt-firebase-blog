@@ -206,7 +206,7 @@ export default {
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
-        this.$message.error('Avatar picture must be JPG format!');
+        this.$message.error('Avatar picture must be JPG or PNG format!');
       }
       else if (!isLt2M) {
         this.$message.error('Avatar picture size can not exceed 2MB!');

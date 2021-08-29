@@ -198,8 +198,10 @@ label {
 .postImageAnimation {
   transition: 500ms background-position;
   will-change: background-position;
+  background-size: cover;
+  background-position: center;
   &:hover {
-    @apply bg-right-bottom
+    background-position: bottom right!important;
   }
 }
 
