@@ -17,7 +17,7 @@
                   class="avatar-uploader "
                   action=""
                   :show-file-list="false"
-                  :on-success="handleAvatarSuccess"
+                  :http-request="handleAvatarSuccess"
                   :before-upload="beforeAvatarUpload">
                   <img v-if="user.photoURL || ppURL" :src="ppURL || user.photoURL" class="avatar">
                   <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -188,16 +188,16 @@ export default {
         this.$message.warning('Slow Down !!!');
       }
     },
-    handleAvatarSuccess(res, file) {
+    handleAvatarSuccess(res) {
       const img = new Image();
-      img.src = URL.createObjectURL(file.raw);
+      img.src = URL.createObjectURL(res.file);
       const _this = this;
       img.onload = function(){
         if(this.width != 460 && this.height != 460){
           _this.$message.error('Avatar picture resolution must be 460x460')
         }else {
           _this.ppURL = this.src
-          _this.ppFile = file.raw;
+          _this.ppFile = res.file;
         }
       }
     },

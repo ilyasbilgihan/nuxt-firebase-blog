@@ -41,7 +41,7 @@
           class="post-image-uploader"
           action=""
           :show-file-list="false"
-          :on-success="handlePostImageSuccess"
+          :http-request="handlePostImageSuccess"
           :before-upload="beforePostImageUpload">
           <div v-if="postImageURL" class="w-full h-80 rounded-lg shadow-lg overflow-hidden">
             <div class="postImageAnimation w-full h-full bg-cover" :style="`background-image: url(${postImageURL})`"></div>
@@ -102,7 +102,7 @@ export default {
     return {
       postTitle: "",
       postSlug: null,
-      postTitleLimit: 64,
+      postTitleLimit: 70,
       descriptionLimit: 300,
       timeout: null,
       checkingSlug: false,
@@ -239,21 +239,23 @@ export default {
       this.loading = false;
       
     },
-    handlePostImageSuccess(res, file) {
+    test(res, file,a){
+      console.log(res,file,a)
+    },
+    handlePostImageSuccess(res) {
       const img = new Image();
-      img.src = URL.createObjectURL(file.raw);
+      img.src = URL.createObjectURL(res.file);
       const _this = this;
       img.onload = function(){
         if(this.width > 1920 || this.height > 1080){
           _this.$message.error('Post image resolution can not exceed 1920x1080')
         }else {
           _this.postImageURL = this.src
-          _this.postImageFile = file.raw;
+          _this.postImageFile = res.file;
         }
       }
     },
     beforePostImageUpload(file) {
-      console.log(file.type)
       const isJPG = (file.type === 'image/jpeg') || file.type === 'image/png';
       const isLt2M = file.size / 1024 / 1024 < 2;
 

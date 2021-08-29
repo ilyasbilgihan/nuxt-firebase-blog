@@ -39,7 +39,7 @@
           class="post-image-uploader"
           action=""
           :show-file-list="false"
-          :on-success="handlePostImageSuccess"
+          :http-request="handlePostImageSuccess"
           :before-upload="beforePostImageUpload">
           <div class="w-full h-80 rounded-lg shadow-lg overflow-hidden">
             <div class="postImageAnimation w-full h-full bg-cover" :style="`background-image: url(${newPostImageURL || post.postImageURL})`"></div>
@@ -117,11 +117,19 @@
 </template>
 
 <script>
+import metaData from '@/lib/meta-tags';
 
 export default {
   head(){
     return {
       title: `${this.post.title}`,
+      meta: metaData({
+        title: this.post.title,
+        description: this.post.description,
+        image: this.post.postImageURL,
+        imageAlt: this.post.title,
+        url: this.$route.path
+      })
     }
   },
   data(){
@@ -309,16 +317,16 @@ export default {
         this.$message.warning('You have to login to bookmark a post.')
       }
     },
-    handlePostImageSuccess(res, file) {
+    handlePostImageSuccess(res) {
       const img = new Image();
-      img.src = URL.createObjectURL(file.raw);
+      img.src = URL.createObjectURL(res.file);
       const _this = this;
       img.onload = function(){
         if(this.width > 1920 || this.height > 1080){
           _this.$message.error('Post image resolution can not exceed 1920x1080')
         }else {
           _this.newPostImageURL = this.src
-          _this.newPostImageFile = file.raw;
+          _this.newPostImageFile = res.file;
         }
       }
     },

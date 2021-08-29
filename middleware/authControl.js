@@ -1,6 +1,6 @@
 
 const unallowedRegularRoutes = ['account', 'write-post', 'bookmarks', 'feed'];
-const unallowedAdminRoutes = ['admin-panel'];
+const unallowedAdminRoutes = ['admin-panel']; // Will not activated (in the near future).
 
 export default ({route, store, redirect}) => {
   const currentPage = route.name;

@@ -8,17 +8,24 @@
 /* add fonts here */
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 
-html {
-  padding-right: calc(100vw - 100%);
-  width: 100vw;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-}
-body.el-popup-parent--hidden {
-  padding: 0 !important;
-  overflow: initial !important;
-}
-body {
-  background-color: #fdfdfd;
+@layer base {
+  html,
+  body {
+    font-family: 'Quicksand', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  html {
+    padding-right: calc(100vw - 100%);
+    width: 100vw;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+  body.el-popup-parent--hidden {
+    padding: 0 !important;
+    overflow: initial !important;
+  }
+  body {
+    background-color: #fdfdfd;
+  }
 }

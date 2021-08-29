@@ -5,8 +5,17 @@ export default {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: 'A Social Blog example which uses Nuxt + Firebase' },
-      { name: 'format-detection', content: 'telephone=no' }
+      { hid: 'description', name: 'description', content: 'A Social Blog example which uses Nuxt + Firebase.' },
+      { hid: 'robots', name: 'robots', content: 'index, follow'},
+      { hid: 'language', name: 'language', content: 'English'},
+      { hid: 'author', name: 'author', content: 'github@ilyasbilgihan'},
+      { name: 'format-detection', content: 'telephone=no' },
+      { hid: 'twitter:site', name: 'twitter:site', content: '@ilyasbilgihan'},
+      { hid: 'twitter:creator', name: 'twitter:creator', content: '@ilyasbilgihan'},
+      { hid: 'twitter:card', name: 'twitter:card', content: 'summary'},
+      { hid: 'og:site_name', name: 'og:site_name', content: 'Nuxt Firebase Blog'},
+      { hid: 'og:title', name: 'og:title', content: 'Nuxt Firebase Blog'},
+      { hid: 'og:description', name: 'og:description', content: 'A Social Blog example which uses Nuxt + Firebase.'}
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
@@ -56,19 +65,10 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    // https://go.nuxtjs.dev/pwa
-    '@nuxtjs/pwa',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {},
-
-  // PWA module configuration: https://go.nuxtjs.dev/pwa
-  pwa: {
-    manifest: {
-      lang: 'en'
-    }
-  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {

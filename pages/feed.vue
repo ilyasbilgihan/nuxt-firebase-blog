@@ -43,7 +43,7 @@ export default {
       return { posts, users, followedList }
 
     }else {
-      return { posts: [], users: {}, followedList}
+      return { posts: [], users: {}, followedList }
     }
     
   }
