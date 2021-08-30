@@ -56,12 +56,10 @@ export const actions = {
             this.commit('user/setUser', {user: userData, info: 'new user - must define a username'}) // mutate our state.user
 
           }else { // we already have setted this user to our 'users db' - existing user - not a new user
-            firestore.doc(`users/${user.uid}`).get().then(userRes => { // then get the user's 'user data' from our 'users db'
-          
-              let info = userRes.data().username == null ? ' - must set a username': '';
-              this.commit('user/setUser', {user: userRes.data(), info: 'not a new user' + info}) // mutate our state.user with 'userRes'
 
-            })
+            let info = snapshot.data().username == null ? ' - must set a username': '';
+            this.commit('user/setUser', {user: snapshot.data(), info: 'not a new user' + info}) // mutate our state.user with 'userRes'
+            
           }
 
         });
