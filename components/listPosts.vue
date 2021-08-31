@@ -3,7 +3,7 @@
 
     <el-timeline-item v-for="post in posts" :key="post.slug" :timestamp="getDate(post)" placement="top">
       
-      <PostCard :user="users[post.uid]" :post="post" :showAuthor="showAuthor"></PostCard>
+      <PostCard :userP="users[post.uid]" :postP="post" :showAuthor="showAuthor"></PostCard>
         
     </el-timeline-item>
     <div v-if="posts.length != 0" class="flex flex-col items-center select-none font-semibold text-gray-400">

@@ -54,7 +54,9 @@ export default {
   data(){
     return {
       likeLoading: false,
-      loadingElement: '<span class="el-icon-loading"></span>'
+      loadingElement: '<span class="el-icon-loading"></span>',
+      user: this.userP,
+      post: this.postP
     }
   },
   methods: {
@@ -101,9 +103,15 @@ export default {
     }
   },
   props: {
-    user: Object,
-    post: Object,
+    userP: Object,
+    postP: Object,
     showAuthor: Boolean,
+  },
+
+  async fetch(){
+    const commentCount = await this.$store.dispatch('comment/fetchCommentCount', { postOwnerId: this.userP.uid, slug: this.postP.slug })
+    this.post = {...this.postP, commentCount}
+
   }
 }
 </script>

@@ -12,6 +12,10 @@ export const actions = {
     })
     return comments
   },
+  async fetchCommentCount({}, data){
+    const snapshot = await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}`).collection('comments').get();
+    return snapshot.docs.length;
+  },
   async addComment({}, data){
     await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}`).collection('comments').add(data.commentData);
     
@@ -20,9 +24,6 @@ export const actions = {
         replyCount: firebase.firestore.FieldValue.increment(1),
       });
     }
-    await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}`).update({
-      commentCount: firebase.firestore.FieldValue.increment(1),
-    })
   },
   async editComment({}, data){
     await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}/comments/${data.commentId}`).update({
@@ -35,7 +36,6 @@ export const actions = {
     await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}/comments/${data.commentId}`).update({
       content: 'Message deleted.',
       uid: 'deleted',
-      updatedAt: new Date(Date.now()),
     });
   },
   async deleteCommentAbsolute({}, data){
@@ -45,9 +45,6 @@ export const actions = {
         replyCount: firebase.firestore.FieldValue.increment(-1),
       });
     }
-    await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}`).update({
-      commentCount: firebase.firestore.FieldValue.increment(-1),
-    })
   },
   async upVoteComment({}, data){
     await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}/comments/${data.commentId}`).update({

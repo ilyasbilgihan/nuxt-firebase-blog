@@ -4,12 +4,16 @@ import Cookie from 'js-cookie'
 
 
 export const state = () => ({
-  user: null
+  user: null,
+  backupUsername: null,
 });
 
 export const getters = {
   getUser(state) {
     return state.user
+  },
+  getBackupUsername(state) {
+    return state.backupUsername
   }
 }
 
@@ -38,6 +42,9 @@ export const mutations = {
     const afterPush = [data, ...state.user.bookmarks]
     state.user.bookmarks = afterPush;
     Cookie.set('user_data', JSON.stringify(state.user), { secure: true })
+  },
+  setBackupUsername(state, username){
+    state.backupUsername = username;
   }
 }
 
@@ -61,17 +68,21 @@ export const actions = {
 
     // delete previous username
     const previousUsername = user.data().username;
-    await firestore.doc(`usernames/${previousUsername}`).delete();
-
-    // set new username to 'usernames' db
-    await firestore.doc(`usernames/${chosenName}`).set({
-      uid: state.user.uid
-    });
+    const previousRef = firestore.doc(`usernames/${previousUsername}`);
+    const previousExists = (await previousRef.get()).exists
+    if(previousExists){
+      await previousRef.delete();
+    }
 	
     // update the user's data with new username and decrease the username change limit
     await firestore.doc(`users/${state.user.uid}`).update({
       username: chosenName,
       usernameChangeLimit: firebase.firestore.FieldValue.increment(-1),
+    });
+
+    // set new username to 'usernames' db
+    await firestore.doc(`usernames/${chosenName}`).set({
+      uid: state.user.uid
     });
 
     commit('updateUsername', chosenName);

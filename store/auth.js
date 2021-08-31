@@ -50,6 +50,8 @@ export const actions = {
               profession: '',
               location: '',
               bookmarks: [],
+              followers: [],
+              followed: [],
               coverImageURL: null,
             }
             await firestore.doc(`users/${user.uid}`).set(userData); // set user to our 'users db'

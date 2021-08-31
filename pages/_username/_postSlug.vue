@@ -399,8 +399,8 @@ export default {
 
         // If the post is not published, it could only be visited by post owner
         if(post.data().published || (authUser && authUser.uid == post.data().uid)){
-
-          return { user, post: post.data(), descriptionInput: post.data().description }
+          const commentCount = await context.store.dispatch('comment/fetchCommentCount', { postOwnerId: user.uid, slug: post.data().slug })
+          return { user, post: {...post.data(), commentCount }, descriptionInput: post.data().description }
 
         }else {
           context.redirect('/') // or redirect to 404 page

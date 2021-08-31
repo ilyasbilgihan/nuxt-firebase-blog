@@ -15,7 +15,7 @@
       <!-- Input end -->
       
       <div class="w-full flex h-9 space-x-4 justify-center">
-        <div v-if="username" @click="cancelChanging" class="text-red-500 rounded-md font-semibold w-1/3 flex justify-center items-center hover:bg-red-50 cursor-pointer">Cancel</div>
+        <div v-if="backupUsername != null" @click="cancelChanging" class="text-red-500 rounded-md font-semibold w-1/3 flex justify-center items-center hover:bg-red-50 cursor-pointer">Cancel</div>
         <button :disabled="!available || loading || result != ''" type="submit" class="bg-blue-500 hover:bg-blue-400 text-white rounded-md w-1/3">Apply</button>
       </div>
       <!-- Cancel, apply buttons end -->
@@ -30,7 +30,6 @@
 <script>
 
 import { mapActions } from 'vuex';
-import Cookie from 'js-cookie';
 
 export default {
   data(){
@@ -65,9 +64,8 @@ export default {
     user(){
       return this.$store.getters['user/getUser'];
     },
-    username(){
-      const userCookie = JSON.parse(Cookie.get('user_data')).username;
-      return userCookie
+    backupUsername(){
+      return this.$store.getters['user/getBackupUsername'];;
     }
   },
   methods:{
@@ -93,7 +91,7 @@ export default {
       
     },
     cancelChanging(){
-      this.$store.commit('user/updateUsername', this.username)
+      this.$store.commit('user/updateUsername', this.backupUsername)
     },
     onChange() {
 

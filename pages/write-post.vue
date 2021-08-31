@@ -208,7 +208,6 @@ export default {
                   updatedAt:  Date.now(),
                   description: this.descriptionText,
                   content: content.ops,
-                  commentCount: 0,
                   published: this.published,
                   tags: this.processedTags,
                   tagSlugs: this.processedTags.map((tag)=>tag.slug), // for query

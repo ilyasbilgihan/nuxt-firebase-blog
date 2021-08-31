@@ -24,8 +24,8 @@
                 </el-upload>
               </el-tooltip>
 
-              <div v-if="user.photoURL || ppURL" @click="removePP" class="select-none ml-6 flex justify-center items-center rounded-md text-red-600 cursor-pointer"><i class="mr-2 text-xl el-icon-delete"></i>Remove Image</div>
-              <div v-else-if="unchangedPP" @click="restorePP" class="select-none ml-6 flex items-center justify-center rounded-md text-reblued-600 cursor-pointer"><i class="mr-2 text-xl el-icon-refresh-left"></i>Restore Current</div>
+              <div v-if="user.photoURL || ppURL" @click="removePP()" class="select-none ml-6 flex justify-center items-center rounded-md text-red-600 cursor-pointer"><i class="mr-2 text-xl el-icon-delete"></i>Remove Image</div>
+              <div v-else-if="unchangedPP" @click="restorePP()" class="select-none ml-6 flex items-center justify-center rounded-md text-reblued-600 cursor-pointer"><i class="mr-2 text-xl el-icon-refresh-left"></i>Restore Current</div>
               
             </div>
 
@@ -72,7 +72,7 @@
         </el-form>
 
         <div class="flex items-center mt-4">
-          <el-button @click="updatePublicProfile" type="primary">Save changes</el-button>
+          <el-button @click="updatePublicProfile()" type="primary">Save changes</el-button>
           <span v-if="loadingUpdate" class="ml-4 text-sm text-gray-800 el-icon-loading"></span>
         </div>
         
@@ -86,14 +86,14 @@
             <h3>Change username ({{user.usernameChangeLimit}} left)</h3>
             <hr class="mt-4 mb-8">
             <p class="text-sm mb-4">After changing your username, your old username becomes available for anyone else to claim. Most references to your posts under the old username automatically change to the new username. However, some links to your profile won't automatically redirect.</p>
-            <el-button :disabled="user.usernameChangeLimit == 0" @click="changeUsername" type="primary">Change username</el-button>
+            <el-button :disabled="user.usernameChangeLimit == 0" @click="changeUsername()" type="primary">Change username</el-button>
           </section>
 
           <section>
             <h3>Export account data</h3>
             <hr class="mt-4 mb-8">
             <p class="text-sm mb-4">Export all your posts and profile metadata for <NuxtLink class="font-semibold" :to="user.username">@{{user.username}}</NuxtLink>. Exports will be available for 7 days.</p>
-            <el-button @click="exportData" type="primary">Export Data</el-button>
+            <el-button @click="exportData()" type="primary">Export Data</el-button>
           </section>
 
         </div>  
@@ -119,7 +119,7 @@
           <span>Are you sure you want to delete your account?</span>
           <span slot="footer" class="dialog-footer">
             <el-button @click="deleteAccountDialog = false">Cancel</el-button>
-            <el-button type="primary" @click="deleteConfirmed">I am sure!</el-button>
+            <el-button type="primary" @click="deleteConfirmed()">I am sure!</el-button>
           </span>
         </el-dialog>
       
@@ -153,6 +153,7 @@ export default {
   methods: {
     changeUsername(){
       if(this.user.usernameChangeLimit != 0){
+        this.$store.commit('user/setBackupUsername', this.user.username)
         this.$store.commit('user/updateUsername', null)
       }
     },
@@ -228,7 +229,7 @@ export default {
   },
   mounted(){
     this.user = JSON.parse(JSON.stringify((this.$store.getters['user/getUser'])))
-    this.unchangedPP = this.user.photoURL
+    this.unchangedPP = this.user && this.user.photoURL
   }
 }
 </script>

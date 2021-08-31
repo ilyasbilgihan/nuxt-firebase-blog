@@ -1,4 +1,4 @@
-import { firestore, storage } from '../plugins/firebase'
+import { firestore, storage, auth } from '../plugins/firebase'
 import firebase from 'firebase/app'
 
 export const actions = {
@@ -154,12 +154,14 @@ export const actions = {
       if(bookmark != undefined){
         const post = await dispatch('fetchPost', {uid: bookmark.uid, slug: bookmark.slug})
 
-        if(post.exists){
+        if(post != undefined && post.exists){
           posts.push(post.data())
 
         }else { // If post does not exist then, we should delete the bookmark from user's bookmark list.
           
-          dispatch('removeBookmark', {bookmarkData: bookmark, uid: authId})
+          if(auth.currentUser){
+            dispatch('removeBookmark', {bookmarkData: bookmark, uid: authId})
+          }
 
           // We should delete it from our data.bookmarks list too,
           data.bookmarks.splice(data.bookmarks.indexOf(bookmark), 1)
