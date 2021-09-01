@@ -1,0 +1,13 @@
+@font-face {
+  font-family: 'iconsax';
+  src: url('~assets/iconsax-css/fonts/iconsax.eot?yjegnn');
+  src: url('~assets/iconsax-css/fonts/iconsax.eot?yjegnn#iefix')
+      format('embedded-opentype'),
+    url('~assets/iconsax-css/fonts/iconsax.ttf?yjegnn') format('truetype'),
+    url('~assets/iconsax-css/fonts/iconsax.woff2?yjegnn') format('woff2'),
+    url('~assets/iconsax-css/fonts/iconsax.woff?yjegnn') format('woff'),
+    url('~assets/iconsax-css/fonts/iconsax.svg?yjegnn#iconsax') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}

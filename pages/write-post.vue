@@ -1,88 +1,85 @@
 <template>
 
   <div class="px-16 py-16">
+    <client-only>
+      <el-form label-position="top" class="w-2/3 px-8 mx-auto my-4">
 
-    <el-form label-position="top" class="w-2/3 px-8 mx-auto my-4">
+        <h1 class="font-semibold mb-4">Write A Post</h1>
 
-      <h1 class="font-semibold mb-4">Write A Post</h1>
-
-      <el-form-item label="Post Title" required>
-        <el-input
-          type="text"
-          placeholder="My awesome post title"
-          v-model="postTitle"
-          autocomplete="off"
-          :maxlength="postTitleLimit"
-          show-word-limit
-          clearable
-        ></el-input>
-      </el-form-item>
-      <div class="text-sm -mt-2 mb-2">
-        <span class="font-semibold">Slug:</span> <span :class="{'text-green-500': available}" class="text-red-500">"{{postSlug}}" is {{available ? 'available.' : 'not available for you. '}} </span>
-      </div>
-      <client-only>
+        <el-form-item label="Post Title" required>
+          <el-input
+            type="text"
+            placeholder="My awesome post title"
+            v-model="postTitle"
+            autocomplete="off"
+            :maxlength="postTitleLimit"
+            show-word-limit
+            clearable
+          ></el-input>
+        </el-form-item>
+        <div class="text-sm -mt-2 mb-2">
+          <span class="font-semibold">Slug:</span> <span :class="{'text-green-500': available}" class="text-red-500">"{{postSlug}}" is {{available ? 'available.' : 'not available for you. '}} </span>
+        </div>
         <el-form-item label="Define a few tags (max 5)" required>
           <el-input-tag v-model="tags" size="medium" type="info"></el-input-tag>
         </el-form-item>
-      </client-only>
-      <el-form-item label="Description Text" required>
-        <el-input 
-          type="textarea" 
-          placeholder="A short, interesting summary of your post."
-          v-model="descriptionText"
-          :autosize="{ minRows: 6}"
-          autocomplete="off"
-          :maxlength="descriptionLimit"
-          show-word-limit
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="Post Image" required>
-        <el-upload
-          class="post-image-uploader"
-          action=""
-          :show-file-list="false"
-          :http-request="handlePostImageSuccess"
-          :before-upload="beforePostImageUpload">
-          <div v-if="postImageURL" class="w-full h-80 rounded-lg shadow-lg overflow-hidden">
-            <div class="postImageAnimation w-full h-full bg-cover" :style="`background-image: url(${postImageURL})`"></div>
+        <el-form-item label="Description Text" required>
+          <el-input 
+            type="textarea" 
+            placeholder="A short, interesting summary of your post."
+            v-model="descriptionText"
+            :autosize="{ minRows: 6}"
+            autocomplete="off"
+            :maxlength="descriptionLimit"
+            show-word-limit
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="Post Image" required>
+          <el-upload
+            class="post-image-uploader"
+            action=""
+            :show-file-list="false"
+            :http-request="handlePostImageSuccess"
+            :before-upload="beforePostImageUpload">
+            <div v-if="postImageURL" class="w-full h-80 rounded-lg shadow-lg overflow-hidden">
+              <div class="postImageAnimation w-full h-full bg-cover" :style="`background-image: url(${postImageURL})`"></div>
+            </div>
+            <div v-else class=" post-image-uploader-icon">
+              <span class="isax-add"></span>
+            </div>
+          </el-upload>
+          <div v-if="postImageFile" @click="removePostImage" class="text-red-500 space-x-2 cursor-pointer select-none flex items-center w-max">
+            <span class="isax-trash text-lg"></span>
+            <span>Remove Post Image</span>
           </div>
-          <div v-else class=" post-image-uploader-icon">
-            <span class="el-icon-plus"></span>
-          </div>
-        </el-upload>
-        <div v-if="postImageFile" @click="removePostImage" class="text-red-500 space-x-2 cursor-pointer select-none flex items-center w-max">
-          <span class="el-icon-delete text-lg"></span>
-          <span>Remove Post Image</span>
-        </div>
-      </el-form-item>
-      <el-form-item label="Post Content" style="margin-bottom: 0!important" required>
-      </el-form-item>
-      <div id="write-post" class="mb-4">
-        <client-only>
+        </el-form-item>
+        <el-form-item label="Post Content" style="margin-bottom: 0!important" required>
+        </el-form-item>
+        <div id="write-post" class="mb-4">
           <quill-editor
             ref="editor"
             v-model="content"
           />
-        </client-only>
-      </div>
-      <el-form-item label="Published" class="flex space-x-2 items-center">
-        <el-switch
-          v-model="published"
-          active-color="#13ce66">
-        </el-switch>
-      </el-form-item>
+        </div>
+        <el-form-item label="Published" class="flex space-x-2 items-center">
+          <el-switch
+            v-model="published"
+            active-color="#13ce66">
+          </el-switch>
+        </el-form-item>
 
-      <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-2">
 
-        <el-button type="primary" @click="openSubmitDialog()">Submit Post</el-button>
-        <div>
-          <span v-if="loading" class="el-icon-loading"></span>
+          <el-button type="primary" @click="openSubmitDialog()">Submit Post</el-button>
+          <div>
+            <Loading v-if="loading" class="mt-4 text-xl"/>
+          </div>
+
         </div>
 
-      </div>
-
-    </el-form>
-
+      </el-form>
+    </client-only>
+    
   </div>
 
 </template>

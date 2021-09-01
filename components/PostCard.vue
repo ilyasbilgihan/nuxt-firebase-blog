@@ -6,7 +6,7 @@
 
       <div class="flex-1 flex flex-col pr-8">
         <NuxtLink v-if="showAuthor" :to="'/' + user.username" :title="'@'+ user.username" class="mb-1 author flex w-max items-center space-x-2">
-          <img :src="user.photoURL || require('@/assets/images/avatar.png')" class="rounded-full shadow h-7 w-7 overflow-hidden" :alt="user.displayName">
+          <img :src="user.photoURL || require('assets/images/avatar.png')" class="rounded-full shadow h-7 w-7 overflow-hidden" :alt="user.displayName">
           <span class="text-xs font-semibold text-gray-700 transition duration-300 transform">{{user.displayName}} </span>
         </NuxtLink>
         <!-- Post owner end (not visible always)-->
@@ -36,8 +36,8 @@
       </ul>
       <!-- Post tags end -->
       <div class="w-48 flex space-x-5 items-center text-sm text-gray-600 px-4">
-        <div :class="{'text-red-700': hasAlreadyLiked}" class="flex justify-end flex-1 items-center space-x-1"><span v-html="likeLoading ? loadingElement : post.likes.length"></span><span @click="likePost()" :class="{'bg-red-50': hasAlreadyLiked}" class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-red-50 hover:text-red-700 el-icon-star-off"></span></div>
-        <NuxtLink :to="'/'+ user.username + '/' + post.slug + '#comments'" class="pt-0.5 flex justify-end flex-1 items-center space-x-1 space-x-reverse flex-row-reverse"><span>{{post.commentCount}}</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-blue-50 hover:text-blue-700 el-icon-chat-line-square"></span></NuxtLink>
+        <div :class="{'text-red-700': hasAlreadyLiked}" class="flex justify-end flex-1 items-center space-x-1"><Loading v-if="likeLoading"/><span v-else>{{post.likes.length}}</span><span @click="likePost()" :class="{'bg-red-50': hasAlreadyLiked}" class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-red-50 hover:text-red-700 isax-heart"></span></div>
+        <NuxtLink :to="'/'+ user.username + '/' + post.slug + '#comments'" class="flex justify-end flex-1 items-center space-x-1 space-x-reverse flex-row-reverse"><span>{{post.commentCount}}</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-blue-50 hover:text-blue-700 isax-messages-3"></span></NuxtLink>
       </div>
       <!-- Post like, comment buttons end -->
 
@@ -54,7 +54,6 @@ export default {
   data(){
     return {
       likeLoading: false,
-      loadingElement: '<span class="el-icon-loading"></span>',
       user: this.userP,
       post: this.postP
     }

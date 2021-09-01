@@ -20,12 +20,12 @@
                   :http-request="handleAvatarSuccess"
                   :before-upload="beforeAvatarUpload">
                   <img v-if="user.photoURL || ppURL" :src="ppURL || user.photoURL" class="avatar">
-                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                  <i v-else class="isax-add avatar-uploader-icon"></i>
                 </el-upload>
               </el-tooltip>
 
-              <div v-if="user.photoURL || ppURL" @click="removePP()" class="select-none ml-6 flex justify-center items-center rounded-md text-red-600 cursor-pointer"><i class="mr-2 text-xl el-icon-delete"></i>Remove Image</div>
-              <div v-else-if="unchangedPP" @click="restorePP()" class="select-none ml-6 flex items-center justify-center rounded-md text-reblued-600 cursor-pointer"><i class="mr-2 text-xl el-icon-refresh-left"></i>Restore Current</div>
+              <div v-if="user.photoURL || ppURL" @click="removePP()" class="select-none ml-6 flex justify-center items-center rounded-md text-red-600 cursor-pointer"><i class="mr-2 text-xl isax-trash"></i>Remove Image</div>
+              <div v-else-if="unchangedPP" @click="restorePP()" class="select-none ml-6 flex items-center justify-center rounded-md text-reblued-600 cursor-pointer"><i class="mr-2 text-xl isax-undo"></i>Restore Current</div>
               
             </div>
 
@@ -73,7 +73,7 @@
 
         <div class="flex items-center mt-4">
           <el-button @click="updatePublicProfile()" type="primary">Save changes</el-button>
-          <span v-if="loadingUpdate" class="ml-4 text-sm text-gray-800 el-icon-loading"></span>
+          <Loading v-if="loadingUpdate" class="ml-4 text-sm text-gray-800"/>
         </div>
         
       </el-tab-pane> <!-- Public profile settings tab -->

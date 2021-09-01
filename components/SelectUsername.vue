@@ -16,13 +16,15 @@
       
       <div class="w-full flex h-9 space-x-4 justify-center">
         <div v-if="backupUsername != null" @click="cancelChanging" class="text-red-500 rounded-md font-semibold w-1/3 flex justify-center items-center hover:bg-red-50 cursor-pointer">Cancel</div>
-        <button :disabled="!available || loading || result != ''" type="submit" class="bg-blue-500 hover:bg-blue-400 text-white rounded-md w-1/3">Apply</button>
+        <button :disabled="!available || loading || submitLoading" type="submit" class="bg-blue-500 hover:bg-blue-400 text-white rounded-md w-1/3">Apply</button>
       </div>
       <!-- Cancel, apply buttons end -->
 
     </form>
-    <div class="mt-4 text-xl" v-html="result"></div>
-    <div v-if="result">Please wait</div>
+    <div v-if="submitLoading" class="flex flex-col items-center space-y-1"> 
+      <Loading class="mt-4 text-xl"/>
+      <span>Please wait</span>
+    </div>
 	
   </div>
 </template>
@@ -41,7 +43,7 @@ export default {
       available: false,
       valid: false,
       loading: false,
-      result: '',
+      submitLoading: false,
     }
   },
   watch: {
@@ -74,19 +76,13 @@ export default {
       checkUsername: 'user/checkUsername'
     }),
     async submitChanging(){
-      this.result = '<span class="el-icon-loading"></span>'
 
-      if(this.result != '' && this.valid && this.available && !this.loading){
+      if(this.valid && this.available && !this.loading){
 
+        this.submitLoading = true;
         await this.changeUsername(this.chosenName);
-        this.result = 'Changed'
+        this.submitLoading = false;
 
-        setTimeout(() => {
-          this.result = ''
-        }, 2000);
-
-      }else {
-        this.result = ''
       }
       
     },

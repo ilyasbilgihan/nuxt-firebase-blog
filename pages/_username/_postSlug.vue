@@ -17,8 +17,8 @@
       <h1 class="overflow-hidden overflow-ellipsis font-semibold capitalize" style="letter-spacing: -1px;">{{post.title}}</h1>
       <div>
         <div class="text-sm text-gray-600 flex justify-between">
-          <div title="Publish date"><span class="el-icon-time mr-1"></span>{{getTime(post.createdAt)}}</div>
-          <div v-if="post.createdAt != post.updatedAt" title="Last update date"><span class="el-icon-refresh-left mr-1"></span>{{getTime(post.updatedAt)}}</div>
+          <div title="Publish date" class="flex items-center"><span class="text-lg isax-calendar-2 mr-1"></span><span>{{getTime(post.createdAt)}}</span></div>
+          <div v-if="post.createdAt != post.updatedAt" class="flex items-center" title="Last update date"><span class="text-lg isax-calendar-edit mr-1"></span><span>{{getTime(post.updatedAt)}}</span></div>
         </div>
       </div>
       <p v-if="!editMode" class="my-4 overflow-hidden overflow-ellipsis" style="line-height: 1.5rem; font-size: 16px">{{descriptionInput}}</p>
@@ -45,12 +45,12 @@
             <div class="postImageAnimation w-full h-full bg-cover" :style="`background-image: url(${newPostImageURL || post.postImageURL})`"></div>
           </div>
           <div v-if="!newPostImageURL" class=" post-image-uploader-icon">
-            <span class="el-icon-plus"></span>
+            <span class="isax-add"></span>
           </div>
         </el-upload>
         <div v-if="newPostImageFile" @click="removePostImage" class="rounded-tr-lg rounded-bl-lg overflow-hidden removeImageBtn absolute py-4 px-8 top-0 right-0 absolute text-white space-x-2 cursor-pointer select-none flex items-center w-max">
           <div class="z-10 relative">
-            <span class="el-icon-delete text-lg"></span>
+            <span class="isax-trash text-lg"></span>
             <span>Remove Post Image</span>
           </div>
         </div>
@@ -62,13 +62,13 @@
           </li>
         </ul>
         <div class="flex items-center space-x-4">
-          <div :class="{'text-red-700': hasAlreadyLiked}" class="flex items-center space-x-1"><span v-html="likeLoading ? loadingElement : post.likes.length"></span><span @click="likePost()" :class="{'bg-red-50': hasAlreadyLiked}" class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-red-50 hover:text-red-700 el-icon-star-off"></span></div>
-          <a href="#comments" class="flex items-center space-x-1"><span>{{post.commentCount}}</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-blue-50 hover:text-blue-700 el-icon-chat-line-square"></span></a>
-          <span @click="addToBookmarks()" :class="{'text-yellow-700 bg-yellow-50': hasAlreadyBookmarked, 'el-icon-collection-tag': !bookmarkLoading}" class="flex items-center justify-center text-2xl p-3 rounded-full cursor-pointer transition duration-300 hover:bg-yellow-50 hover:text-yellow-700"><span :class="{'el-icon-loading': bookmarkLoading, }"></span></span>
+          <div :class="{'text-red-700': hasAlreadyLiked}" class="flex items-center space-x-1"><Loading v-if="likeLoading"/><span v-else>{{post.likes.length}}</span><span @click="likePost()" :class="{'bg-red-50': hasAlreadyLiked}" class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-red-50 hover:text-red-700 isax-heart"></span></div>
+          <a href="#comments" class="flex items-center space-x-1"><span>{{post.commentCount}}</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-blue-50 hover:text-blue-700 isax-messages-3"></span></a>
+          <span @click="addToBookmarks()" :class="{'text-yellow-700 bg-yellow-50': hasAlreadyBookmarked, 'isax-archive-add': !bookmarkLoading}" class="flex items-center justify-center text-2xl p-3 rounded-full cursor-pointer transition duration-300 hover:bg-yellow-50 hover:text-yellow-700"><Loading v-if="bookmarkLoading" /></span>
         </div>
       </div>
       <div class="flex w-max py-3 items-center space-x-2">
-        <img :src="user.photoURL || require('@/assets/images/avatar.png')" class="rounded-full w-14 h-14 shadow-lg"/>
+        <img :src="user.photoURL || require('assets/images/avatar.png')" class="rounded-full w-14 h-14 shadow-lg"/>
         <div class="flex flex-col">
           <NuxtLink :title="'@'+user.username" class="font-semibold transition duration-300 transform hover:translate-x-1" :to="'/'+ user.username">
            {{user.displayName}}
@@ -76,16 +76,16 @@
           <span class="text-sm">{{user.profession}}</span>
         </div>
       </div>
-      <div class="mt-8" v-loading="editorLoading">
-        <client-only>
+      <client-only>
+        <div class="mt-8" v-loading="editorLoading">
           <quill-editor
             :class="{'contentInput': editMode}"
             contentType="html"
             ref="editor"
             :disabled='!editMode'
           />
-        </client-only>
-      </div>
+        </div>
+      </client-only>
       <hr class="my-8">
       <h2 id="comments" class="font-semibold mb-4">Comments</h2>
       <div class="flex-1 space-y-2 mb-4">
@@ -135,7 +135,6 @@ export default {
   data(){
     return {
       timeOptions: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' },
-      loadingElement: '<span class="el-icon-loading"></span>',
       likeLoading: false,
       bookmarkLoading: false,
       editMode: false,

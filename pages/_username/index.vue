@@ -7,31 +7,33 @@
       <h1 class="displayName">{{user.displayName}}</h1>
       <div v-if="ownProfile" class="absolute bottom-0 right-0 p-8 flex items-center justify-center text-white">
 
-        <el-upload
-          v-if="!this.coverImageURL"
-          action=""
-          :show-file-list="false"
-          :on-success="handleCoverSuccess"
-          :before-upload="beforeCoverUpload"
-          >
-          <el-tooltip effect="dark" content="Change cover image" placement="left">
-            <el-button size="small" type="warning" class="w-12 h-12" circle plain>
-              <span class="el-icon-picture-outline text-lg"></span>
-            </el-button>
-          </el-tooltip>
-        </el-upload>
-        <div v-else class="flex space-x-2">
-          <el-tooltip effect="dark" content="Discard changing" placement="left">
-            <el-button @click="discardChanging()" size="small" type="danger" class="w-12 h-12" circle plain>
-              <span class="el-icon-close text-lg"></span>
-            </el-button>
-          </el-tooltip>
-          <el-tooltip effect="dark" content="Accept changing" placement="top">
-            <el-button @click="acceptChanging()" size="small" type="success" class="w-12 h-12" circle plain>
-              <span class="el-icon-check text-lg"></span>
-            </el-button>
-          </el-tooltip>
-        </div>
+        <client-only>
+          <el-upload
+            v-if="!this.coverImageURL"
+            action=""
+            :show-file-list="false"
+            :on-success="handleCoverSuccess"
+            :before-upload="beforeCoverUpload"
+            >
+            <el-tooltip effect="dark" content="Change cover image" placement="left">
+              <el-button size="small" type="warning" class="w-12 h-12" circle plain>
+                <span class="isax-gallery-edit text-lg"></span>
+              </el-button>
+            </el-tooltip>
+          </el-upload>
+          <div v-else class="flex space-x-2">
+            <el-tooltip effect="dark" content="Discard changing" placement="left">
+              <el-button @click="discardChanging()" size="small" type="danger" class="w-12 h-12" circle plain>
+                <span class="isax-gallery-remove text-lg"></span>
+              </el-button>
+            </el-tooltip>
+            <el-tooltip effect="dark" content="Accept changing" placement="top">
+              <el-button @click="acceptChanging()" size="small" type="success" class="w-12 h-12" circle plain>
+                <span class="isax-gallery-tick text-lg"></span>
+              </el-button>
+            </el-tooltip>
+          </div>
+        </client-only>
 
       </div>
     </div>
@@ -45,10 +47,10 @@
           <div class="mt-4 space-y-2 text-sm">
             <h6 class="font-semibold">{{user.displayName}}</h6>
             <p v-if="user.bio" class="pb-2">{{user.bio}}</p>
-            <div v-if="user.location" :title="user.location" class="flex items-center"><i class="mr-1 text-xl el-icon-map-location"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.location}}</span></div>
-            <div v-if="user.profession" :title="user.profession" class="flex items-center"><i class="mr-1 text-xl el-icon-suitcase"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.profession}}</span></div>
+            <div v-if="user.location" :title="user.location" class="flex items-center"><i class="mr-1 text-xl isax-location"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.location}}</span></div>
+            <div v-if="user.profession" :title="user.profession" class="flex items-center"><i class="mr-1 text-xl isax-briefcase"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.profession}}</span></div>
             <div class="flex space-x-4 pt-2">
-              <div class="space-x-1"><strong v-if="!followLoading">{{user.followers.length}}</strong><span v-else class="el-icon-loading"></span><span>followers</span></div>
+              <div class="space-x-1"><strong v-if="!followLoading">{{user.followers.length}}</strong><Loading v-else /><span>followers</span></div>
               <div class="space-x-1"><strong>{{user.followed.length}}</strong><span>followed</span></div>
             </div>
             <div v-if="!ownProfile">
@@ -152,6 +154,7 @@ export default {
         await this.$store.dispatch('user/updateUser', {updatedUser: JSON.parse(JSON.stringify(this.authUser)), coverImageFile: this.coverImageFile});
         this.$message.success('Cover image changed successfully.');
         this.coverLoading = false;
+        this.$router.go();
       }else {
         this.$message.warning('Slow Down !!!');
       }

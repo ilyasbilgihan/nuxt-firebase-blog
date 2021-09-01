@@ -18,15 +18,15 @@
           <el-dropdown trigger="click" @command="handleDropdown">
 
             <span class="el-dropdown-link flex items-center rounded-full w-full cursor-pointer overflow-hidden shadow">
-              <img :src="user.photoURL || require('@/assets/images/avatar.png')" :alt="user.displayName">
+              <img :src="user.photoURL || require('/assets/images/avatar.png')" :alt="user.displayName">
             </span> <!-- Dropdown trigger end -->
 
             <el-dropdown-menu slot="dropdown" class="w-40">
-              <el-dropdown-item command="profile" icon="el-icon-view">Public Profile</el-dropdown-item>
-              <el-dropdown-item divided command="writePost" icon="el-icon-edit">Write A Post</el-dropdown-item>
-              <el-dropdown-item command="bookmarks" icon="el-icon-collection-tag">Bookmarks</el-dropdown-item>
-              <el-dropdown-item command="account" icon="el-icon-user">Account</el-dropdown-item>
-              <el-dropdown-item divided command="logout"><span class="text-red-500">Logout</span></el-dropdown-item>
+              <el-dropdown-item command="profile"><div class="dd-item"><span class="isax-profile-circle"></span><span>Public Profile</span></div></el-dropdown-item>
+              <el-dropdown-item divided command="writePost"><div class="dd-item"><span class="isax-edit-2"></span><span>Write A Post</span></div></el-dropdown-item>
+              <el-dropdown-item command="bookmarks"><div class="dd-item"><span class="isax-save-2"></span><span>Bookmarks</span></div></el-dropdown-item>
+              <el-dropdown-item command="account"><div class="dd-item"><span class="isax-user-edit"></span><span>Account</span></div></el-dropdown-item>
+              <el-dropdown-item divided command="logout"><div class="dd-item text-red-600"><span class="isax-logout"></span><span>Logout</span></div></el-dropdown-item>
             </el-dropdown-menu> <!-- Dropdown menu end -->
 
           </el-dropdown>  <!-- Dropdown end -->
@@ -186,14 +186,30 @@ label {
   display: block;
 }
 
-.el-timeline-item__timestamp{
-  font-size: 14px!important;
-  &:before{
-    content: "\e71f";
-    font-family: element-icons !important;
-    @apply mr-1
+.el-timeline-item{
+  &.updated{
+    .el-timeline-item__timestamp{
+      &:before{
+        
+        content: "\e994";
+      }
+    }
   }
+  .el-timeline-item__timestamp{
+    font-size: 14px!important;
+    display: flex;
+    align-items: center;
+
+    &:before{
+      font-family: 'iconsax';
+      content: "\e991";
+      line-height: 1!important;
+      @apply text-lg mr-1;
+    }
+  }
+
 }
+
 
 .postImageAnimation {
   transition: 500ms background-position;

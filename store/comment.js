@@ -5,12 +5,12 @@ import firebase from 'firebase/app'
 export const actions = {
 
   async fetchComments({}, data){
-    let comments = []
+
     const snapshot = await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}`).collection('comments').where('parentId', '==', data.parent).orderBy('voteCount', 'desc').orderBy('createdAt','desc').get();
-    snapshot.forEach((comment) =>{
-      comments.push({commentId: comment.id, ...JSON.parse(JSON.stringify(comment.data()))})
-    })
-    return comments
+    return snapshot.docs.map((doc) => {
+      return {...doc.data(), commentId: doc.id}
+    });
+    
   },
   async fetchCommentCount({}, data){
     const snapshot = await firestore.doc(`users/${data.postOwnerId}/posts/${data.slug}`).collection('comments').get();

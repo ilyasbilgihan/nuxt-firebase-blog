@@ -28,4 +28,12 @@
   body {
     background-color: #fdfdfd;
   }
+
+  .dd-item {
+    @apply flex items-center space-x-2 w-max;
+  }
+  .dd-item [class^='isax-'],
+  .dd-item [class*=' isax-'] {
+    @apply text-base;
+  }
 }

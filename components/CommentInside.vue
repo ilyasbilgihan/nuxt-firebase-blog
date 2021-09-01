@@ -26,12 +26,12 @@
 
       <el-dropdown v-if="authUser && (authUser.uid == comment.uid)" size="small" trigger="click" placement="bottom-start" @command="handleMoreOption">
         <span class="el-dropdown-link">
-          <span class="transition duration-300 hover:bg-gray-50 hover:shadow cursor-pointer p-1 rounded-full el-icon-more text-xs text-gray-500"></span>
+          <span class="transition duration-300 hover:bg-gray-50 hover:shadow cursor-pointer p-1 rounded-full isax-more text-gray-500"></span>
         </span> <!-- Dropdown trigger end -->
 
         <el-dropdown-menu slot="dropdown" class="w-40">
-          <el-dropdown-item command="editComment" icon="el-icon-edit-outline">{{showEditArea ? 'Preview' : 'Edit'}} comment</el-dropdown-item>
-          <el-dropdown-item divided command="deleteComment"><span class="text-red-500"><span class="el-icon-delete"></span> Delete comment</span></el-dropdown-item>
+          <el-dropdown-item command="editComment"><div class="dd-item"><span class="text-base" :class="!showEditArea ? 'isax-edit' : 'isax-eye'"></span><span>{{showEditArea ? 'Preview' : 'Edit'}} comment</span></div></el-dropdown-item>
+          <el-dropdown-item divided command="deleteComment"><div class="dd-item text-red-600"><span class="text-base isax-trash4"></span><span>Delete comment</span></div></el-dropdown-item>
         </el-dropdown-menu> <!-- Dropdown menu end -->
       </el-dropdown>  <!-- Comment settings dropdown end -->
 
@@ -60,9 +60,9 @@
         <!-- Comment content and content edit textarea end -->
 
         <div class="flex items-center space-x-1">
-          <div :class="{'bg-green-50 text-green-700': hasAlreadyUpVoted}" @click="upVote()" class="flex w-8 h-8 justify-center items-center cursor-pointer transition duration-300 rounded-full hover:bg-green-50 hover:text-green-700"><span class="el-icon-arrow-up pb-0.5"></span></div>
+          <div :class="{'bg-green-50 text-green-700': hasAlreadyUpVoted}" @click="upVote()" class="flex w-8 h-8 text-lg justify-center items-center cursor-pointer transition duration-300 rounded-full hover:bg-green-50 hover:text-green-700"><span class="isax-arrow-up-2"></span></div>
           <span class="text-sm font-semibold text-gray-600 px-1">{{comment.voteCount}}</span>
-          <div :class="{'bg-red-50 text-red-700': hasAlreadyDownVoted}" @click="downVote()" class="flex w-8 h-8 justify-center items-center cursor-pointer transition duration-300 rounded-full hover:bg-red-50 hover:text-red-700"><span class="el-icon-arrow-down"></span></div>
+          <div :class="{'bg-red-50 text-red-700': hasAlreadyDownVoted}" @click="downVote()" class="flex w-8 h-8 text-lg justify-center items-center cursor-pointer transition duration-300 rounded-full hover:bg-red-50 hover:text-red-700"><span class="isax-arrow-down-1"></span></div>
           <span @click="toggleReply()" v-if="comment.uid != 'deleted'" class="select-none cursor-pointer text-sm font-semibold">Reply</span>
         </div>
         <!-- Upvote - downvote - reply buttons end -->
@@ -111,8 +111,8 @@
             <NuxtLink :to="'/' + commentOwner.username" class="transition duration-300 transform hover:translate-x-1">
               <h6 class="font-semibold">{{commentOwner.displayName}}</h6>
             </NuxtLink>
-            <div v-if="commentOwner.profession" class="flex items-center"><span class="mr-1 text-xl el-icon-map-location"></span>{{commentOwner.profession}}</div>
-            <div v-if="commentOwner.profession" class="flex items-center"><span class="mr-1 text-xl el-icon-suitcase"></span>{{commentOwner.location}}</div>
+            <div v-if="commentOwner.location" class="flex items-center"><span class="mr-1 text-lg isax-location"></span>{{commentOwner.location}}</div>
+            <div v-if="commentOwner.profession" class="flex items-center"><span class="mr-1 text-lg isax-briefcase"></span>{{commentOwner.profession}}</div>
             <p>{{commentOwner.bio}}</p>
           </div>
         </div> <!-- Comment Owner Details end -->

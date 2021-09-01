@@ -3,7 +3,7 @@
 
     <div class="w-2/3 mx-auto px-8">
       <h1 class="font-semibold relative">
-        <span class="absolute top-1/2 -left-4 transform -translate-y-1/2 -translate-x-full p-4 rounded-full el-icon-collection-tag text-yellow-700 bg-yellow-50"></span>
+        <span class="absolute top-1/2 -left-4 transform -translate-y-1/2 -translate-x-full p-4 rounded-full isax-save-2 text-yellow-700 bg-yellow-50"></span>
         Your Bookmarks
       </h1>
 
