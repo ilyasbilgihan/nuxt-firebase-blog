@@ -16,8 +16,6 @@ $ npm run start
 # generate static project
 $ npm run generate
 ```
-<br>
-<br>
 <p align="center">
   <img width="256" height="256" src="https://firebasestorage.googleapis.com/v0/b/nuxt-blog-exercise.appspot.com/o/external%2Fbig-logo.png?alt=media&token=bb5e45d2-0909-46cc-a25b-3e9adac0a28c" />
 </p>
