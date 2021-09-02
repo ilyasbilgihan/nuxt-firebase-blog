@@ -9,7 +9,7 @@
         <input v-model="chosenName" class="border-current outline-none bg-transparent relative border rounded-lg py-2 px-4 w-full" type="text" required :pattern="pattern">
         <span :class="{'move-top': chosenName}" class="left-0 top-0 px-2 m-2 select-none">Username</span>
         <!-- label end -->
-        <div class="error text-xs bg-white px-2 mr-2 -mt-3 select-none">{{ info[0] }}</div>
+        <div class="error text-xs px-2 mr-2 -mt-3 select-none" style="background-color: #fdfdfd">{{ info[0] }}</div>
         <!-- info message end -->
       </div>
       <!-- Input end -->

@@ -110,7 +110,7 @@ body.el-popup-parent--hidden {
 }
 
 .el-loading-mask {
-  background-color: #fdfdfd8f!important;
+  background-color: #fdfdfd!important;
   .el-loading-spinner {
     display: flex;
     justify-content: center;
