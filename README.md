@@ -1,4 +1,4 @@
-# Nuxt Firebase Blog
+<h1 align="center">Nuxt Firebase Blog</h1>
 
 ## Build Setup
 
@@ -16,6 +16,11 @@ $ npm run start
 # generate static project
 $ npm run generate
 ```
+<br>
+<br>
+<p align="center">
+  <img width="256" height="256" src="https://firebasestorage.googleapis.com/v0/b/nuxt-blog-exercise.appspot.com/o/external%2Fbig-logo.png?alt=media&token=bb5e45d2-0909-46cc-a25b-3e9adac0a28c" />
+</p>
 
 ## About this application
 This is a fully functional social blog application. The main idea is its functionality, so I didn't keep myself busy that much with design stuff (an innocent excuse for why the app is not responsive :\ ). I also wrote some security rules for firestore, but there are still small security issues, I will share them in a different file too. Lastly, I tried my best to make the app SEO friendly. For instance: Nuxt supports meta tags in every page, All the dynamic pages have different meta tags according to the page's content (ex. post title, post image, post description, user's profile picture, user's display name etc. ).
