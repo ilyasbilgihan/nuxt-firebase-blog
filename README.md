@@ -22,6 +22,7 @@ This is a fully functional social blog application. The main idea is its functio
 
 ### List of the features
 - Create accounts, change account informations (location, profession, bio, display name, username, profile picture, cover image).
+- Every user have a public profile page which includes a list of the posts the user have published, a cover image of the user, user informations and a secret 'unpublished posts' section that only shown to the page's owner.
 - Write posts, delete posts, edit posts (description, content, post image, published status).
 - Like posts, add/remove posts to your bookmarks.
 - Follow/Unfollow people, list the posts of the ones you follow.
