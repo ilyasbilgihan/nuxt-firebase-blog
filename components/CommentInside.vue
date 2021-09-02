@@ -127,12 +127,12 @@
                 ins{
                   text-decoration: none;
                   color: #fff;
-                  background-color: #EF4444;
+                  background-color: #10B981;
                 }
                 del {
                   color: #fff;
                   text-decoration: none;
-                  background-color: #10B981;
+                  background-color: #EF4444;
                 }
             </style>
           </div>
