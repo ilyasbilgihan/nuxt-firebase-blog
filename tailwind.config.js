@@ -1,8 +1,6 @@
 
 module.exports = {
   purge: {
-    mode: 'all',
-    preserveHtmlElements: false,
     content: [
       `components/**/*.{vue,js}`,
       `layouts/**/*.vue`,
