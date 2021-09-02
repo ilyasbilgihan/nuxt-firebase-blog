@@ -117,18 +117,17 @@
 </template>
 
 <script>
-import metaData from '@/lib/meta-tags';
+import { metaData, toCapitalize} from '@/helpers/meta-tags';
 
 export default {
   head(){
     return {
-      title: `${this.post.title}`,
+      title: toCapitalize(this.post.title),
       meta: metaData({
-        title: this.post.title,
+        title: toCapitalize(this.post.title),
         description: this.post.description,
         image: this.post.postImageURL,
-        imageAlt: this.post.title,
-        url: this.$route.path
+        imageAlt: toCapitalize(this.post.title),
       })
     }
   },

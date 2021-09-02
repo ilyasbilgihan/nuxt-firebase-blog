@@ -93,19 +93,18 @@
 </template>
 
 <script>
-import metaData from '@/lib/meta-tags';
+import { metaData, toCapitalize } from '@/helpers/meta-tags';
 const LIMIT = 3;
 
 export default {
   head(){
     return {
-      title: `${this.user.displayName}'s rofile`,
+      title: `${toCapitalize(this.user.displayName)}'s rofile`,
       meta: metaData({
-        title: `${this.user.displayName}'s profile`,
-        description: `Public profile page of ${this.user.displayName}.`,
+        title: `${toCapitalize(this.user.displayName)}'s profile`,
+        description: `Public profile page of ${toCapitalize(this.user.displayName)}.`,
         image: this.user.photoURL || require('@/assets/images/avatar.png'),
-        imageAlt: this.user.displayName,
-        url: this.$route.path
+        imageAlt: toCapitalize(this.user.displayName),
       })
     }
   },

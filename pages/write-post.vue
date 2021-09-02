@@ -71,9 +71,7 @@
         <div class="flex items-center space-x-2">
 
           <el-button type="primary" @click="openSubmitDialog()">Submit Post</el-button>
-          <div>
-            <Loading v-if="loading" class="mt-4 text-xl"/>
-          </div>
+          <Loading v-if="!loading" class="text-xl"/>
 
         </div>
 

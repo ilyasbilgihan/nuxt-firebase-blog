@@ -3,7 +3,7 @@
 
     <div class="h-16 flex items-center px-40 shadow bg-white z-10 sticky top-0">
 
-      <span class="font-semibold">LOGO</span> <!-- Dropdown logo end -->
+      <span class="font-semibold">LOGO</span> <!-- Logo end -->
 
       <ul class="flex space-x-4 flex-1 px-8">
         <li><NuxtLink to="/">Home</NuxtLink></li>
@@ -53,9 +53,12 @@
 import { mapActions } from 'vuex'
 
 export default {
-  data(){
+  head(){
     return {
-      
+      meta: [
+        { hid: 'og:url', name: 'og:url', content: this.$route.path },
+        { hid: 'twitter:url', name: 'twitter:url', content: this.$route.path }
+      ]
     }
   },
   methods: {
@@ -94,6 +97,11 @@ export default {
 
 
 <style lang="scss">
+
+body.el-popup-parent--hidden {
+  padding: 0 !important;
+  overflow: initial !important;
+}
 
 #el-drawer__title {
   span{

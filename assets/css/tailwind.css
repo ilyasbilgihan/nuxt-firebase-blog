@@ -21,10 +21,6 @@
     overflow-y: scroll;
     overflow-x: hidden;
   }
-  body.el-popup-parent--hidden {
-    padding: 0 !important;
-    overflow: initial !important;
-  }
   body {
     background-color: #fdfdfd;
   }

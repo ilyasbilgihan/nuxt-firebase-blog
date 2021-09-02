@@ -12,10 +12,14 @@ export default {
       { name: 'format-detection', content: 'telephone=no' },
       { hid: 'twitter:site', name: 'twitter:site', content: '@ilyasbilgihan'},
       { hid: 'twitter:creator', name: 'twitter:creator', content: '@ilyasbilgihan'},
-      { hid: 'twitter:card', name: 'twitter:card', content: 'summary'},
+      { hid: 'twitter:card', name: 'twitter:card', content: 'summary_large_image'},
       { hid: 'og:site_name', name: 'og:site_name', content: 'Nuxt Firebase Blog'},
       { hid: 'og:title', name: 'og:title', content: 'Nuxt Firebase Blog'},
-      { hid: 'og:description', name: 'og:description', content: 'A Social Blog example which uses Nuxt + Firebase.'}
+      { hid: 'og:description', name: 'og:description', content: 'A Social Blog example which uses Nuxt + Firebase.'},
+      { hid: 'og:image', name: 'og:image', content: 'https://firebasestorage.googleapis.com/v0/b/nuxt-blog-exercise.appspot.com/o/external%2Fbig-logo.png?alt=media&token=bb5e45d2-0909-46cc-a25b-3e9adac0a28c'},
+      { hid: 'og:image:alt', name: 'og:image:alt', content: 'Nuxt Firebase Blog'},
+      { hid: 'twitter:image', name: 'twitter:image', content: 'https://firebasestorage.googleapis.com/v0/b/nuxt-blog-exercise.appspot.com/o/external%2Fbig-logo.png?alt=media&token=bb5e45d2-0909-46cc-a25b-3e9adac0a28c'},
+      { hid: 'twitter:image:alt', name: 'twitter:image:alt', content: 'Nuxt Firebase Blog'}
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
@@ -58,7 +62,6 @@ export default {
     cssPath: '~/assets/css/tailwind.css',
     configPath: 'tailwind.config.js',
     exposeConfig: false,
-    config: {}
   },
 
   // Modules: https://go.nuxtjs.dev/config-modules

@@ -31,7 +31,7 @@
 
         <el-dropdown-menu slot="dropdown" class="w-40">
           <el-dropdown-item command="editComment"><div class="dd-item"><span class="text-base" :class="!showEditArea ? 'isax-edit' : 'isax-eye'"></span><span>{{showEditArea ? 'Preview' : 'Edit'}} comment</span></div></el-dropdown-item>
-          <el-dropdown-item divided command="deleteComment"><div class="dd-item text-red-600"><span class="text-base isax-trash4"></span><span>Delete comment</span></div></el-dropdown-item>
+          <el-dropdown-item divided command="deleteComment"><div class="dd-item text-red-600"><span class="text-base isax-trash"></span><span>Delete comment</span></div></el-dropdown-item>
         </el-dropdown-menu> <!-- Dropdown menu end -->
       </el-dropdown>  <!-- Comment settings dropdown end -->
 
@@ -122,17 +122,17 @@
             <h5 class="font-semibold">{{index + 1}}</h5>
             <span class="text-xs text-gray-500">{{getTime(history.editedAt)}}</span>
             <hr class="my-2">
-            <div class="text-sm diff-content" v-html="index != 0 ? highlightDifferences(history.content, comment.updateHistory[index - 1].content) : history.content"></div>
+            <div class="text-sm diff-content" style="line-break: anywhere" v-html="index != 0 ? highlightDifferences(history.content, comment.updateHistory[index - 1].content) : history.content"></div>
             <style>
                 ins{
                   text-decoration: none;
-                  color: #333;
-                  background-color: rgba(0,255,0, .8);
+                  color: #fff;
+                  background-color: #EF4444;
                 }
                 del {
-                  color: #333;
+                  color: #fff;
                   text-decoration: none;
-                  background-color: rgba(255,0,0, .8);
+                  background-color: #10B981;
                 }
             </style>
           </div>
