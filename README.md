@@ -23,6 +23,8 @@ $ npm run generate
 ## About this application
 This is a fully functional social blog application. The main idea is its functionality, so I didn't keep myself busy that much with design stuff (an innocent excuse for why the app is not responsive :\ ). I also wrote some security rules for firestore, but there are still small security issues, I will share them in a different file too. Lastly, I tried my best to make the app SEO friendly. For instance: Nuxt supports meta tags in every page, All the dynamic pages have different meta tags according to the page's content (ex. post title, post image, post description, user's profile picture, user's display name etc. ).
 
+<a href="https://firebasestorage.googleapis.com/v0/b/nuxt-blog-exercise.appspot.com/o/external%2Ffirestore.rules?alt=media&token=d3011a55-ea8d-4e01-b7e6-f08c9e88c2be" target="_blank" title="Firebase Firestore Security Rules">Firestore security rules</a> (I am really new to writing security rules, Please inform me if you encounter a insecure rule)
+
 <a href="https://nuxt-firebase-blog.herokuapp.com/" target="_blank" title="Nuxt Firebase Blog">Live Demo</a>
 
 ### List of the features
@@ -34,3 +36,11 @@ This is a fully functional social blog application. The main idea is its functio
 - List the posts by their tags (Max of 5 tag is supported for each post).
 - Write comments, up/down vote comments, delete comments, edit comments(content), inspect comments' edit history.
 
+<br>
+
+## Reach me
+**[twitter/@ilyasbilgihan](https://twitter.com/ilyasbilgihan)**
+
+**[instagram/@ilyasbilgihan](https://instagram.com/ilyasbilgihan)**
+
+**ilyasbilgihan@gmail.com**
