@@ -18,7 +18,7 @@ $ npm run generate
 ```
 
 ## About this application
-This is a fully functional social blog application. The main idea is its functionality, so I didn't keep myself busy that much with design stuff. I also wrote some security rules for firestore, but there are still small security issues, I will share them in a different file too. Lastly, I tried my best to make the app SEO friendly. For instance: Nuxt supports meta tags in every page, All the dynamic pages have different meta tags according to the page's content(ex. post title, post image, post description, user's profile picture, user's display name etc. ).
+This is a fully functional social blog application. The main idea is its functionality, so I didn't keep myself busy that much with design stuff (an innocent excuse for why the app is not responsive :\ ). I also wrote some security rules for firestore, but there are still small security issues, I will share them in a different file too. Lastly, I tried my best to make the app SEO friendly. For instance: Nuxt supports meta tags in every page, All the dynamic pages have different meta tags according to the page's content (ex. post title, post image, post description, user's profile picture, user's display name etc. ).
 
 <a href="https://nuxt-firebase-blog.herokuapp.com/" target="_blank" title="Nuxt Firebase Blog">Live Demo</a>
 
