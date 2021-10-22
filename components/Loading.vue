@@ -13,6 +13,7 @@ export default {
 
 .spin {
   animation: loading 0.5s infinite linear;
+  display: inline-block;
 }
 
 @keyframes loading {

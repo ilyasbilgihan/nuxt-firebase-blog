@@ -159,7 +159,7 @@ export default {
     },
     deleteConfirmed(){
       this.deleteAccountDialog = false
-      alert('delete confirmed')
+      alert('Deleting account is not allowed. Please contact "ilyasbilgihan@gmail.com"')
     },
     exportData(){
       alert('export data')
