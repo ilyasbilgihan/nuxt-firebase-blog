@@ -166,18 +166,12 @@ export default {
 
         await this.$store.dispatch('post/deletePost', {ownerId: this.post.uid, slug: this.post.slug})
 
-        this.$message({
-          type: 'success',
-          message: 'Post deleted successfully!'
-        });
+        this.$message.error('Post deleted successfully!');
         this.$router.push('/'+ this.authUser.username);
         
       }).catch((err) => {
         console.log(err);
-        this.$message({
-          type: 'info',
-          message: 'Deleting post canceled.'
-        });       
+        this.$message.info('Deleting post canceled.');       
       });
     },
     async addComment(){

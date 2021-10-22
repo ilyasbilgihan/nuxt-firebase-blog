@@ -50,7 +50,7 @@
             <div v-if="user.location" :title="user.location" class="flex items-center"><i class="mr-1 text-xl isax-location"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.location}}</span></div>
             <div v-if="user.profession" :title="user.profession" class="flex items-center"><i class="mr-1 text-xl isax-briefcase"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.profession}}</span></div>
             <div class="flex space-x-4 pt-2">
-              <div class="space-x-1"><strong v-if="!followLoading">{{user.followers.length}}</strong><Loading v-else /><span>followers</span></div>
+              <div class="space-x-1"><Loading v-if="followLoading" /><strong v-else>{{user.followers.length}}</strong><span>followers</span></div>
               <div class="space-x-1"><strong>{{user.followed.length}}</strong><span>followed</span></div>
             </div>
             <div v-if="!ownProfile">
@@ -140,7 +140,7 @@ export default {
         }
 
       }else {
-        this.$message.error('You have to login to follow someone');
+        this.$message.warning('You have to login to follow someone');
       }
     },
     discardChanging(){

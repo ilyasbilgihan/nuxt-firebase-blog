@@ -179,12 +179,12 @@ export default({
       if(this.authUser){
         this.updateHistory = true
       }else {
-        this.$message.error('You have to login to see a comment\'s history.');
+        this.$message.warning('You have to login to see a comment\'s history.');
       }
     },
     highlightDifferences(newContent, oldContent){
 
-      const changes = Diff.diffCss(oldContent, newContent);
+      const changes = Diff.diffWords(oldContent, newContent);
       return Diff.convertChangesToXML(changes);
 
     },
@@ -288,7 +288,7 @@ export default({
       if(this.authUser){
         this.showReply = !this.showReply
       }else {
-        this.$message.error('You have to login to reply a comment.')
+        this.$message.warning('You have to login to reply a comment.')
       }
     },
     async upVote(){
@@ -327,7 +327,7 @@ export default({
           this.$message.warning('Slow Down !!!');
         }
       }else {
-        this.$message.error('You have to login to vote a comment.')
+        this.$message.warning('You have to login to vote a comment.')
       }
     },
     async downVote(){
@@ -366,7 +366,7 @@ export default({
           this.$message.warning('Slow Down !!!');
         }
       }else {
-        this.$message.error('You have to login to vote a comment.')
+        this.$message.warning('You have to login to vote a comment.')
       }
     },
     async replyComment(){
