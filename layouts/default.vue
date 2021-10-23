@@ -59,7 +59,7 @@
 
       <div>
 
-        <span v-if="!user" @click="login()" class="cursor-pointer">Login</span>
+        <span v-if="!user" @click="login()" class="cursor-pointer ml-8">Login</span>
         <NuxtLink v-else :to="'/' + this.user.username" class="px-8 py-4 flex space-x-2 items-center">
           <span class="flex h-10 items-center rounded-full w-10 cursor-pointer overflow-hidden shadow">
             <img :src="user.photoURL || require('/assets/images/avatar.png')" :alt="user.displayName">

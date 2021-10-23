@@ -14,18 +14,18 @@
       <!-- Comment owner details(profile-picture, display name)  end -->
 
       <div v-if="comment.uid != 'deleted'" class="flex space-x-2 items-center text-xs text-gray-500">
-        <span :title="getTime(comment.createdAt)" >sent {{fromNow(comment.createdAt)}}</span>
-        <div v-if="comment.createdAt != comment.updatedAt" class="p-0.5 bg-gray-400 rounded-full"></div>
-        <span v-if="comment.createdAt != comment.updatedAt" :title="getTime(comment.updatedAt)">
+        <span :title="getTime(comment.createdAt)" class="hidden sm:inline-block">sent {{fromNow(comment.createdAt)}}</span>
+        <div v-if="comment.createdAt != comment.updatedAt" class="hidden sm:block p-0.5 bg-gray-400 rounded-full"></div>
+        <span v-if="comment.createdAt != comment.updatedAt" :title="getTime(comment.updatedAt)" class="hidden sm:inline-block">
           <span @click="toggleHistory()" class="underline cursor-pointer select-none hover:text-gray-600">edited</span>
           {{ fromNow(comment.updatedAt) }}
         </span>
       </div>
-      <span v-else class="text-xs text-gray-500">Unknown</span> 
+      <span v-else class="text-xs text-gray-500 hidden sm:inline">Unknown</span> 
       <!-- Comment create, update information end -->
 
       <el-dropdown v-if="authUser && (authUser.uid == comment.uid)" size="small" trigger="click" placement="bottom-start" @command="handleMoreOption">
-        <span class="el-dropdown-link">
+        <span class="el-dropdown-link -ml-3">
           <span class="transition duration-300 hover:bg-gray-50 hover:shadow cursor-pointer p-1 rounded-full isax-more text-gray-500"></span>
         </span> <!-- Dropdown trigger end -->
 
@@ -69,8 +69,8 @@
 
         <el-collapse-transition>
           <div v-show="showReply" class="reply mt-2 flex">
-            <div class="replyLine pt-0"><span></span></div>
-            <div class="flex-1 pl-2 space-y-1">
+            <div class="hidden sm:replyLine pt-0"><span></span></div>
+            <div class="flex-1 sm:pl-2 space-y-1">
               <el-input 
                 type="textarea" 
                 placeholder="What are your thoughts?."

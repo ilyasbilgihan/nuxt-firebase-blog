@@ -118,7 +118,7 @@
         <el-dialog
           title="Warning"
           :visible.sync="deleteAccountDialog"
-          width="30%"
+          :width="deleteModalWidth"
           center
           >
           <span>Are you sure you want to delete your account?</span>
@@ -153,7 +153,8 @@ export default {
       loadingUpdate: false,
       limitSmall: 25,
       limitBio: 150,
-      tabPosition: null
+      tabPosition: null,
+      deleteModalWidth: '40%'
     }
   },
   methods: {
@@ -238,6 +239,7 @@ export default {
     this.tabPosition = window.innerWidth > 1024 ? "left" : "top"
     window.addEventListener('resize', () => {
       this.tabPosition = window.innerWidth > 1024 ? "left" : "top"
+      this.deleteModalWidth = window.innerWidth > 1024 ? "40%" : "80%"
     })
   }
 }

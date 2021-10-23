@@ -10,11 +10,11 @@
 
         <!-- buggy for now -->
         <el-alert
-          class="sm:hidden"
+          v-if="mobileWarning"
           style="margin-bottom:16px!important"
           title="It seems you are on mobile"
           type="info"
-          description="It is highly recommended that writing posts on the desktop."
+          description="It is highly recommended you to write your posts on the desktop."
           show-icon>
         </el-alert>
         
@@ -83,12 +83,26 @@
 
         <div class="flex items-center space-x-2">
 
-          <el-button type="primary" @click="openSubmitDialog()">Submit Post</el-button>
+          <el-button type="primary" @click="submitDialog = true">Submit Post</el-button>
           <Loading v-if="loading" class="text-xl"/>
 
         </div>
 
+        <el-dialog
+          title="Warning"
+          :visible.sync="submitDialog"
+          width="50%"
+          center
+          >
+          <div style="text-align: center">You will not have a chance to change the post's title or slug.</div>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="submitDialog = false">Cancel</el-button>
+            <el-button type="primary" @click="submitPost()">I Understand</el-button>
+          </span>
+        </el-dialog>
       </el-form>
+
+      
     </client-only>
 
 </template>
@@ -122,6 +136,10 @@ export default {
       tags: ["use","comma","between","tags"],
       tagLimit: 5,
       published: true,
+      submitDialog: false,
+      mobileWarning: false,
+      submitDialogSize: "40%"
+
     }
   },
   methods: {
@@ -170,27 +188,8 @@ export default {
         return true
       }
     },
-    openSubmitDialog(){
-
-      if(!this.loading){
-
-        this.$confirm('You will not have a chance to change the post\'s title or slug.', 'Warning', {
-          confirmButtonText: 'I understand',
-          cancelButtonText: 'Cancel',
-          type: 'warning',
-          center: true
-        }).then(async () => {
-
-          await this.submitPost();
-
-        }).catch(()=>{})
-        
-      }else {
-        this.$message.warning('Slow Down !!!');
-      }
-
-    },
     async submitPost(){
+      this.submitDialog = false;
       this.loading = true;
       const content = this.$refs.editor.quill.getContents();
       const isContentValid = this.isContentValid(content);
@@ -295,6 +294,13 @@ export default {
       },[])
       return filteredTags
     }
+  },
+  mounted(){
+    this.mobileWarning = window.innerWidth < 640
+    this.submitDialogSize = window.innerWidth > 1024 ? "80%" : "40%"
+    window.addEventListener('resize', () => {
+      this.submitDialogSize = window.innerWidth > 1024 ? "80%" : "40%"
+    })
   },
   watch: {
     postTitle(e){
