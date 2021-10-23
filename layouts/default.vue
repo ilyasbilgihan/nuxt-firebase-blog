@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <div class="px-8 sm:px-16 h-16 shadow bg-white z-10 sticky top-0">
+    <div class="px-8 sm:px-16 h-16 shadow-md bg-white bg-opacity-75 backdrop-blur backdrop-filter z-10 sticky top-0">
 
       <div class="h-full md:w-10/12 xl:w-2/3 mx-auto flex justify-between sm:justify-legacy items-center xl:px-8">
 

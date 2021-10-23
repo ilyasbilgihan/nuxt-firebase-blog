@@ -17,7 +17,7 @@
       <h1 class="overflow-hidden overflow-ellipsis font-semibold capitalize" style="letter-spacing: -1px;">{{post.title}}</h1>
       <div>
         <div class="text-sm text-gray-600 flex justify-between">
-          <div title="Publish date" class="flex items-center"><span class="text-lg isax-calendar-2 mr-1"></span><span>{{getTime(post.createdAt)}}</span></div>
+          <div title="Publish date" class="hidden sm:flex items-center"><span class="text-lg isax-calendar-2 mr-1"></span><span>{{getTime(post.createdAt)}}</span></div>
           <div v-if="post.createdAt != post.updatedAt" class="flex items-center" title="Last update date"><span class="text-lg isax-calendar-edit mr-1"></span><span>{{getTime(post.updatedAt)}}</span></div>
         </div>
       </div>

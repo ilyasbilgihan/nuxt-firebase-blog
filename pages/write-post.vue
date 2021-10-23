@@ -91,13 +91,13 @@
         <el-dialog
           title="Warning"
           :visible.sync="submitDialog"
-          width="50%"
+          :width="submitDialogSize"
           center
           >
           <div style="text-align: center">You will not have a chance to change the post's title or slug.</div>
-          <span slot="footer" class="dialog-footer">
+          <span slot="footer" class="space-y-2 dialog-footer">
             <el-button @click="submitDialog = false">Cancel</el-button>
-            <el-button type="primary" @click="submitPost()">I Understand</el-button>
+            <el-button type="primary" style="margin-left:0" @click="submitPost()">I Understand</el-button>
           </span>
         </el-dialog>
       </el-form>
@@ -297,9 +297,9 @@ export default {
   },
   mounted(){
     this.mobileWarning = window.innerWidth < 640
-    this.submitDialogSize = window.innerWidth > 1024 ? "80%" : "40%"
+    this.submitDialogSize = window.innerWidth > 1024 ? "40%" : "80%"
     window.addEventListener('resize', () => {
-      this.submitDialogSize = window.innerWidth > 1024 ? "80%" : "40%"
+      this.submitDialogSize = window.innerWidth > 1024 ? "40%" : "80%"
     })
   },
   watch: {

@@ -121,10 +121,10 @@
           :width="deleteModalWidth"
           center
           >
-          <span>Are you sure you want to delete your account?</span>
-          <span slot="footer" class="dialog-footer">
+          <div style="text-align: center">Are you sure you want to delete your account?</div>
+          <span slot="footer" class="space-y-2 dialog-footer">
             <el-button @click="deleteAccountDialog = false">Cancel</el-button>
-            <el-button type="primary" @click="deleteConfirmed()">I am sure!</el-button>
+            <el-button type="primary" style="margin-left:0" @click="deleteConfirmed()">I am sure!</el-button>
           </span>
         </el-dialog>
       
@@ -237,6 +237,7 @@ export default {
     this.unchangedPP = this.user && this.user.photoURL
 
     this.tabPosition = window.innerWidth > 1024 ? "left" : "top"
+    this.deleteModalWidth = window.innerWidth > 1024 ? "40%" : "80%"
     window.addEventListener('resize', () => {
       this.tabPosition = window.innerWidth > 1024 ? "left" : "top"
       this.deleteModalWidth = window.innerWidth > 1024 ? "40%" : "80%"
