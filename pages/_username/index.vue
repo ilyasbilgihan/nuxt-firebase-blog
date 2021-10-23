@@ -1,6 +1,6 @@
 <template>
 
-  <div>
+  <div class="-mx-8 -my-12 sm:-m-16">
 
     <div class="h-64 shadow-lg relative overflow-hidden">
       <div class="coverImage postImageAnimation" :style="`background-image: url(${coverImageURL || (user.coverImageURL || require('@/assets/images/cover-default.jpg'))})`"></div>
@@ -39,16 +39,16 @@
     </div>
     <!-- Cover image end -->
 
-    <div class="p-16 flex w-full">
+    <div class="p-8 pb-12 sm:p-16 flex flex-col sm:flex-row w-full">
 
-      <div class="stickyUser w-1/6 relative">
-        <div class="sticky top-32">
-          <img :src="user.photoURL || require('@/assets/images/avatar.png')" class="w-2/3 rounded-2xl shadow-lg" :alt="user.displayName">
-          <div class="mt-4 space-y-2 text-sm">
-            <h6 class="font-semibold">{{user.displayName}}</h6>
-            <p v-if="user.bio" class="pb-2">{{user.bio}}</p>
-            <div v-if="user.location" :title="user.location" class="flex items-center"><i class="mr-1 text-xl isax-location"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.location}}</span></div>
-            <div v-if="user.profession" :title="user.profession" class="flex items-center"><i class="mr-1 text-xl isax-briefcase"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.profession}}</span></div>
+      <div class="stickyUser sm:w-1/6 relative">
+        <div class="sm:sticky top-32 flex items-center sm:items-start sm:flex-col">
+          <img :src="user.photoURL || require('@/assets/images/avatar.png')" class="w-1/2 sm:w-2/3 rounded-2xl shadow-lg" :alt="user.displayName">
+          <div class="sm:mt-4 px-4 sm:px-0 space-y-2 text-sm">
+            <h6 class="hidden sm:block font-semibold">{{user.displayName}}</h6>
+            <p v-if="user.bio" class="hidden sm:block pb-2">{{user.bio}}</p>
+            <div v-if="user.location" :title="user.location" class="flex items-center flex-1"><i class="mr-1 text-xl isax-location"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.location}}</span></div>
+            <div v-if="user.profession" :title="user.profession" class="flex items-center flex-1"><i class="mr-1 text-xl isax-briefcase"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.profession}}</span></div>
             <div class="flex space-x-4 pt-2">
               <div class="space-x-1"><Loading v-if="followLoading" /><strong v-else>{{user.followers.length}}</strong><span>followers</span></div>
               <div class="space-x-1"><strong>{{user.followed.length}}</strong><span>followed</span></div>
@@ -61,9 +61,9 @@
       </div>
       <!-- User info end -->
 
-      <div class="pl-16 w-4/6">
+      <div class="sm:pl-16 mt-12 sm:mt-0 sm:w-4/6">
 
-        <div class="flex mb-12 items-center justify-between">
+        <div class="flex flex-col sm:flex-row mb-12 sm:items-center justify-between space-y-3 sm:space-y-0">
           <h2 class="font-bold" style="color: #303133; letter-spacing: -1px">All the posts {{ownProfile ? 'you have' : 'the user has' }}</h2>
           <div v-if="ownProfile" class="flex space-x-2">
             <el-button @click="published = (!published ? true : published)" type="primary" size="small" round :plain="!published">Published</el-button>

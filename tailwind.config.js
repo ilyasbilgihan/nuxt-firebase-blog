@@ -11,7 +11,11 @@ module.exports = {
   },
   darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      spacing: {
+        '42': '10.5rem',
+      }
+     }
   },
   variants: {
     extend: {

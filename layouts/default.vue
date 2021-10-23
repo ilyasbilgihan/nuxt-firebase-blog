@@ -1,49 +1,79 @@
 <template>
   <div>
 
-    <div class="h-16 flex items-center px-40 shadow bg-white z-10 sticky top-0">
+    <div class="px-8 sm:px-16 h-16 shadow bg-white z-10 sticky top-0">
 
-      <span class="font-semibold">LOGO</span> <!-- Logo end -->
+      <div class="h-full md:w-10/12 xl:w-2/3 mx-auto flex justify-between sm:justify-legacy items-center xl:px-8">
 
-      <ul class="flex space-x-4 flex-1 px-8">
-        <li><NuxtLink to="/">Home</NuxtLink></li>
-        <li v-if="user"><NuxtLink to="/feed">My Feed</NuxtLink></li> <!-- will be ready in the next commit -->
-      </ul>  <!-- Header menu end -->
+        <span class="font-semibold">LOGO</span> <!-- Logo end -->
 
-      <div>
+        <ul class="hidden sm:flex space-x-4 flex-1 px-8">
+          <li><NuxtLink to="/">Home</NuxtLink></li>
+          <li v-if="user"><NuxtLink to="/feed">My Feed</NuxtLink></li> <!-- will be ready in the next commit -->
+        </ul>  <!-- Header menu end -->
 
-        <span v-if="!user" @click="login()" class="cursor-pointer">Login</span>
+        <div class="hidden sm:block">
 
-        <div v-else class="flex items-center w-10">
-          <el-dropdown trigger="click" @command="handleDropdown">
+          <span v-if="!user" @click="login()" class="cursor-pointer">Login</span>
 
-            <span class="el-dropdown-link flex items-center rounded-full w-full cursor-pointer overflow-hidden shadow">
-              <img :src="user.photoURL || require('/assets/images/avatar.png')" :alt="user.displayName">
-            </span> <!-- Dropdown trigger end -->
+          <div v-else class="flex items-center w-10">
+            <el-dropdown trigger="click" @command="handleDropdown">
 
-            <el-dropdown-menu slot="dropdown" class="w-40">
-              <el-dropdown-item command="profile"><div class="dd-item"><span class="isax-profile-circle"></span><span>Public Profile</span></div></el-dropdown-item>
-              <el-dropdown-item divided command="writePost"><div class="dd-item"><span class="isax-edit-2"></span><span>Write A Post</span></div></el-dropdown-item>
-              <el-dropdown-item command="bookmarks"><div class="dd-item"><span class="isax-save-2"></span><span>Bookmarks</span></div></el-dropdown-item>
-              <el-dropdown-item command="account"><div class="dd-item"><span class="isax-user-edit"></span><span>Account</span></div></el-dropdown-item>
-              <el-dropdown-item divided command="logout"><div class="dd-item text-red-600"><span class="isax-logout"></span><span>Logout</span></div></el-dropdown-item>
-            </el-dropdown-menu> <!-- Dropdown menu end -->
+              <span class="el-dropdown-link flex items-center rounded-full w-full cursor-pointer overflow-hidden shadow">
+                <img :src="user.photoURL || require('/assets/images/avatar.png')" :alt="user.displayName">
+              </span> <!-- Dropdown trigger end -->
 
-          </el-dropdown>  <!-- Dropdown end -->
+              <el-dropdown-menu slot="dropdown" class="w-40">
+                <el-dropdown-item command="profile"><div class="dd-item"><span class="isax-profile-circle"></span><span>Public Profile</span></div></el-dropdown-item>
+                <el-dropdown-item divided command="writePost"><div class="dd-item"><span class="isax-edit-2"></span><span>Write A Post</span></div></el-dropdown-item>
+                <el-dropdown-item command="bookmarks"><div class="dd-item"><span class="isax-save-2"></span><span>Bookmarks</span></div></el-dropdown-item>
+                <el-dropdown-item command="account"><div class="dd-item"><span class="isax-user-edit"></span><span>Account</span></div></el-dropdown-item>
+                <el-dropdown-item divided command="logout"><div class="dd-item text-red-600"><span class="isax-logout"></span><span>Logout</span></div></el-dropdown-item>
+              </el-dropdown-menu> <!-- Dropdown menu end -->
+
+            </el-dropdown>  <!-- Dropdown end -->
+          </div>
+
+        </div>  <!-- Header rigt end -->
+
+        <div class="flex sm:hidden hamburger p-5 cursor-pointer -mr-5" @click="hamburgerDrawer = true">
+          <span class="isax-menu-1 text-2xl"></span>
         </div>
-
-      </div>  <!-- Header rigt end -->
+      </div>
 
     </div> <!-- Header end -->
 
 
-    <div id="main">
+    <div id="main" class="px-8 py-12 sm:p-16">
 
       <SelectUsername v-if="user && !(user.username)"/>
       <Nuxt v-else />
 
     </div>  <!-- Main(View) end -->
 
+    <el-drawer
+      title="Quick Menu"
+      :visible.sync="hamburgerDrawer"
+      direction="rtl"
+      size="72%">
+
+      <div>
+
+        <span v-if="!user" @click="login()" class="cursor-pointer">Login</span>
+        <ul class="flex-row space-y-2 px-8 mb-8">
+          <li><NuxtLink to="/">Home</NuxtLink></li>
+          <li v-if="user"><NuxtLink to="/feed">My Feed</NuxtLink></li> <!-- will be ready in the next commit -->
+          <li v-if="user"><NuxtLink :to="'/' + this.user.username">Profile</NuxtLink></li> <!-- will be ready in the next commit -->
+          <li v-if="user"><NuxtLink to="/bookmarks">Bookmarks</NuxtLink></li> <!-- will be ready in the next commit -->
+          <li v-if="user"><NuxtLink to="/account">Account</NuxtLink></li> <!-- will be ready in the next commit -->
+          <li v-if="user"><NuxtLink to="/write-post">Write Post</NuxtLink></li> <!-- will be ready in the next commit -->
+          <li v-if="user"><a @click="logout()">Logout</a></li> <!-- will be ready in the next commit -->
+        </ul>  <!-- Header menu end -->  
+        <hr>
+      </div>
+      
+
+    </el-drawer>  <!-- Comment Edit History end -->
 
   </div>
 </template>
@@ -59,6 +89,11 @@ export default {
         { hid: 'og:url', name: 'og:url', content: this.$route.path },
         { hid: 'twitter:url', name: 'twitter:url', content: this.$route.path }
       ]
+    }
+  },
+  data(){
+    return {
+      hamburgerDrawer: false
     }
   },
   methods: {
@@ -160,8 +195,26 @@ h6 {
   padding-left: 0;
 }
 
-.el-tab-pane {
+.el-tabs--left .el-tab-pane {
   padding-left: 50px;
+}
+
+.el-tabs--top .el-tabs__header {
+  margin-bottom: 45px;
+}
+
+.is-top {
+  .el-tabs__nav-prev {
+    padding-right: 12px;
+    font-size: 16px
+  }
+  .el-tabs__nav-next {
+    padding-left: 12px;
+    font-size: 16px
+  }
+  .el-tabs__nav-scroll {
+    margin: 0 8px
+  }
 }
 
 label {

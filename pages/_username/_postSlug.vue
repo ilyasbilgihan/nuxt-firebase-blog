@@ -1,7 +1,7 @@
 <template>
 
-  <div class="p-16 postView flex">
-    <div class="w-1/6 relative pr-8">
+  <div class="postView flex">
+    <div class="w-1/6 hidden xl:block relative pr-8">
       <div v-if="ownPost" class="sticky top-32">
         <div v-if="!editMode" class="flex flex-col space-x-0 space-y-2">
           <el-button class="w-full" @click="openEditMode()" type="warning">Enter edit mode</el-button>
@@ -13,7 +13,7 @@
         </div>
       </div>
     </div>
-    <div class="w-2/3 px-8">
+    <div class="w-full -mt-4 sm:mt-0 md:w-10/12 xl:w-2/3 mx-auto xl:px-8">
       <h1 class="overflow-hidden overflow-ellipsis font-semibold capitalize" style="letter-spacing: -1px;">{{post.title}}</h1>
       <div>
         <div class="text-sm text-gray-600 flex justify-between">
@@ -106,7 +106,7 @@
       <Comments :key="forceUpdate" v-if="post.commentCount > 0" :parent="post.slug" :postOwnerId="post.uid" :post="post" />
       <el-empty v-else description="No comment found, be the first!" :image-size="100"></el-empty>
     </div>
-    <div class="w-1/6 relative pl-8">
+    <div class="hidden xl:block w-1/6 relative pl-8">
       <div v-if="ownPost && hasPostChanged" class="sticky top-32 space-x-0 space-y-2">
         <el-button class="w-full" type="danger" @click="resetChanges()">Reset Changes</el-button>
         <el-button class="w-full" type="success" @click="saveChanges()">Save Changes</el-button>
@@ -133,7 +133,7 @@ export default {
   },
   data(){
     return {
-      timeOptions: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' },
+      timeOptions: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
       likeLoading: false,
       bookmarkLoading: false,
       editMode: false,

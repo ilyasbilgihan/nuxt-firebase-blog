@@ -99,7 +99,7 @@
       title="Update history for selected comment."
       :visible.sync="updateHistory"
       direction="rtl"
-      size="40%"
+      :size="historyWidth"
       >
       <div class="px-8">
 
@@ -169,6 +169,7 @@ export default({
       editLoading: false,
       deleteLoading: false,
       updateHistory: false,
+      historyWidth: "50%"
     }
   },
   methods: {
@@ -413,6 +414,12 @@ export default({
         this.$message.warning('Slow Down !!!')
       }
     }
+  },
+  mounted(){
+    this.historyWidth = window.innerWidth > 1024 ? "50%" : "80%"
+    window.addEventListener('resize', () => {
+      this.historyWidth = window.innerWidth > 1024 ? "50%" : "80%"
+    })
   },
   computed: {
     fromNow(){

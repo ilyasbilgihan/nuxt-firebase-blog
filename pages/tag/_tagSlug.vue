@@ -1,18 +1,15 @@
 <template>
-  <div class="p-16">
+  <div class="md:w-10/12 xl:w-2/3 mx-auto xl:px-8">
 
-    <div class="w-2/3 mx-auto px-8">
-      <h1 class="font-semibold relative">
-        <span class="absolute top-1/2 -left-4 transform -translate-y-1/2 -translate-x-full p-4 rounded-full isax-clipboard text-green-700 bg-green-50"></span>
-        {{$route.params.tagSlug}}
-      </h1>
-
-      <hr class="my-8">
-
-      <el-empty v-if="!posts.length" description="Tag not found, ERROR" :image-size="100"></el-empty>
-      <ListPosts v-else :usersP="users" :postsP="posts" :limit="limit" moreDispatchPath="post/fetchPostsWithTagMore" :tag="$route.params.tagSlug" />
-
+    <div class="font-semibold relative space-x-20 xl:space-x-0">
+      <span class="text-4xl absolute top-1/2 xl:-left-4 transform -translate-y-1/2 xl:-translate-x-full p-4 rounded-full isax-clipboard text-green-700 bg-green-50"></span>
+      <h1>{{$route.params.tagSlug}}</h1>
     </div>
+
+    <hr class="my-8">
+
+    <el-empty v-if="!posts.length" description="Tag not found, ERROR" :image-size="100"></el-empty>
+    <ListPosts v-else :usersP="users" :postsP="posts" :limit="limit" moreDispatchPath="post/fetchPostsWithTagMore" :tag="$route.params.tagSlug" />
 
   </div>
 </template>

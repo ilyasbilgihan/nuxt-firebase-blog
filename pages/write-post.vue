@@ -1,10 +1,22 @@
 <template>
 
-  <div class="px-16 py-16">
     <client-only>
-      <el-form label-position="top" class="w-2/3 px-8 mx-auto my-4">
+      <el-form label-position="top" class="md:w-10/12 xl:w-2/3 mx-auto xl:px-8">
 
-        <h1 class="font-semibold mb-4">Write A Post</h1>
+        <div class="font-semibold relative space-x-20 xl:space-x-0 mb-8">
+          <span class="text-4xl absolute top-1/2 xl:-left-4 transform -translate-y-1/2 xl:-translate-x-full p-4 rounded-full isax-edit-2 text-pink-700 bg-pink-50"></span>
+          <h1>Write A Post</h1>
+        </div>
+
+         <el-alert
+          class="sm:hidden"
+          style="margin-bottom:16px!important"
+          title="It seems you are on mobile"
+          type="info"
+          description="It is highly recommended that writing posts on the desktop."
+          show-icon>
+        </el-alert>
+        
 
         <el-form-item label="Post Title" required>
           <el-input
@@ -77,8 +89,6 @@
 
       </el-form>
     </client-only>
-    
-  </div>
 
 </template>
 

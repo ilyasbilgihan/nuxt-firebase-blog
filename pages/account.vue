@@ -1,8 +1,12 @@
 <template>
-  <div v-if="user" class="px-40 py-20">
+  <div v-if="user" class="md:w-10/12 xl:w-2/3 mx-auto xl:px-8">
 
-    <h2 class="text-4xl font-semibold mb-8">Settings</h2>
-    <el-tabs tab-position="left">
+    <div class="font-semibold relative space-x-20 xl:space-x-0 mb-8">
+      <span class="text-4xl absolute top-1/2 xl:-left-4 transform -translate-y-1/2 xl:-translate-x-full p-4 rounded-full isax-user-edit text-gray-700 bg-gray-100"></span>
+      <h1>Account Details</h1>
+    </div>
+
+    <el-tabs :tab-position="tabPosition">
 
       <el-tab-pane label="Profile">
 
@@ -24,8 +28,8 @@
                 </el-upload>
               </el-tooltip>
 
-              <div v-if="user.photoURL || ppURL" @click="removePP()" class="select-none ml-6 flex justify-center items-center rounded-md text-red-600 cursor-pointer"><i class="mr-2 text-xl isax-trash"></i>Remove Image</div>
-              <div v-else-if="unchangedPP" @click="restorePP()" class="select-none ml-6 flex items-center justify-center rounded-md text-reblued-600 cursor-pointer"><i class="mr-2 text-xl isax-undo"></i>Restore Current</div>
+              <div v-if="user.photoURL || ppURL" @click="removePP()" class="select-none ml-10 flex justify-center items-center rounded-md text-red-600 cursor-pointer"><i class="mr-2 text-xl isax-trash"></i>Remove Image</div>
+              <div v-else-if="unchangedPP" @click="restorePP()" class="select-none ml-10 flex items-center justify-center rounded-md text-reblued-600 cursor-pointer"><i class="mr-2 text-xl isax-undo"></i>Restore Current</div>
               
             </div>
 
@@ -66,13 +70,14 @@
             v-model="user.bio"
             autocomplete="off"
             :maxlength="150"
+            :autosize="{ minRows: 3, maxRows: 6}"
             show-word-limit>
             </el-input>
           </el-form-item>
         </el-form>
 
-        <div class="flex items-center mt-4">
-          <el-button @click="updatePublicProfile()" type="primary">Save changes</el-button>
+        <div class="flex items-center mt-6 sm:mt-4">
+          <el-button @click="updatePublicProfile()" class="w-full sm:w-auto" type="primary">Save changes</el-button>
           <Loading v-if="loadingUpdate" class="ml-4 text-sm text-gray-800"/>
         </div>
         
@@ -148,6 +153,7 @@ export default {
       loadingUpdate: false,
       limitSmall: 25,
       limitBio: 150,
+      tabPosition: null
     }
   },
   methods: {
@@ -225,11 +231,14 @@ export default {
       this.ppFile = null
     }
   },
-  computed: {
-  },
   mounted(){
     this.user = JSON.parse(JSON.stringify((this.$store.getters['user/getUser'])))
     this.unchangedPP = this.user && this.user.photoURL
+
+    this.tabPosition = window.innerWidth > 1024 ? "left" : "top"
+    window.addEventListener('resize', () => {
+      this.tabPosition = window.innerWidth > 1024 ? "left" : "top"
+    })
   }
 }
 </script>

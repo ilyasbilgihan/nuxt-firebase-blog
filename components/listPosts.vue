@@ -9,7 +9,7 @@
     <div v-if="posts.length != 0" class="flex flex-col items-center select-none font-semibold text-gray-400">
       <div v-if="moreLoading" class="h-24 w-full flex items-center justify-center"><Loading /></div>
       <el-button v-if="!endOfThePosts && posts.length >= limit" @click="fetchMore()" type="info" size="medium" round plain>See More</el-button>
-      <div v-else-if="posts.length >= limit" class="text-lg">You have reached the end!</div>
+      <div v-else-if="posts.length >= limit" class="my-4 text-lg">You have reached the end!</div>
     </div>
 
   </el-timeline>
