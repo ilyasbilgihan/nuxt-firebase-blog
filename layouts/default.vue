@@ -9,7 +9,7 @@
 
         <ul class="hidden sm:flex space-x-4 flex-1 px-8">
           <li><NuxtLink to="/">Home</NuxtLink></li>
-          <li v-if="user"><NuxtLink to="/feed">My Feed</NuxtLink></li> <!-- will be ready in the next commit -->
+          <li v-if="user"><NuxtLink to="/feed">My Feed</NuxtLink></li>
         </ul>  <!-- Header menu end -->
 
         <div class="hidden sm:block">
@@ -44,7 +44,7 @@
     </div> <!-- Header end -->
 
 
-    <div id="main" class="px-8 py-12 sm:p-16">
+    <div id="main" class="p-8 sm:p-16">
 
       <SelectUsername v-if="user && !(user.username)"/>
       <Nuxt v-else />
@@ -52,7 +52,7 @@
     </div>  <!-- Main(View) end -->
 
     <el-drawer
-      title="Quick Menu"
+      title="Navigation"
       :visible.sync="hamburgerDrawer"
       direction="rtl"
       size="72%">
@@ -60,16 +60,23 @@
       <div>
 
         <span v-if="!user" @click="login()" class="cursor-pointer">Login</span>
-        <ul class="flex-row space-y-2 px-8 mb-8">
-          <li><NuxtLink to="/">Home</NuxtLink></li>
-          <li v-if="user"><NuxtLink to="/feed">My Feed</NuxtLink></li> <!-- will be ready in the next commit -->
-          <li v-if="user"><NuxtLink :to="'/' + this.user.username">Profile</NuxtLink></li> <!-- will be ready in the next commit -->
-          <li v-if="user"><NuxtLink to="/bookmarks">Bookmarks</NuxtLink></li> <!-- will be ready in the next commit -->
-          <li v-if="user"><NuxtLink to="/account">Account</NuxtLink></li> <!-- will be ready in the next commit -->
-          <li v-if="user"><NuxtLink to="/write-post">Write Post</NuxtLink></li> <!-- will be ready in the next commit -->
-          <li v-if="user"><a @click="logout()">Logout</a></li> <!-- will be ready in the next commit -->
+        <NuxtLink v-else :to="'/' + this.user.username" class="px-8 py-4 flex space-x-2 items-center">
+          <span class="flex h-10 items-center rounded-full w-10 cursor-pointer overflow-hidden shadow">
+            <img :src="user.photoURL || require('/assets/images/avatar.png')" :alt="user.displayName">
+          </span>
+          <span class="font-semibold">{{user.displayName}}</span>
+        </NuxtLink>
+        <ul class="flex-row space-y-2 px-8">
+          <hr class="my-4">
+          <li><NuxtLink to="/" class="menu-item"><span class="isax-home"></span><span>Home</span></NuxtLink></li>
+          <li v-if="user"><NuxtLink to="/feed" class="menu-item"><span class="isax-people"></span><span>My Feed</span></NuxtLink></li>
+          <li v-if="user"><NuxtLink to="/write-post" class="menu-item"><span class="isax-edit-2"></span><span>Write Post</span></NuxtLink></li>
+          <li v-if="user"><NuxtLink to="/bookmarks" class="menu-item"><span class="isax-save-2"></span><span>Bookmarks</span></NuxtLink></li>
+          <li v-if="user"><NuxtLink to="/account" class="menu-item"><span class="isax-user-edit"></span><span>Account</span></NuxtLink></li>
+          <br>
+          <li v-if="user"><a @click="logout()" class="menu-item text-red-600"><span class="isax-logout"></span><span>Logout</span></a></li>
         </ul>  <!-- Header menu end -->  
-        <hr>
+        
       </div>
       
 
@@ -143,6 +150,10 @@ body.el-popup-parent--hidden {
     @apply font-semibold text-gray-800 text-xl pt-4;
   }
 }
+.menu-item {
+  @apply flex items-center space-x-2
+}
+
 
 .el-loading-mask {
   background-color: #fdfdfd!important;

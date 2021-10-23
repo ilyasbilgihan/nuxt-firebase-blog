@@ -8,7 +8,8 @@
           <h1>Write A Post</h1>
         </div>
 
-         <el-alert
+        <!-- buggy for now -->
+        <el-alert
           class="sm:hidden"
           style="margin-bottom:16px!important"
           title="It seems you are on mobile"

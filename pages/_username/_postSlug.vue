@@ -13,7 +13,7 @@
         </div>
       </div>
     </div>
-    <div class="w-full -mt-4 sm:mt-0 md:w-10/12 xl:w-2/3 mx-auto xl:px-8">
+    <div class="w-full sm:mt-0 md:w-10/12 xl:w-2/3 mx-auto xl:px-8">
       <h1 class="overflow-hidden overflow-ellipsis font-semibold capitalize" style="letter-spacing: -1px;">{{post.title}}</h1>
       <div>
         <div class="text-sm text-gray-600 flex justify-between">
