@@ -1,8 +1,8 @@
 <template>
 
-  <div class="-mx-8 -my-12 sm:-m-16">
+  <div class="">
 
-    <div class="h-64 shadow-lg relative overflow-hidden">
+    <div class="-mx-8 -mt-8 sm:-mx-16 sm:-mt-16 h-64 shadow-lg relative overflow-hidden">
       <div class="coverImage postImageAnimation" :style="`background-image: url(${coverImageURL || (user.coverImageURL || require('@/assets/images/cover-default.jpg'))})`"></div>
       <h1 class="displayName">{{user.displayName}}</h1>
       <div v-if="ownProfile" class="absolute bottom-0 right-0 p-8 flex items-center justify-center text-white">
@@ -39,29 +39,44 @@
     </div>
     <!-- Cover image end -->
 
-    <div class="p-8 pb-12 sm:p-16 flex flex-col sm:flex-row w-full">
+    <div class="py-8 sm:py-16 flex flex-col xl:flex-row md:w-10/12 md:mx-auto xl:mx-0 xl:w-auto">
 
-      <div class="stickyUser sm:w-1/6 relative">
-        <div class="sm:sticky top-32 flex items-center sm:items-start sm:flex-col">
-          <img :src="user.photoURL || require('@/assets/images/avatar.png')" class="w-1/2 sm:w-2/3 rounded-2xl shadow-lg" :alt="user.displayName">
-          <div class="sm:mt-4 px-4 sm:px-0 space-y-2 text-sm">
-            <h6 class="hidden sm:block font-semibold">{{user.displayName}}</h6>
-            <p v-if="user.bio" class="hidden sm:block pb-2">{{user.bio}}</p>
-            <div v-if="user.location" :title="user.location" class="flex items-center flex-1"><i class="mr-1 text-xl isax-location"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.location}}</span></div>
-            <div v-if="user.profession" :title="user.profession" class="flex items-center flex-1"><i class="mr-1 text-xl isax-briefcase"></i><span class="whitespace-nowrap overflow-ellipsis overflow-hidden">{{user.profession}}</span></div>
-            <div class="flex space-x-4 pt-2">
-              <div class="space-x-1"><Loading v-if="followLoading" /><strong v-else>{{user.followers.length}}</strong><span>followers</span></div>
-              <div class="space-x-1"><strong>{{user.followed.length}}</strong><span>followed</span></div>
+      <div class="w-full xl:w-1/6 xl:relative">
+        <div class="xl:sticky xl:top-32 flex xl:flex-col gap-4 xl:gap-x-0 mb-8 xl:mb-0 ">
+          <div class="w-1/2 sm:w-3/12 lg:w-1/6 xl:w-3/4">
+            <img :src="user.photoURL || require('@/assets/images/avatar.png')" class="rounded-2xl shadow-lg" :alt="user.displayName">
+            <div class="flex sm:hidden mt-4 gap-x-2 lg:block space-x-1 lg:space-x-0 lg:space-y-1 xl:space-y-0">
+              <div v-if="user.location" :title="user.location" class="flex items-center flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden"><i class="mr-1 text-xl isax-location"></i><span class="overflow-ellipsis overflow-hidden">{{user.location}}</span></div>
+              <div v-if="user.profession" :title="user.profession" class="flex items-center flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden"><i class="mr-1 text-xl isax-briefcase"></i><span class="overflow-ellipsis overflow-hidden">{{user.profession}}</span></div>
             </div>
-            <div v-if="!ownProfile">
-              <el-button @click="toggleFollow()" type="success" size="medium" round :plain="hasAlreadyFollowed">{{hasAlreadyFollowed ? 'Unfollow' : 'Follow'}}</el-button>
+          </div>
+          <div class="flex justify-between sm:justify-center sm:justify-start flex-col w-1/2 sm:flex-row xl:flex-col sm:w-9/12 lg:w-5/6 xl:w-auto gap-2 sm:gap-4 sm:items-center xl:items-start">
+            <div class="sm:w-1/2 lg:w-2/3 xl:w-auto">
+              <h6 class="hidden sm:block font-semibold">{{user.displayName}}</h6>
+              <p v-if="user.bio" class="pt-2 sm:pt-0 limit-lines l-5">{{user.bio}}</p>
+            </div>
+            <div class="sm:w-1/2 lg:w-1/3 xl:w-full">
+              <div class="hidden sm:flex gap-x-2 lg:block space-x-1 lg:space-x-0 lg:space-y-1 xl:space-y-0">
+                <div v-if="user.location" :title="user.location" class="flex items-center flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden"><i class="mr-1 text-xl isax-location"></i><span class="overflow-ellipsis overflow-hidden">{{user.location}}</span></div>
+                <div v-if="user.profession" :title="user.profession" class="flex items-center flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden"><i class="mr-1 text-xl isax-briefcase"></i><span class="overflow-ellipsis overflow-hidden">{{user.profession}}</span></div>
+              </div>
+              
+              <div class="flex flex-col items-center xl:items-start">
+                <div class="flex space-x-4 pb-2 sm:pt-2">
+                  <div class="space-x-1 flex flex-col items-center sm:block"><Loading v-if="followLoading" /><strong v-else>{{user.followers.length}}</strong><span>followers</span></div>
+                  <div class="space-x-1 flex flex-col items-center sm:block"><strong>{{user.followed.length}}</strong><span>followed</span></div>
+                </div>
+                <div v-if="!ownProfile">
+                  <el-button @click="toggleFollow()" type="success" size="medium" round :plain="hasAlreadyFollowed">{{hasAlreadyFollowed ? 'Unfollow' : 'Follow'}}</el-button>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
       </div>
-      <!-- User info end -->
 
-      <div class="sm:pl-16 mt-12 sm:mt-0 sm:w-4/6">
+      <div class="xl:w-2/3 xl:mx-0 xl:px-8">
 
         <div class="flex flex-col sm:flex-row mb-12 sm:items-center justify-between space-y-3 sm:space-y-0">
           <h2 class="font-bold" style="color: #303133; letter-spacing: -1px">All the posts {{ownProfile ? 'you have' : 'the user has' }}</h2>

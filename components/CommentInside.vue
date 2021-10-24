@@ -31,9 +31,22 @@
 
         <el-dropdown-menu slot="dropdown" class="w-40">
           <el-dropdown-item command="editComment"><div class="dd-item"><span class="text-base" :class="!showEditArea ? 'isax-edit' : 'isax-eye'"></span><span>{{showEditArea ? 'Preview' : 'Edit'}} comment</span></div></el-dropdown-item>
-          <el-dropdown-item divided command="deleteComment"><div class="dd-item text-red-600"><span class="text-base isax-trash"></span><span>Delete comment</span></div></el-dropdown-item>
+          <el-dropdown-item divided command="openDeleteCommentDialog"><div class="dd-item text-red-600"><span class="text-base isax-trash"></span><span>Delete comment</span></div></el-dropdown-item>
         </el-dropdown-menu> <!-- Dropdown menu end -->
       </el-dropdown>  <!-- Comment settings dropdown end -->
+      <el-dialog
+        title="Warning"
+        :visible.sync="deleteDialog"
+        :width="deleteDialogSize"
+        center
+        >
+        <div style="text-align: center">Are you sure you want to delete your comment.</div>
+        <span slot="footer" class="space-y-2 dialog-footer">
+          <el-button @click="deleteDialog = false">Cancel</el-button>
+          <el-button type="primary" style="margin-left:0" @click="confirmDelete()">Delete</el-button>
+        </span>
+      </el-dialog> <!-- Delete comment dialog -->
+
 
     </div>  <!-- Comment Details (owner, created, updated, settings) end -->
 
@@ -169,7 +182,9 @@ export default({
       editLoading: false,
       deleteLoading: false,
       updateHistory: false,
-      historyWidth: "50%"
+      historyWidth: "50%",
+      deleteDialog: false,
+      deleteDialogSize: "40%"
     }
   },
   methods: {
@@ -192,26 +207,18 @@ export default({
     handleMoreOption(command) {
       if( command == 'editComment' )
         this.showEditArea = !this.showEditArea
-      if ( command == 'deleteComment')
-        this.openDeleteModal();
+      if ( command == 'openDeleteCommentDialog')
+        this.deleteDialog = true
     },
-    openDeleteModal() {
+    confirmDelete(){
+      this.deleteDialog = false;
+
+      this.deleteComment().then(()=>{
+        this.$message.success('Your comment successfully deleted.');
+      });
+    },
+    async deleteComment(){
       
-      this.$confirm('Are you sure you want to delete your comment.', 'Warning', {
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-        center: true
-      }).then(() => {
-        this.confirmDelete().then(()=>{
-          this.$message.success('Your comment successfully deleted.');
-        });
-      }).catch(()=>{});
-
-    },
-    async confirmDelete(){
-      this.deleteCommentWarning = false;
-
       if(!this.deleteLoading){
         this.deleteLoading = true;
         const deleteData = {
@@ -242,7 +249,7 @@ export default({
 
               // This process will cause a recursive event, It continues delete comments over and over,
               // until facing a not deleted comment or a comment which has had replies.
-              this.$parent.$parent.confirmDelete();
+              this.$parent.$parent.deleteComment();
             }
 
           }
@@ -417,8 +424,10 @@ export default({
   },
   mounted(){
     this.historyWidth = window.innerWidth > 1024 ? "50%" : "80%"
+    this.deleteDialogSize = window.innerWidth > 1024 ? "40%" : "80%"
     window.addEventListener('resize', () => {
       this.historyWidth = window.innerWidth > 1024 ? "50%" : "80%"
+      this.deleteDialogSize = window.innerWidth > 1024 ? "40%" : "80%"
     })
   },
   computed: {

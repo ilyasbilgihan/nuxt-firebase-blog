@@ -57,7 +57,7 @@
       direction="rtl"
       size="72%">
 
-      <div>
+      <div class="mb-8">
 
         <span v-if="!user" @click="login()" class="cursor-pointer ml-8">Login</span>
         <NuxtLink v-else :to="'/' + this.user.username" class="px-8 py-4 flex space-x-2 items-center">
@@ -139,6 +139,28 @@ export default {
 
 
 <style lang="scss">
+
+.limit-lines {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;  
+  box-orient: vertical;
+  overflow: hidden;
+  &.l-1{
+    -webkit-line-clamp: 1;
+  }
+  &.l-2{
+    -webkit-line-clamp: 2;
+  }
+  &.l-3{
+    -webkit-line-clamp: 3;
+  }
+  &.l-4{
+    -webkit-line-clamp: 4;
+  }
+  &.l-5{
+    -webkit-line-clamp: 5;
+  }
+}
 
 body.el-popup-parent--hidden {
   padding: 0 !important;

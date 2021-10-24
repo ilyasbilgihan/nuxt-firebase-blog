@@ -32,8 +32,8 @@
     <!-- Post card main end -->
 
     <div class="flex justify-between sm:px-0 flex-row lg:flex-row mt-3 sm:mt-2">
-      <ul class="hidden md:flex space-x-2 items-center flex-1 pr-8">
-        <li v-for="tag in post.tags" :key="tag.slug">
+      <ul class="hidden md:flex items-center flex-1 pr-8 flex-wrap">
+        <li v-for="tag in post.tags" :key="tag.slug" class="mr-2 my-1.5">
           <NuxtLink :to="'/tag/' + tag.slug" class="tag">{{tag.name}}</NuxtLink>
         </li>
       </ul>
@@ -131,25 +131,6 @@ export default {
   width: fit-content;
   width: webkit-fit-content;
   width: intrinsic;
-}
-
-.limit-lines {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;  
-  box-orient: vertical;
-  overflow: hidden;
-  &.l-1{
-    -webkit-line-clamp: 1;
-  }
-  &.l-2{
-    -webkit-line-clamp: 2;
-  }
-  &.l-3{
-    -webkit-line-clamp: 3;
-  }
-  &.l-4{
-    -webkit-line-clamp: 4;
-  }
 }
 
 .author:hover {

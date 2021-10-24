@@ -1,10 +1,10 @@
 <template>
 
-  <div class="postView flex">
+  <div class="postView flex -mt-4">
     <div class="w-1/6 hidden xl:block relative pr-8">
       <div v-if="ownPost" class="sticky top-32">
         <div v-if="!editMode" class="flex flex-col space-x-0 space-y-2">
-          <el-button class="w-full" @click="openEditMode()" type="warning">Enter edit mode</el-button>
+          <el-button class="w-full" @click="openEditMode()" type="warning">Enter Edit Mode</el-button>
           <el-button class="w-full" type="danger" @click="openDeleteModal()">Delete This Post</el-button>
         </div>
         <div v-else class="flex flex-col space-x-0 space-y-2">
@@ -56,8 +56,8 @@
         </div>
       </div>
       <div class="flex justify-between py-3">
-        <ul class="flex items-center text-sm pr-8 space-x-2">
-          <li v-for="tag in post.tags" :key="tag.slug">
+        <ul class="flex items-center text-sm pr-8 flex-wrap">
+          <li v-for="tag in post.tags" :key="tag.slug" class="mr-2 my-1.5">
             <NuxtLink :to="'/tag/' + tag.slug" class="tag">{{tag.name}}</NuxtLink>
           </li>
         </ul>
