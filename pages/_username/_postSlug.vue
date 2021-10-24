@@ -1,6 +1,6 @@
 <template>
 
-  <div class="postView flex -mt-4">
+  <div class="postView flex">
     <div class="w-1/6 hidden xl:block relative pr-8">
       <div v-if="ownPost" class="sticky top-32">
         <div v-if="!editMode" class="flex flex-col space-x-0 space-y-2">
@@ -55,16 +55,16 @@
           </div>
         </div>
       </div>
-      <div class="flex justify-between py-3">
-        <ul class="flex items-center text-sm pr-8 flex-wrap">
+      <div class="flex flex-col-reverse sm:items-center sm:flex-row sm:justify-between py-3">
+        <ul class="flex items-center text-sm sm:pr-8 flex-wrap">
           <li v-for="tag in post.tags" :key="tag.slug" class="mr-2 my-1.5">
             <NuxtLink :to="'/tag/' + tag.slug" class="tag">{{tag.name}}</NuxtLink>
           </li>
         </ul>
-        <div class="flex items-center space-x-4">
+        <div class="flex pb-2.5 px-1 sm:px-0 sm:pt-0 items-center sm:space-x-4">
           <div :class="{'text-red-700': hasAlreadyLiked}" class="flex items-center space-x-1"><Loading v-if="likeLoading"/><span v-else>{{post.likes.length}}</span><span @click="likePost()" :class="{'bg-red-50': hasAlreadyLiked}" class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-red-50 hover:text-red-700 isax-heart"></span></div>
-          <a href="#comments" class="flex items-center space-x-1"><span>{{post.commentCount}}</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-blue-50 hover:text-blue-700 isax-messages-3"></span></a>
-          <span @click="addToBookmarks()" :class="{'text-yellow-700 bg-yellow-50': hasAlreadyBookmarked, 'isax-archive-add': !bookmarkLoading}" class="flex items-center justify-center text-2xl p-3 rounded-full cursor-pointer transition duration-300 hover:bg-yellow-50 hover:text-yellow-700"><Loading v-if="bookmarkLoading" /></span>
+          <a href="#comments" class="ml-3 flex items-center space-x-1"><span>{{post.commentCount}}</span><span class="text-xl p-2 rounded-full cursor-pointer transition duration-300 hover:bg-blue-50 hover:text-blue-700 isax-messages-3"></span></a>
+          <span @click="addToBookmarks()" :class="{'text-yellow-700 bg-yellow-50': hasAlreadyBookmarked, 'isax-archive-add': !bookmarkLoading}" class="ml-auto sm:ml-0 flex items-center justify-center text-2xl p-3 rounded-full cursor-pointer transition duration-300 hover:bg-yellow-50 hover:text-yellow-700"><Loading v-if="bookmarkLoading" /></span>
         </div>
       </div>
       <div class="flex w-max py-3 items-center space-x-2">
