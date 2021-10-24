@@ -4,7 +4,7 @@
       <el-form label-position="top" class="md:w-10/12 xl:w-2/3 mx-auto xl:px-8">
 
         <div class="font-semibold relative space-x-20 xl:space-x-0 mb-8">
-          <span class="text-4xl absolute top-1/2 xl:-left-4 transform -translate-y-1/2 xl:-translate-x-full p-4 rounded-full isax-edit-2 text-pink-700 bg-pink-50"></span>
+          <span class="text-4xl absolute top-1/2 xl:-left-4 transform -translate-y-1/2 xl:-translate-x-full p-4 rounded-full isax-edit-2 text-blue-700 bg-blue-50"></span>
           <h1>Write A Post</h1>
         </div>
 

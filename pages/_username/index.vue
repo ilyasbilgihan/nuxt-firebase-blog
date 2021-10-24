@@ -45,7 +45,7 @@
         <div class="xl:sticky xl:top-32 flex xl:flex-col gap-4 xl:gap-x-0 mb-8 xl:mb-0 ">
           <div class="w-1/2 sm:w-3/12 lg:w-1/6 xl:w-3/4">
             <img :src="user.photoURL || require('@/assets/images/avatar.png')" class="rounded-2xl shadow-lg" :alt="user.displayName">
-            <div class="flex sm:hidden mt-4 gap-x-2 lg:block space-x-1 lg:space-x-0 lg:space-y-1 xl:space-y-0">
+            <div class="flex sm:hidden mt-4 gap-x-2 space-x-1 lg:space-x-0 lg:space-y-1 xl:space-y-0">
               <div v-if="user.location" :title="user.location" class="flex items-center flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden"><i class="mr-1 text-xl isax-location"></i><span class="overflow-ellipsis overflow-hidden">{{user.location}}</span></div>
               <div v-if="user.profession" :title="user.profession" class="flex items-center flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden"><i class="mr-1 text-xl isax-briefcase"></i><span class="overflow-ellipsis overflow-hidden">{{user.profession}}</span></div>
             </div>

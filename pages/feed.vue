@@ -2,7 +2,7 @@
   <div class="md:w-10/12 xl:w-2/3 mx-auto xl:px-8">
 
     <div class="font-semibold relative space-x-20 xl:space-x-0">
-      <span class="text-4xl absolute top-1/2 xl:-left-4 transform -translate-y-1/2 xl:-translate-x-full p-4 rounded-full isax-people text-purple-700 bg-purple-50"></span>
+      <span class="text-4xl absolute top-1/2 xl:-left-4 transform -translate-y-1/2 xl:-translate-x-full p-4 rounded-full isax-people text-pink-700 bg-pink-50"></span>
       <h1>Your Feed</h1>
     </div>
 
