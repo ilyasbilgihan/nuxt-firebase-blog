@@ -5,7 +5,7 @@
     <div class="-mx-8 -mt-8 sm:-mx-16 sm:-mt-16 h-64 shadow-lg relative overflow-hidden">
       <div class="coverImage postImageAnimation" :style="`background-image: url(${coverImageURL || (user.coverImageURL || require('@/assets/images/cover-default.jpg'))})`"></div>
       <h1 class="displayName">{{user.displayName}}</h1>
-      <div v-if="ownProfile" class="absolute bottom-0 right-0 p-8 flex items-center justify-center text-white">
+      <div v-if="ownProfile" class="absolute bottom-0 right-0 p-8 flex items-center justify-center text-white z-10">
 
         <client-only>
           <el-upload
@@ -50,7 +50,7 @@
               <div v-if="user.profession" :title="user.profession" class="flex items-center flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden"><i class="mr-1 text-xl isax-briefcase"></i><span class="overflow-ellipsis overflow-hidden">{{user.profession}}</span></div>
             </div>
           </div>
-          <div class="flex justify-between sm:justify-center sm:justify-start flex-col w-1/2 sm:flex-row xl:flex-col sm:w-9/12 lg:w-5/6 xl:w-auto gap-2 sm:gap-4 sm:items-center xl:items-start">
+          <div class="flex justify-between sm:justify-center flex-col w-1/2 sm:flex-row xl:flex-col sm:w-9/12 lg:w-5/6 xl:w-auto gap-2 sm:gap-4 sm:items-center xl:items-start">
             <div class="sm:w-1/2 lg:w-2/3 xl:w-auto">
               <h6 class="hidden sm:block font-semibold">{{user.displayName}}</h6>
               <p v-if="user.bio" class="pt-2 sm:pt-0 limit-lines l-5">{{user.bio}}</p>
@@ -62,7 +62,7 @@
               </div>
               
               <div class="flex flex-col items-center xl:items-start">
-                <div class="flex space-x-4 pb-2 sm:pt-2">
+                <div class="flex space-x-4 sm:pt-2" :class="{'pb-2' : !ownProfile}">
                   <div class="space-x-1 flex flex-col items-center sm:block"><Loading v-if="followLoading" /><strong v-else>{{user.followers.length}}</strong><span>followers</span></div>
                   <div class="space-x-1 flex flex-col items-center sm:block"><strong>{{user.followed.length}}</strong><span>followed</span></div>
                 </div>
