@@ -9,12 +9,13 @@ $ npm install
 # serve with hot reload at localhost:3000
 $ npm run dev
 
+# serve with hot reload at 0.0.0.0 (Your static IP)
+$ npm run dev:host
+
 # build for production and launch server
 $ npm run build
 $ npm run start
 
-# generate static project
-$ npm run generate
 ```
 <p align="center">
   <img width="256" height="256" src="https://firebasestorage.googleapis.com/v0/b/nuxt-blog-exercise.appspot.com/o/external%2Fbig-logo.png?alt=media&token=bb5e45d2-0909-46cc-a25b-3e9adac0a28c" />
@@ -35,7 +36,7 @@ This is a fully functional social blog application. The main idea is its functio
 - Follow/Unfollow people, list the posts of the ones you have followed.
 - List the posts by their tags (Max of 5 tag is supported for each post).
 - Write comments, up/down vote comments, delete comments, edit comments(content), inspect comments' edit history.
-- Mobile friendly as much as I could handdle.
+- Mobile friendly as much as I could handle.
 
 <br>
 
