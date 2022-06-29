@@ -1,7 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'Nuxt Firebase Blog',
+    title: 'Blog App using Nuxt and Firebase',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -19,7 +19,8 @@ export default {
       { hid: 'og:image', name: 'og:image', content: 'https://firebasestorage.googleapis.com/v0/b/nuxt-blog-exercise.appspot.com/o/external%2Fbig-logo.png?alt=media&token=bb5e45d2-0909-46cc-a25b-3e9adac0a28c'},
       { hid: 'og:image:alt', name: 'og:image:alt', content: 'Nuxt Firebase Blog'},
       { hid: 'twitter:image', name: 'twitter:image', content: 'https://firebasestorage.googleapis.com/v0/b/nuxt-blog-exercise.appspot.com/o/external%2Fbig-logo.png?alt=media&token=bb5e45d2-0909-46cc-a25b-3e9adac0a28c'},
-      { hid: 'twitter:image:alt', name: 'twitter:image:alt', content: 'Nuxt Firebase Blog'}
+      { hid: 'twitter:image:alt', name: 'twitter:image:alt', content: 'Nuxt Firebase Blog'},
+      { hid: 'google-site-verification', name: 'google-site-verification', content: 'hETDkVHEY1J3olqwArDQdc2D3bnyb7GC3rzun49aOTw'}
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
