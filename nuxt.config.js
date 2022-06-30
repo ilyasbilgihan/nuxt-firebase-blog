@@ -73,7 +73,7 @@ export default {
   ],
 
   sitemap: {
-    path: '/sitemap.xml',
+    path: '/site_map.xml',
     hostname: 'https://nuxt-firebase-blog.herokuapp.com',
     exclude: [
       '/admin-panel',

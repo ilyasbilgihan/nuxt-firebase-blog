@@ -39,8 +39,7 @@ export const generateDynamicRoutes = async () => {
   let combinedRoutes = [...postRoutes, ...tagRoutes, ...userRoutes]
   let routeObjs = combinedRoutes.map((route) => {
     return {
-      url: route,
-      lastmod: new Date(),
+      url: route
     }
   })
   return routeObjs
