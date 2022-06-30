@@ -1,3 +1,5 @@
+import {generateDynamicRoutes} from './helpers/generateDynamicRoutes.js'
+
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -67,7 +69,25 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+    "@nuxtjs/sitemap"
   ],
+
+  sitemap: {
+    path: '/sitemap.xml',
+    hostname: 'https://nuxt-firebase-blog.herokuapp.com',
+    exclude: [
+      '/admin-panel',
+      '/account',
+      '/feed',
+      '/write-post',
+      '/bookmarks',
+      '/tag',
+    ],
+    routes: async () => {
+      const routes = await generateDynamicRoutes()
+      return routes
+    }
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
