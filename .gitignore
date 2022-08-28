@@ -91,3 +91,7 @@ sw.*
 
 # Vim swap files
 *.swp
+
+.firebase
+public/_nuxt
+.editorconfig

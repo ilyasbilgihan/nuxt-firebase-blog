@@ -1,0 +1,284 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /usernames/{username} {
+    
+    	// Anyone can read usernames
+      allow read;
+      
+      // Only the username owner can create, update or delete the username.
+      allow create, update: if (request.resource.data.size() == 1) && isOwner(request.resource.data.uid);
+      allow delete: if isOwner(resource.data.uid);
+      
+    }
+    
+    match /users/{userId} {
+    
+    	// Anyone can read user informations.
+      allow read;
+      
+      // If the user data(request.resource.data) is valid, everyone can create their "own" accounts.
+      allow create: if isOwner(userId) && isOwner(request.resource.data.uid) && isValidUserData();
+      
+      // When users want to follow someone, add bookmark, change cover image,
+      // change username or update their profile
+      // We should check the requests' validity, and allow them if they are valid.
+      allow update: if canFollow() || canBeFollowed() || canAddRemoveBookmark() || usernameChange() || coverImage() || isValidUserUpdateData();
+    
+  		// Delete user not ready yet.
+      allow delete: if false;
+    }
+
+		match /{path=**}/posts/{postSlug} {
+    
+      // There is a problem with Nuxt SS request(ex. in asyncData hook)
+      // request.auth will always be null if the request is coming from the server side.
+      // So we can't check if the request is coming from the post owner.
+      // Thus, if we check post's published field, the owner can't read it too.
+      allow read;
+      
+      // If the post is valid, everyone can create their "own" posts.
+      allow create: if isOwner(request.resource.data.uid) && isValidPost();
+      
+      // When users want to like or update post, we should check
+      // the requests' validity, and allow them if they are valid.
+      allow update: if canLeaveALike() || isValidPostUpdate();
+      
+      // Only the post owner can delete the post.
+      allow delete: if isOwner(resource.data.uid);
+    }
+    
+
+    match /{path=**}/comments/{commentId} {
+    
+    	// Anyone can read comments
+      allow read;
+      
+      // If the comment is valid, everyone can create their "own" comments.
+      allow create: if isOwner(request.resource.data.uid) && isValidComment();
+      
+      // When users want to vote, reply, delete or edit comment,
+      // We should check the requests' validity, and allow them if they are valid.
+      allow update: if isValidCommentUpdate() || canUpDownVote() || reply() || temporarilyDelete();
+    
+      allow delete: if validDeletion();
+    }
+      
+
+    
+    function isOwner(userId){
+      return request.auth != null && request.auth.uid == userId;
+    }
+    
+    function isValidUserData(){
+      let user = request.resource.data;
+      
+      let noData = user.photoURL == null && user.username == null && user.coverImageURL == null;
+      let empty = user.bio == "" && user.location == "" && user.profession == "";
+      let follower = user.followers is list && user.followed is list && user.followers.size() == 0 && user.followed.size() == 0;
+      let bookmark = user.bookmarks is list && user.bookmarks.size() == 0;
+      let limit = user.usernameChangeLimit is int && user.usernameChangeLimit == 4;
+      let name = user.displayName is string && user.displayName.size() > 0;
+      
+      return noData && empty && bookmark && limit && name && follower;
+    }
+    
+    function isValidUserUpdateData(){
+      let user = request.resource.data;
+      
+      let validUser = isOwner(resource.data.uid);
+      let hasValidFields = user.diff(resource.data).affectedKeys().hasOnly(['bio','displayName','location','photoURL','profession']);
+      let bio = user.bio is string && user.bio.size() <= 150;
+      let displayName = user.displayName is string && user.displayName.size() <= 25;
+      let profession = user.profession is string && user.profession.size() <= 25;
+      let location = user.location is string && user.location.size() <= 25;
+      
+      return validUser && hasValidFields && bio && displayName && profession && location;
+    }
+    
+    function usernameChange(){
+      let user = request.resource.data;
+      
+      let validUser = isOwner(resource.data.uid);
+      let hasValidFields = user.diff(resource.data).affectedKeys().hasOnly(['usernameChangeLimit','username']);
+      let limit = user.usernameChangeLimit is int && resource.data.usernameChangeLimit - user.usernameChangeLimit == 1;
+      let validUsername = !exists(/databases/$(database)/documents/usernames/$(user.username));
+      
+      return validUser && hasValidFields && limit && validUsername;
+    }
+    
+    function coverImage(){
+      let user = request.resource.data;
+      
+      let validUser = isOwner(resource.data.uid);
+      let hasValidFields = user.diff(resource.data).affectedKeys().hasOnly(['coverImageURL']);
+      
+      return validUser && hasValidFields;
+    }
+    
+    function isValidPost(){
+      let post = request.resource.data;
+      
+      let hasValidFields = post.diff({}).addedKeys() == ['uid','title','slug','description','content','likes','tags','tagSlugs','createdAt','updatedAt','published','postImageURL'].toSet();
+      let title = post.title is string && post.title.size() <= 70;
+      let slug = post.slug is string && !exists(/databases/$(database)/documents/users/$(post.uid)/posts/$(post.slug));
+      let like = post.likes is list && post.likes.size() == 0;
+      let validDate = post.createdAt is int && post.updatedAt == post.createdAt;
+      let descr = post.description is string && post.description.size() <= 300;
+			let content = post.content is list && post.content.size() > 0 && post.content.size() <= 300;
+      let published = post.published is bool;
+      let tags = post.tags is list && post.tags.size() > 0 && post.tags.size() <= 5 && post.tagSlugs is list && post.tagSlugs.size() > 0 && post.tagSlugs.size() <= 5;
+      
+      return hasValidFields && validDate && title && slug && like && descr && content && published && tags;
+    }
+    
+    function isValidPostUpdate(){
+      let post = request.resource.data;
+      
+      let validUser = isOwner(resource.data.uid) && isOwner(request.resource.data.uid);
+      let hasValidFields = request.resource.data.diff(resource.data).affectedKeys().hasOnly(['description','content','updatedAt','published','postImageURL']);
+      let validDate = post.updatedAt is int && post.createdAt < post.updatedAt;
+      let descr = post.description is string && post.description.size() <= 300;
+			let content = post.content is list && post.content.size() > 0 && post.content.size() <= 300;
+      let published = post.published is bool;
+      
+      return validUser && hasValidFields && validDate && descr && content && published;
+    }
+    
+    function canLeaveALike(){
+    
+      let hasValidField = request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']);
+      let changeCount = request.resource.data.likes.size() - resource.data.likes.size();
+      let validChange = changeCount == 1 || changeCount == -1;
+      let existsBefore = request.auth.uid in resource.data.likes;
+      let existsAfter = request.auth.uid in request.resource.data.likes;
+      
+      let hasLiked = !existsBefore && existsAfter;
+      let hasDisliked = existsBefore && !existsAfter;
+      let hasOwnAction = changeCount == 1 ? hasLiked : hasDisliked;
+      
+      return hasValidField && validChange && hasOwnAction;
+    }
+    
+    function canFollow(){
+      
+      let isValidFollower = request.auth.uid != resource.data.uid;
+			let hasValidField = request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers']);
+      let changeCount = request.resource.data.followers.size() - resource.data.followers.size();
+      let validChange = changeCount == 1 || changeCount == -1;
+      let existsBefore = request.auth.uid in resource.data.followers;
+      let existsAfter = request.auth.uid in request.resource.data.followers;
+      
+      let hasFollowed = existsAfter && !existsBefore;
+      let hasUnfollowed = existsBefore && !existsAfter;
+      let hasOwnAction = changeCount == 1 ? hasFollowed : hasUnfollowed;
+      
+      return isValidFollower && hasValidField && validChange && hasOwnAction;
+    }
+    
+    function canBeFollowed(){
+    
+      let isValidUser = isOwner(resource.data.uid);
+      let hasValidField = request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followed']);
+      // No need further controls, followed list could only be changed by its owner. 
+      
+      return isValidUser && hasValidField;
+    }
+    
+    function canAddRemoveBookmark(){
+    
+			let isValidUser = isOwner(resource.data.uid);
+      let hasValidField = request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bookmarks']);
+    	// No need further controls, bookmarks could only be changed by its owner.
+      
+      return isValidUser && hasValidField;
+    }
+    
+    function isValidComment(){
+      let comment = request.resource.data;
+      
+      let validUser = isOwner(comment.uid);
+      let hasValidFields = comment.diff({}).addedKeys() == ['uid','content','createdAt','updatedAt','upVotes','downVotes','parentId','replyCount','updateHistory','voteCount'].toSet();
+      let validDate = comment.createdAt is int && comment.updatedAt == comment.createdAt;
+			let content = comment.content is string && comment.content.size() > 0 && comment.content.size() <= 300;
+      let counts = comment.downVotes is list && comment.upVotes is list && comment.downVotes.size() == 0 && comment.upVotes.size() == 0 && comment.replyCount is int && comment.replyCount == 0;
+      let history = comment.updateHistory is list && comment.updateHistory.size() == 1;
+      let vote = comment.voteCount is int && comment.voteCount == 0;
+      
+      return hasValidFields && validUser && validDate && content && counts && history && vote;
+    }
+    
+    function isValidCommentUpdate(){
+      let comment = request.resource.data;
+      
+      let validUser = isOwner(resource.data.uid);
+      let hasValidFields = comment.diff(resource.data).affectedKeys().hasOnly(['content','updatedAt','updateHistory']);
+      let content = comment.content is string && comment.content.size() > 0 && comment.content.size() <= 300;
+      let updatedAt = comment.updatedAt is int && resource.data.createdAt < comment.updatedAt;
+      let history = comment.updateHistory.size() - resource.data.updateHistory.size() == 1;
+      let newComment = comment.updateHistory.removeAll(resource.data.updateHistory)[0];
+      let newContent = newComment.content == comment.content;
+      let editedAt = newComment.editedAt == comment.updatedAt;
+      
+      
+      return validUser && hasValidFields && content && updatedAt && history && newContent && editedAt;
+      
+    }
+    
+    function canUpDownVote(){
+      
+      let hasValidFields = request.resource.data.diff(resource.data).affectedKeys().hasOnly(['downVotes', 'upVotes', 'voteCount']);
+      
+      let beforeUp = request.auth.uid in resource.data.upVotes;
+      let afterUp = request.auth.uid in request.resource.data.upVotes;
+      
+      let beforeDown = request.auth.uid in resource.data.downVotes;
+      let afterDown = request.auth.uid in request.resource.data.downVotes;
+      
+      let changeCount = request.resource.data.voteCount - resource.data.voteCount;
+			let validChange = changeCount in [-1,-2,1,2];
+      
+      // a little confusing but necessary (~`_`~)
+      let hasOwnAction = (changeCount == 1) ? ( (!beforeUp && afterUp) || (beforeDown && !afterDown) ) : ((changeCount == 2) ? ( !beforeUp && afterUp && beforeDown && !afterDown ) : ((changeCount == -1) ? ( (!beforeDown && afterDown) || (beforeUp && !afterUp) ) : ( !beforeDown && afterDown && (beforeUp || !afterUp) )));
+      
+      return hasValidFields && validChange && hasOwnAction;
+      
+    }
+    
+    function reply() {
+      let comment = request.resource.data;
+      
+      let hasValidFields = comment.diff(resource.data).affectedKeys().hasOnly(['replyCount']);
+      let count = comment.replyCount is int && (comment.replyCount - resource.data.replyCount) in [-1,1];
+      
+      // Could be a problem, but we can't check if it is a valid increment
+      // for the current comment system desing
+      // Any user can increment comment's replyCount
+      return hasValidFields && count && request.auth != null;
+      
+    }
+    
+    function temporarilyDelete(){
+      let comment = request.resource.data;
+      
+      let validUser = isOwner(resource.data.uid);
+      let hasValidFields = comment.diff(resource.data).affectedKeys().hasOnly(['content', 'uid']);
+      let content = comment.content == 'Message deleted.';
+      let userId = comment.uid == 'deleted';
+
+      return hasValidFields && content && userId && validUser;
+    
+    }
+    
+    function validDeletion(){
+      let comment = resource.data;
+      
+      let hasReplies = comment.replyCount != 0;
+      let ownerId = comment.uid;
+      
+      return (!hasReplies && isOwner(ownerId)) || (!hasReplies && ownerId == "deleted");
+    }
+  
+  }
+}

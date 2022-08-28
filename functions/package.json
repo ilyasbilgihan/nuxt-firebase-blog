@@ -1,15 +1,22 @@
 {
-  "name": "nuxt-firebase-blog",
-  "version": "1.1.0",
-  "private": true,
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
   "scripts": {
-    "dev": "nuxt",
-    "build": "nuxt build",
-    "start": "nuxt start",
-    "generate": "nuxt generate"
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
   },
+  "engines": {
+    "node": "16"
+  },
+  "main": "index.js",
   "dependencies": {
-    "@nuxtjs/moment": "^1.6.1",
+    "firebase-admin": "^10.0.2",
+    "firebase-functions": "^3.18.0",
+    "nuxt-start": "^2.15.8",
+	"@nuxtjs/moment": "^1.6.1",
     "@nuxtjs/sitemap": "^2.4.0",
     "cookieparser": "^0.1.0",
     "core-js": "^3.19.3",
@@ -29,9 +36,7 @@
     "webpack": "^4.46.0"
   },
   "devDependencies": {
-    "@nuxtjs/tailwindcss": "^4.2.1",
-    "postcss": "^8.4.4",
-    "sass": "^1.53.0",
-    "sass-loader": "^10.3.0"
-  }
+    "firebase-functions-test": "^0.2.0"
+  },
+  "private": true
 }

@@ -1,19 +1,18 @@
-let admin = require("firebase-admin");
-let gConfig = process.env.GOOGLE_CONFIG_BASE64;
+module.exports = async function () {
+  let admin = require("firebase-admin");
+  let gConfig = process.env.GOOGLE_CONFIG_BASE64;
 
-if(!admin.apps.length){
+  if(!admin.apps.length){
 
-  let googleConfig = JSON.parse(Buffer.from(gConfig, 'base64').toString('ascii'))
-
-  admin.initializeApp({
-    credential: admin.credential.cert(googleConfig),
-    databaseURL: "https://nuxt-blog-exercise-default-rtdb.europe-west1.firebasedatabase.app"
-  });
+    let googleConfig = JSON.parse(Buffer.from(gConfig, 'base64').toString('ascii'))
   
-}
+    admin.initializeApp({
+      credential: admin.credential.cert(googleConfig),
+      databaseURL: "https://nuxt-blog-exercise-default-rtdb.europe-west1.firebasedatabase.app"
+    });
+    
+  }
 
-
-export const generateDynamicRoutes = async () => {
   let postRoutes = []
   let tagRoutes = []
   let userRoutes = []

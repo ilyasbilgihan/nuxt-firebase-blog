@@ -26,7 +26,7 @@ This is a fully functional social blog application. The main idea is its functio
 
 <a href="https://firebasestorage.googleapis.com/v0/b/nuxt-blog-exercise.appspot.com/o/external%2Ffirestore.rules?alt=media&token=a36a3eb4-b6e7-43a2-8b97-2e211dc62a31" target="_blank" title="Firebase Firestore Security Rules">Firestore security rules</a> (I am really new to writing security rules, Please inform me if you come across an insecure rule)
 
-<a href="https://nuxt-firebase-blog.herokuapp.com/" target="_blank" title="Nuxt Firebase Blog">Live Demo</a>
+<a href="https://nuxt-blog-exercise.web.app/" target="_blank" title="Nuxt Firebase Blog">Live Demo</a>
 
 ### List of the features
 - Create accounts, change account informations (location, profession, bio, display name, username, profile picture, cover image).
